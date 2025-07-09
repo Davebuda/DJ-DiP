@@ -1,19 +1,19 @@
-namespace DJDiP.Domain.Models
+namespace DJDiP.Domain.Models.AdmnModels
 {
-    public class MediaFile
-    {
-        public Guid Id { get; set; }
-        public string Url { get; set; } = null!;
-        public string FileName { get; set; } = null!;
-        public string MediaType { get; set; } = null!;           // e.g., "image/jpeg"
-        public long FileSize { get; set; }                      // In bytes
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+public class MediaFile
+{
+    public Guid Id { get; set; }
+    public string FileName { get; set; } = string.Empty;
+    public string FileType { get; set; } = string.Empty; // f.eks. "image/jpeg", "video/mp4"
+    public string Url { get; set; } = string.Empty;
+    public DateTime UploadedAt { get; set; }
+    public string? Description { get; set; }
 
-        // Optional Relations:
-        public Guid? EventId { get; set; }
-        public Event? Event { get; set; }
+    // Relasjoner (valgfritt – avhengig av bruk)
+    public Guid? EventId { get; set; }
+    public Event? Event { get; set; }
 
-        public Guid? DJId { get; set; }
-        public DJProfile? DJ { get; set; }
-    }
+    public Guid? DJProfileId { get; set; }
+    public DJProfile? DJProfile { get; set; }
+}
 }

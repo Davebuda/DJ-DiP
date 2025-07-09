@@ -1,14 +1,14 @@
-namespace DJDiP.Domain.Models
+
+namespace DJDiP.Domain.Models.AdmnModels
 {
     public class AuditLog
-{
-    public Guid Id { get; set; }
-    public Guid UserId { get; set; }
-    public ApplicationUser User { get; set; } = null!;
-    public string Action { get; set; } = null!;           // e.g., "Created Event"
-    public string EntityName { get; set; } = null!;       // e.g., "Event"
-    public Guid? EntityId { get; set; }                    // Specific entity id
-    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-}
-
+    {
+        public Guid Id { get; set; }
+        public DateTime Timestamp { get; set; }
+        public string Action { get; set; } = string.Empty; // f.eks. "Create", "Update", "Delete"
+        public string EntityName { get; set; } = string.Empty; // f.eks. "Event", "DJProfile"
+        public string EntityId { get; set; } = string.Empty;   // ID i string for fleksibilitet
+        public string UserId { get; set; } = string.Empty;     // Den som utførte handlingen
+        public string? Changes { get; set; }                   // Valgfri: Beskrivelse eller JSON-diff
+    }
 }

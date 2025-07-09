@@ -9,6 +9,11 @@ namespace DJDiP.Domain.Models
         public string Currency { get; set; } = "NOK"; 
         public string PaymentMethod { get; set; } = null!;
         public string? TransactionId { get; set; }
+
+        
+        public Guid? PromotionCodeId { get; set; }
+        public PromotionCode? PromotionCode { get; set; }
+
         public DateTime PaymentDate { get; set; }
         public PaymentStatus Status { get; set; }
     }
