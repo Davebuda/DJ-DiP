@@ -1,6 +1,6 @@
 namespace Application.DTO.DJProfile
 {
-    public class CreateDJProfileFDto
+    public class CreateDJProfileDto
     {
         public string StageName { get; set; } = string.Empty;
         public string? FullName { get; set; }

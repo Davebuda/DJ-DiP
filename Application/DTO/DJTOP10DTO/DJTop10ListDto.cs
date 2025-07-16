@@ -1,4 +1,4 @@
-namespace DJDiP.Application.DTOs.DJTop10
+namespace DJDiP.Application.DTO.DJTop10DTO
 {
     public class DJTop10ListDto
     {

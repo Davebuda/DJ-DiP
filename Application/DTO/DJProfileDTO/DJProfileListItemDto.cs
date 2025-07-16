@@ -1,4 +1,4 @@
-namespace DJDiP.Application.DTOs.DJProfile
+namespace DJDiP.Application.DTO.DJProfileDTO
 {
     public class DJProfileListItemDto
     {

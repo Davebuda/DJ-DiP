@@ -1,8 +1,7 @@
-namespace DJDiP.Application.DTOs.Events
+namespace DJDiP.Application.DTO.EventDTO
 {
-    public class EventUpdateDto
+    public class CreateEventDto
     {
-        public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public Guid VenueId { get; set; }
