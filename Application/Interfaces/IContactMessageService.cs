@@ -1,6 +1,5 @@
 
 using DJDiP.Application.DTO.ContactMessageDTO;
-using DJDiP.Application.DTOs.ContactMessage;
 namespace DJDiP.Application.Interfaces
 {
 public interface IContactMessageService

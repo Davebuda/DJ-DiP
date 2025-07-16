@@ -1,14 +1,16 @@
 
-using DJDiP.Domain.Models;
-namespace DJDiP.Application.DTO.EventDTO;
+using DJDiP.Application.DTO.EventDTO;
 
-
-public interface IEventService
+namespace DJDiP.Application.Interface 
 {
-    Task<IEnumerable<EventDJ>> GetAllAsync();
+    public interface IEventService
+{
+    Task<IEnumerable<EventListDto>> GetAllAsync();
     Task<DetailEventDto?> GetByIdAsync(Guid id);
     Task<Guid> CreateAsync(CreateEventDto dto);
     Task UpdateAsync(Guid id, UpdateEventDto dto);
     Task DeleteAsync(Guid id);
 }
+}
+
 

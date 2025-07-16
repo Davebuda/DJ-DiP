@@ -1,5 +1,4 @@
 using DJDiP.Application.DTO.DJTop10DTO;
-using DJDiP.Application.DTO.DJTop10;
 
 namespace Application.Interfaces
 {

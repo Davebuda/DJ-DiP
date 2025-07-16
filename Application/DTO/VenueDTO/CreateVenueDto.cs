@@ -1,4 +1,4 @@
-namespace Application.DTO.VenueDTO
+namespace DJDiP.Application.DTO.VenueDTO
 {
 public class CreateVenueDto
 {
