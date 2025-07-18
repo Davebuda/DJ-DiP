@@ -1,7 +1,7 @@
 namespace Application.DTO.SongDTO
 
 {
-public class CreateSongDto
+public class AddSongDto
 {
     public string Title { get; set; } = string.Empty;
     public string Artist { get; set; } = string.Empty;
