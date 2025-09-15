@@ -13,18 +13,18 @@
         public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
         public DbSet<DJProfile> DJProfiles => Set<DJProfile>();
         public DbSet<DJTop10> DJTop10s => Set<DJTop10>();
-        public DbSet<Event> Event => Set<Event>();
+        public DbSet<Event> Events => Set<Event>();
         public DbSet<Genre> Genres => Set<Genre>();
-        public DbSet<Newsletter> Newsletter => Set<Newsletter>();
-        public DbSet<Notification> Notification => Set<Notification>();
-        public DbSet<Order> Order => Set<Order>();
-        public DbSet<OrderItem> OrderItem => Set<OrderItem>();
-        public DbSet<Payment> Payment => Set<Payment>();
-        public DbSet<PromotionCode> PromotionCode => Set<PromotionCode>();
-        public DbSet<Song> Song => Set<Song>();
-        public DbSet<Ticket> Ticket => Set<Ticket>();
-        public DbSet<ApplicationUser> ApplicationUser => Set<ApplicationUser>();
-        public DbSet<Venue> Venue => Set<Venue>();
+        public DbSet<Newsletter> Newsletters => Set<Newsletter>();
+        public DbSet<Notification> Notifications => Set<Notification>();
+        public DbSet<Order> Orders => Set<Order>();
+        public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+        public DbSet<Payment> Payments => Set<Payment>();
+        public DbSet<PromotionCode> PromotionCodes => Set<PromotionCode>();
+        public DbSet<Song> Songs => Set<Song>();
+        public DbSet<Ticket> Tickets => Set<Ticket>();
+        public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
+        public DbSet<Venue> Venues => Set<Venue>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -43,7 +43,7 @@
                 .HasForeignKey(edj => edj.DJId);
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.User)
-                .WithMany(u => u.Order)
+                .WithMany(u => u.Orders)
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<OrderItem>()
@@ -70,13 +70,13 @@
 
             modelBuilder.Entity<ContactMessage>()
                 .HasOne(cm => cm.User)
-                .WithMany(u => u.ContactMessage)
+                .WithMany(u => u.ContactMessages)
                 .HasForeignKey(cm => cm.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Notification>()
                 .HasOne(n => n.User)
-                .WithMany(u => u.Notification)
+                .WithMany(u => u.Notifications)
                 .HasForeignKey(n => n.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Ticket>()

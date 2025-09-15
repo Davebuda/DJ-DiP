@@ -1,6 +1,6 @@
-namespace Application.DTO.NewsLetterDTO;
+namespace Application.DTO.NewsLetterDTO
 {
-CreateNewsletterDtopublic class CreateNewsletterDto
+    public class CreateNewsletterDto
 {
     public string Email { get; set; } = string.Empty;
 }

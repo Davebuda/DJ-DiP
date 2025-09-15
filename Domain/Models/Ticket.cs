@@ -6,7 +6,7 @@ namespace DJDiP.Domain.Models
         public Guid Id { get; set; }
         public Guid EventId { get; set; }
         public Event Event { get; set; } = null!;
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public ApplicationUser User { get; set; } = null!;
         public DateTime PurchaseDate { get; set; }
         public string TicketNumber { get; set; } = null!;

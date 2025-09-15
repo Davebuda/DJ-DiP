@@ -1,10 +1,26 @@
 using DJDiP.Infrastructure.Persistance;
+using DJDiP.Application.Interfaces;
+using DJDiP.Application.Services;
 using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
-#pragma warning disable CS0436 // Type conflicts with imported type
+
+// Add services to the container
 builder.Services.AddDbContext<AppDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-#pragma warning restore CS0436 // Type conflicts with imported type
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register repositories and Unit of Work
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IEventRepository, EventRepository>();
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IDJProfileRepository, DJProfileRepository>();
+
+// Register services
+builder.Services.AddScoped<IUserService, UserService>();
+
 var app = builder.Build();
 
 app.MapGet("/", () => "Hello World!");
