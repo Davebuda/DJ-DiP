@@ -1,7 +1,8 @@
-namespace Application.DTO.GenreDTO;
-
-public class GenreDto
+namespace DJDiP.Application.DTO.GenreDTO
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; } = string.Empty;
+    public class GenreDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
 }

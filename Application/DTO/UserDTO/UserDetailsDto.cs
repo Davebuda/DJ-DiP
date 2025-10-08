@@ -1,8 +1,8 @@
-namespace Application.DTO.UserDTO
+namespace DJDiP.Application.DTO.UserDTO
 {
     public class UserDetailsDto
-{
-    public string FullName { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-}
+    {
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+    }
 }

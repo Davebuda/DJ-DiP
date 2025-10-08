@@ -52,7 +52,7 @@ namespace DJDiP.Application.Services
             user.FullName = userDto.FullName;
             user.Email = userDto.Email;
 
-            _unitOfWork.Users.UpdateAsync(user);
+            await _unitOfWork.Users.UpdateAsync(user);
             await _unitOfWork.SaveChangesAsync();
         }
 

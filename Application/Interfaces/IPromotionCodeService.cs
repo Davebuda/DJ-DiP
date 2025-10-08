@@ -1,6 +1,6 @@
 using Application.DTO.PromotionCodeDTO;
 
-namespace Application.Interfaces
+namespace DJDiP.Application.Interfaces
 {
     public interface IPromotionCodeService
     {

@@ -1,14 +1,12 @@
-namespace Application.DTO.PaymentDTO
+namespace DJDiP.Application.DTO.PaymentDTO
 {
-public class CreatePaymentDto
-{
-    public Guid OrderId { get; set; }
-    public string PaymentIntentId { get; set; } = string.Empty;
-    public string Currency { get; set; } = "NOK";
-    public decimal Amount { get; set; }
-    public DateTime PaidAt { get; set; }
-
-    public string ReceiptUrl { get; set; } = string.Empty;
-    public string Status { get; set; } = "Succeeded";
-}
+    public class CreatePaymentDto
+    {
+        public Guid OrderId { get; set; }
+        public decimal Amount { get; set; }
+        public string PaymentMethod { get; set; } = string.Empty; // "CreditCard", "PayPal", etc.
+        public string TransactionId { get; set; } = string.Empty;
+        public DateTime PaymentDate { get; set; }
+        public string Status { get; set; } = string.Empty; // "Pending", "Completed", "Failed"
+    }
 }

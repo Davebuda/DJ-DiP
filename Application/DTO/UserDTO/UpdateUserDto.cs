@@ -1,4 +1,4 @@
-namespace Application.DTO.UserDTO
+namespace DJDiP.Application.DTO.UserDTO
 {
     public class UpdateUserDto
     {

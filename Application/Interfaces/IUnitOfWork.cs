@@ -1,3 +1,5 @@
+using DJDiP.Domain.Models;
+
 namespace DJDiP.Application.Interfaces
 {
     public interface IUnitOfWork : IDisposable

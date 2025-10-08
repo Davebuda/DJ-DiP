@@ -1,13 +1,12 @@
-namespace Application.DTO.OrderDTO
+namespace DJDiP.Application.DTO.OrderItemDTO
 {
-public class OrderItemDto
-{
-    public Guid EventId { get; set; }
-    public string EventTitle { get; set; } = string.Empty;
-    public DateTime EventDate { get; set; }
-
-    public int Quantity { get; set; }
-    public decimal UnitPrice { get; set; }
-    public decimal TotalPrice => Quantity * UnitPrice;
-}
+    public class OrderItemDto
+    {
+        public Guid Id { get; set; }
+        public Guid OrderId { get; set; }
+        public Guid EventId { get; set; }
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal TotalPrice { get; set; }
+    }
 }

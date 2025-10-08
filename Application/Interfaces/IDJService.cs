@@ -4,8 +4,7 @@
 using Application.DTO.DJProfile;
 using DJDiP.Application.DTO.DJProfileDTO;
 
-namespace Application.Interfaces
-
+namespace DJDiP.Application.Interfaces
 {
     public interface IDJService
     {

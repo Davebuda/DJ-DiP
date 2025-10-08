@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using DJDiP.Application.Interfaces;
+using DJDiP.Domain.Models;
+using DJDiP.Infrastructure.Persistance.Repositories;
 
 namespace DJDiP.Infrastructure.Persistance
 {
