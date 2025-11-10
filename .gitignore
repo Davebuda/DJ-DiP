@@ -482,3 +482,19 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
+
+# Temporary files
+/tmp/
+*.tmp
+*.log
+
+# Documentation archives (keep source .md files but not archives)
+*.tar.gz
+
+# Mockups (design files - optional, can be removed if you want to track these)
+Mockups/
