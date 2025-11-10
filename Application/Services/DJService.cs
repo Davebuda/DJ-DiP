@@ -20,9 +20,11 @@ namespace DJDiP.Application.Services
             return djs.Select(dj => new DJProfileListItemDto
             {
                 Id = dj.Id,
-                StageName = dj.Name,
+                Name = dj.Name,
+                StageName = dj.StageName ?? dj.Name,
+                Bio = dj.Bio,
                 Genre = string.Join(", ", dj.Genres.Select(g => g.Name)),
-                ProfilePictureUrl = string.Empty
+                ProfilePictureUrl = dj.ProfilePictureUrl ?? string.Empty
             });
         }
 

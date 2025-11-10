@@ -16,7 +16,20 @@ namespace DJDiP.Application.Services
         public async Task<IEnumerable<EventListDto>> GetAllAsync()
         {
             var events = await _unitOfWork.Events.GetAllAsync();
-            return new List<EventListDto> { new EventListDto { Events = events.ToList() } };
+            return events.Select(e => new EventListDto
+            {
+                Id = e.Id,
+                Title = e.Title,
+                Description = e.Description,
+                Date = e.Date,
+                Price = e.Price,
+                ImageUrl = e.ImageUrl,
+                Venue = new VenueDto
+                {
+                    Id = e.Venue.Id,
+                    Name = e.Venue.Name
+                }
+            }).ToList();
         }
 
         public async Task<DetailEventDto?> GetByIdAsync(Guid id)

@@ -10,6 +10,13 @@ namespace DJDiP.Infrastructure.Persistance.Repositories
         {
         }
 
+        public override async Task<IEnumerable<DJProfile>> GetAllAsync()
+        {
+            return await _dbSet
+                .Include(dj => dj.Genres)
+                .ToListAsync();
+        }
+
         public async Task<DJProfile?> GetByNameAsync(string name)
         {
             return await _dbSet

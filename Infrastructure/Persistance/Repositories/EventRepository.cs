@@ -10,6 +10,15 @@ namespace DJDiP.Infrastructure.Persistance.Repositories
         {
         }
 
+        public override async Task<IEnumerable<Event>> GetAllAsync()
+        {
+            return await _dbSet
+                .Include(e => e.Venue)
+                .Include(e => e.Genres)
+                .Include(e => e.EventDJs)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<Event>> GetEventsByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
             return await _dbSet
