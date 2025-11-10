@@ -21,11 +21,14 @@
   </ItemGroup>
 
   <ItemGroup>
-  
     <ProjectReference Include="Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="Domain\Domain.csproj" />
-      <Compile Remove="Domain\**\*.cs" />
-  <Compile Remove="**\obj\**\*.cs" />
+
+    <!-- Exclude source files from referenced projects to avoid CS0436 conflicts -->
+    <Compile Remove="Domain\**\*.cs" />
+    <Compile Remove="Application\**\*.cs" />
+    <Compile Remove="Infrastructure\**\*.cs" />
+    <Compile Remove="**\obj\**\*.cs" />
   </ItemGroup>
 
 </Project>
