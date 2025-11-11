@@ -52,6 +52,8 @@ namespace DJDiP.Infrastructure.Persistance.Repositories
                     .ThenInclude(top10 => top10.Song)
                 .Include(dj => dj.EventDJs)
                     .ThenInclude(ed => ed.Event)
+                        .ThenInclude(e => e.Venue)
+                .Include(dj => dj.Followers)
                 .FirstOrDefaultAsync(dj => dj.Id == djId);
         }
     }

@@ -1,0 +1,107 @@
+import { FormEvent, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
+const RegisterPage = () => {
+  const navigate = useNavigate();
+  const { register, loading } = useAuth();
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (password !== confirmPassword) {
+      setError('Passwords must match.');
+      return;
+    }
+
+    setSubmitting(true);
+    setError('');
+    try {
+      await register(email, password, fullName);
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to create the account.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center px-6 py-16 bg-gradient-to-b from-[#120601] via-[#050202] to-black">
+      <div className="w-full max-w-md space-y-8 rounded-[32px] border border-white/10 bg-black/60 backdrop-blur px-8 py-10">
+        <div className="space-y-2">
+          <p className="text-sm uppercase tracking-[0.5em] text-orange-400">Join</p>
+          <h1 className="text-3xl font-bold text-white">Create Account</h1>
+          <p className="text-gray-400 text-sm">Unlock uploads, ticket vaults, and saved playlists with one login.</p>
+        </div>
+
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          <div className="space-y-2">
+            <label className="text-xs uppercase tracking-[0.4em] text-gray-500">Full Name</label>
+            <input
+              type="text"
+              value={fullName}
+              onChange={(event) => setFullName(event.target.value)}
+              required
+              className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-white focus:border-orange-400 focus:outline-none"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs uppercase tracking-[0.4em] text-gray-500">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              required
+              className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-white focus:border-orange-400 focus:outline-none"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs uppercase tracking-[0.4em] text-gray-500">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              minLength={6}
+              className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-white focus:border-orange-400 focus:outline-none"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs uppercase tracking-[0.4em] text-gray-500">Confirm Password</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              required
+              className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-white focus:border-orange-400 focus:outline-none"
+            />
+          </div>
+          {error && <p className="text-sm text-red-400">{error}</p>}
+
+          <button
+            type="submit"
+            disabled={submitting || loading}
+            className="w-full rounded-2xl bg-gradient-to-r from-orange-400 to-pink-500 px-4 py-3 text-sm font-semibold tracking-[0.3em] uppercase text-black disabled:opacity-60"
+          >
+            {submitting ? 'Creating...' : 'Create Account'}
+          </button>
+        </form>
+
+        <p className="text-center text-sm text-gray-400">
+          Already have an account?{' '}
+          <Link to="/login" className="text-orange-300 underline">
+            Login
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default RegisterPage;

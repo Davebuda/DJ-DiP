@@ -24,10 +24,12 @@ namespace DJDiP.Application.Services
                 Date = e.Date,
                 Price = e.Price,
                 ImageUrl = e.ImageUrl,
-                Venue = new VenueDto
+                Genres = e.Genres.Select(g => g.Name).ToList(),
+                Venue = new EventVenueDto
                 {
                     Id = e.Venue.Id,
-                    Name = e.Venue.Name
+                    Name = e.Venue.Name,
+                    City = e.Venue.City
                 }
             }).ToList();
         }

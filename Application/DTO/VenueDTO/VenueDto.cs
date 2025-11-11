@@ -2,6 +2,7 @@ namespace DJDiP.Application.DTO.VenueDTO
 {
 public class VenueDto
 {
+    public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     

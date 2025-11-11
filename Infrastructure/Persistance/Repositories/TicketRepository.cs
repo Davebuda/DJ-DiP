@@ -10,10 +10,25 @@ namespace DJDiP.Infrastructure.Persistance.Repositories
         {
         }
 
+        public override async Task<Ticket?> GetByIdAsync(object id)
+        {
+            if (id is Guid guid)
+            {
+                return await _dbSet
+                    .Include(t => t.Event)
+                        .ThenInclude(e => e.Venue)
+                    .Include(t => t.User)
+                    .FirstOrDefaultAsync(t => t.Id == guid);
+            }
+
+            return await base.GetByIdAsync(id);
+        }
+
         public async Task<IEnumerable<Ticket>> GetTicketsByUserIdAsync(string userId)
         {
             return await _dbSet
                 .Include(t => t.Event)
+                    .ThenInclude(e => e.Venue)
                 .Include(t => t.User)
                 .Where(t => t.UserId == userId)
                 .ToListAsync();
@@ -23,6 +38,7 @@ namespace DJDiP.Infrastructure.Persistance.Repositories
         {
             return await _dbSet
                 .Include(t => t.Event)
+                    .ThenInclude(e => e.Venue)
                 .Include(t => t.User)
                 .Where(t => t.EventId == eventId)
                 .ToListAsync();
@@ -32,6 +48,7 @@ namespace DJDiP.Infrastructure.Persistance.Repositories
         {
             return await _dbSet
                 .Include(t => t.Event)
+                    .ThenInclude(e => e.Venue)
                 .Include(t => t.User)
                 .FirstOrDefaultAsync(t => t.TicketNumber == ticketNumber);
         }
@@ -40,6 +57,7 @@ namespace DJDiP.Infrastructure.Persistance.Repositories
         {
             return await _dbSet
                 .Include(t => t.Event)
+                    .ThenInclude(e => e.Venue)
                 .Include(t => t.User)
                 .Where(t => t.IsValid)
                 .ToListAsync();
@@ -49,6 +67,7 @@ namespace DJDiP.Infrastructure.Persistance.Repositories
         {
             return await _dbSet
                 .Include(t => t.Event)
+                    .ThenInclude(e => e.Venue)
                 .Include(t => t.User)
                 .Where(t => t.PurchaseDate >= startDate && t.PurchaseDate <= endDate)
                 .ToListAsync();

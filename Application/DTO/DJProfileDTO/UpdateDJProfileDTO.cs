@@ -4,6 +4,7 @@ namespace DJDiP.Application.DTO.DJProfileDTO
     {
         public Guid Id { get; set; } // viktig for å identifisere hvilken profil som skal endres
         public string StageName { get; set; } = string.Empty;
+        public string? FullName { get; set; }
         public string Bio { get; set; } = string.Empty;
         public string Genre { get; set; } = string.Empty;
         public string SocialLinks { get; set; } = string.Empty;

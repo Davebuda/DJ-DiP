@@ -8,12 +8,14 @@ namespace DJDiP.Application.DTO.EventDTO
         public DateTime Date { get; set; }
         public decimal Price { get; set; }
         public string? ImageUrl { get; set; }
-        public VenueDto Venue { get; set; } = null!;
+        public EventVenueDto Venue { get; set; } = null!;
+        public List<string> Genres { get; set; } = new();
     }
 
-    public class VenueDto
+    public class EventVenueDto
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
+        public string? City { get; set; }
     }
 }

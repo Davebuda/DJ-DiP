@@ -20,6 +20,7 @@ namespace DJDiP.Application.Interfaces
         IRepository<OrderItem> OrderItems { get; }
         IRepository<DJTop10> DJTop10s { get; }
         IRepository<EventDJ> EventDJs { get; }
+        IUserFollowDJRepository UserFollowDJs { get; }
 
         Task<int> SaveChangesAsync();
         Task BeginTransactionAsync();

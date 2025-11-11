@@ -26,6 +26,7 @@ namespace DJDiP.Infrastructure.Persistance
         private IRepository<OrderItem>? _orderItems;
         private IRepository<DJTop10>? _djTop10s;
         private IRepository<EventDJ>? _eventDJs;
+        private IUserFollowDJRepository? _userFollowDJs;
 
         public UnitOfWork(AppDbContext context)
         {
@@ -48,6 +49,7 @@ namespace DJDiP.Infrastructure.Persistance
         public IRepository<OrderItem> OrderItems => _orderItems ??= new Repository<OrderItem>(_context);
         public IRepository<DJTop10> DJTop10s => _djTop10s ??= new Repository<DJTop10>(_context);
         public IRepository<EventDJ> EventDJs => _eventDJs ??= new Repository<EventDJ>(_context);
+        public IUserFollowDJRepository UserFollowDJs => _userFollowDJs ??= new UserFollowDJRepository(_context);
 
         public async Task<int> SaveChangesAsync()
         {
