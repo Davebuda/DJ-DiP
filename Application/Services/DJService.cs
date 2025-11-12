@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Application.DTO.DJProfile;
 using DJDiP.Application.DTO.DJProfileDTO;
 using DJDiP.Application.Interfaces;
 using DJDiP.Domain.Models;
@@ -89,7 +88,18 @@ namespace DJDiP.Application.Services
                 Name = dto.FullName ?? dto.StageName,
                 StageName = dto.StageName,
                 Bio = dto.Bio,
-                SocialLinks = dto.SocialLinks
+                LongBio = dto.LongBio,
+                Tagline = dto.Tagline,
+                Genre = dto.Genre,
+                SocialLinks = dto.SocialLinks,
+                ProfilePictureUrl = dto.ProfilePictureUrl,
+                CoverImageUrl = dto.CoverImageUrl,
+                Specialties = dto.Specialties,
+                Achievements = dto.Achievements,
+                YearsExperience = dto.YearsExperience,
+                InfluencedBy = dto.InfluencedBy,
+                EquipmentUsed = dto.EquipmentUsed,
+                Top10SongTitles = DJProfileMappings.SerializeList(dto.TopTracks)
             };
 
             await _unitOfWork.DJProfiles.AddAsync(dj);
@@ -105,7 +115,18 @@ namespace DJDiP.Application.Services
             dj.Name = dto.FullName ?? dto.StageName;
             dj.StageName = dto.StageName;
             dj.Bio = dto.Bio;
+            dj.LongBio = dto.LongBio;
+            dj.Tagline = dto.Tagline;
+            dj.Genre = dto.Genre;
             dj.SocialLinks = dto.SocialLinks;
+            dj.ProfilePictureUrl = dto.ProfilePictureUrl;
+            dj.CoverImageUrl = dto.CoverImageUrl;
+            dj.Specialties = dto.Specialties;
+            dj.Achievements = dto.Achievements;
+            dj.YearsExperience = dto.YearsExperience;
+            dj.InfluencedBy = dto.InfluencedBy;
+            dj.EquipmentUsed = dto.EquipmentUsed;
+            dj.Top10SongTitles = DJProfileMappings.SerializeList(dto.TopTracks);
 
             await _unitOfWork.DJProfiles.UpdateAsync(dj);
             await _unitOfWork.SaveChangesAsync();
@@ -122,6 +143,16 @@ namespace DJDiP.Application.Services
 
     internal static class DJProfileMappings
     {
+        internal static string? SerializeList(List<string>? values)
+        {
+            if (values == null || values.Count == 0)
+            {
+                return null;
+            }
+
+            return JsonSerializer.Serialize(values);
+        }
+
         internal static List<SocialLinkDto> ParseSocialLinks(string? rawSocialLinks)
         {
             if (string.IsNullOrWhiteSpace(rawSocialLinks))

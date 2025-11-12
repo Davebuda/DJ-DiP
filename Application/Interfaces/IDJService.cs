@@ -1,7 +1,4 @@
 
-
-
-using Application.DTO.DJProfile;
 using DJDiP.Application.DTO.DJProfileDTO;
 
 namespace DJDiP.Application.Interfaces

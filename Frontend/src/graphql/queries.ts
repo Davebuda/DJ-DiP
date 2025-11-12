@@ -79,10 +79,10 @@ export const GET_DJ_BY_ID = gql`
       stageName
       bio
       longBio
+      tagline
       genre
       profilePictureUrl
       coverImageUrl
-      tagline
       specialties
       achievements
       yearsExperience
@@ -107,6 +107,24 @@ export const GET_DJ_BY_ID = gql`
   }
 `;
 
+export const CREATE_DJ = gql`
+  mutation CreateDj($input: CreateDjInput!) {
+    createDj(input: $input)
+  }
+`;
+
+export const UPDATE_DJ = gql`
+  mutation UpdateDj($id: UUID!, $input: UpdateDjInput!) {
+    updateDj(id: $id, input: $input)
+  }
+`;
+
+export const DELETE_DJ = gql`
+  mutation DeleteDj($id: UUID!) {
+    deleteDj(id: $id)
+  }
+`;
+
 export const GET_EVENTS = gql`
   query GetEvents {
     events {
@@ -126,6 +144,24 @@ export const GET_EVENTS = gql`
   }
 `;
 
+export const CREATE_EVENT = gql`
+  mutation CreateEvent($input: CreateEventInput!) {
+    createEvent(input: $input)
+  }
+`;
+
+export const UPDATE_EVENT = gql`
+  mutation UpdateEvent($id: UUID!, $input: UpdateEventInput!) {
+    updateEvent(id: $id, input: $input)
+  }
+`;
+
+export const DELETE_EVENT = gql`
+  mutation DeleteEvent($id: UUID!) {
+    deleteEvent(id: $id)
+  }
+`;
+
 export const GET_EVENT_BY_ID = gql`
   query GetEventById($id: UUID!) {
     event(id: $id) {
@@ -134,8 +170,11 @@ export const GET_EVENT_BY_ID = gql`
       description
       date
       price
+      venueId
       imageUrl
       videoUrl
+      genreIds
+      djIds
       venue {
         id
         name
@@ -162,9 +201,98 @@ export const GET_VENUES = gql`
     venues {
       id
       name
+      description
+      address
       city
       country
+      capacity
+      contactEmail
+      phoneNumber
+      imageUrl
     }
+  }
+`;
+
+export const GET_VENUE_BY_ID = gql`
+  query GetVenueById($id: UUID!) {
+    venue(id: $id) {
+      id
+      name
+      description
+      address
+      city
+      country
+      latitude
+      longitude
+      capacity
+      contactEmail
+      phoneNumber
+      imageUrl
+    }
+  }
+`;
+
+export const CREATE_VENUE = gql`
+  mutation CreateVenue($input: CreateVenueInput!) {
+    createVenue(input: $input)
+  }
+`;
+
+export const UPDATE_VENUE = gql`
+  mutation UpdateVenue($id: UUID!, $input: UpdateVenueInput!) {
+    updateVenue(id: $id, input: $input)
+  }
+`;
+
+export const DELETE_VENUE = gql`
+  mutation DeleteVenue($id: UUID!) {
+    deleteVenue(id: $id)
+  }
+`;
+
+export const GET_DJ_TOP10_LISTS = gql`
+  query GetDjTop10Lists {
+    djTop10Lists {
+      djId
+      djStageName
+      top10Songs {
+        id
+        djId
+        songId
+        songTitle
+      }
+    }
+  }
+`;
+
+export const CREATE_DJ_TOP10_ENTRY = gql`
+  mutation CreateDjTop10Entry($input: CreateDjTop10Input!) {
+    createDjTop10Entry(input: $input)
+  }
+`;
+
+export const DELETE_DJ_TOP10_ENTRY = gql`
+  mutation DeleteDjTop10Entry($id: UUID!) {
+    deleteDjTop10Entry(id: $id)
+  }
+`;
+
+export const GET_SONGS = gql`
+  query GetSongs {
+    songs {
+      id
+      title
+      artist
+      album
+      duration
+      spotifyId
+    }
+  }
+`;
+
+export const CREATE_SONG = gql`
+  mutation CreateSong($input: CreateSongInput!) {
+    createSong(input: $input)
   }
 `;
 
@@ -235,6 +363,20 @@ export const GET_USER_TICKETS = gql`
   }
 `;
 
+export const GET_TICKETS_BY_EVENT = gql`
+  query GetTicketsByEvent($eventId: UUID!) {
+    ticketsByEvent(eventId: $eventId) {
+      id
+      ticketNumber
+      userId
+      price
+      purchaseDate
+      isValid
+      isCheckedIn
+    }
+  }
+`;
+
 export const PURCHASE_TICKET = gql`
   mutation PurchaseTicket($input: PurchaseTicketInput!) {
     purchaseTicket(input: $input) {
@@ -247,6 +389,120 @@ export const PURCHASE_TICKET = gql`
         title
         date
       }
+    }
+  }
+`;
+
+export const CHECK_IN_TICKET = gql`
+  mutation CheckInTicket($ticketId: UUID!) {
+    checkInTicket(ticketId: $ticketId)
+  }
+`;
+
+export const INVALIDATE_TICKET = gql`
+  mutation InvalidateTicket($ticketId: UUID!) {
+    invalidateTicket(ticketId: $ticketId)
+  }
+`;
+
+export const DELETE_TICKET = gql`
+  mutation DeleteTicket($ticketId: UUID!) {
+    deleteTicket(ticketId: $ticketId)
+  }
+`;
+
+export const GET_SITE_SETTINGS = gql`
+  query GetSiteSettings {
+    siteSettings {
+      id
+      siteName
+      tagline
+      logoUrl
+      faviconUrl
+      primaryColor
+      secondaryColor
+      accentColor
+      heroTitle
+      heroSubtitle
+      heroCtaText
+      heroCtaLink
+      heroBackgroundImageUrl
+      heroBackgroundVideoUrl
+      heroOverlayOpacity
+      contactEmail
+      contactPhone
+      contactAddress
+      facebookUrl
+      instagramUrl
+      twitterUrl
+      youTubeUrl
+      tikTokUrl
+      soundCloudUrl
+      defaultEventImageUrl
+      defaultDjImageUrl
+      defaultVenueImageUrl
+      enableNewsletter
+      enableNotifications
+      enableReviews
+      enableGamification
+      enableSubscriptions
+      metaDescription
+      metaKeywords
+      footerText
+      copyrightText
+    }
+  }
+`;
+
+export const UPDATE_SITE_SETTINGS = gql`
+  mutation UpdateSiteSettings($input: UpdateSiteSettingsInput!) {
+    updateSiteSettings(input: $input) {
+      id
+      siteName
+      tagline
+      logoUrl
+      faviconUrl
+      primaryColor
+      secondaryColor
+      accentColor
+      heroTitle
+      heroSubtitle
+      heroCtaText
+      heroCtaLink
+      heroBackgroundImageUrl
+      heroBackgroundVideoUrl
+      heroOverlayOpacity
+      contactEmail
+      contactPhone
+      contactAddress
+      facebookUrl
+      instagramUrl
+      twitterUrl
+      youTubeUrl
+      tikTokUrl
+      soundCloudUrl
+      defaultEventImageUrl
+      defaultDjImageUrl
+      defaultVenueImageUrl
+      enableNewsletter
+      enableNotifications
+      enableReviews
+      enableGamification
+      enableSubscriptions
+      metaDescription
+      metaKeywords
+      footerText
+      copyrightText
+    }
+  }
+`;
+
+export const CREATE_CONTACT_MESSAGE = gql`
+  mutation CreateContactMessage($input: CreateContactMessageInput!) {
+    createContactMessage(input: $input) {
+      id
+      userId
+      message
     }
   }
 `;

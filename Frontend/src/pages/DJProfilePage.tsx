@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client';
 import { FOLLOW_DJ, GET_DJ_BY_ID, IS_FOLLOWING_DJ, UNFOLLOW_DJ } from '../graphql/queries';
 import { useAuth } from '../context/AuthContext';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 type EventSummary = {
   eventId: string;
@@ -43,6 +44,7 @@ type DJProfile = {
 const DJProfilePage = () => {
   const { id } = useParams();
   const { user, isAuthenticated } = useAuth();
+  const { siteSettings } = useSiteSettings();
 
   const resolvedUserId = useMemo(() => {
     if (user?.id) return user.id;
@@ -64,14 +66,13 @@ const DJProfilePage = () => {
     skip: !id,
   });
 
-  const followStatusQueryEnabled = Boolean(id && resolvedUserId);
   const {
     data: followStatus,
     refetch: refetchFollowStatus,
     loading: followStatusLoading,
   } = useQuery(IS_FOLLOWING_DJ, {
     variables: { userId: resolvedUserId, djId: id },
-    skip: !followStatusQueryEnabled,
+    skip: !(id && resolvedUserId),
   });
 
   const [followDj, { loading: followLoading }] = useMutation(FOLLOW_DJ);
@@ -95,13 +96,6 @@ const DJProfilePage = () => {
     await refetchFollowStatus();
   };
 
-  const heroBackground = dj?.coverImageUrl ?? '/media/defaults/dj.jpg';
-
-  const socialEntries = useMemo(() => {
-    if (!dj?.socialLinks) return [];
-    return dj.socialLinks.filter((link) => Boolean(link.url));
-  }, [dj?.socialLinks]);
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
@@ -119,54 +113,96 @@ const DJProfilePage = () => {
     );
   }
 
+  const heroBackground = dj.coverImageUrl ?? siteSettings.defaultDjImageUrl ?? '/media/defaults/dj.jpg';
+  const defaultEventImage = siteSettings.defaultEventImageUrl ?? '/media/defaults/event.jpg';
+  const genreTags = (dj.genre ?? '')
+    .split(',')
+    .map((genre) => genre.trim())
+    .filter(Boolean);
+  const creativeTiles = [
+    { label: 'Specialties', value: dj.specialties },
+    { label: 'Achievements', value: dj.achievements },
+    { label: 'Influences', value: dj.influencedBy },
+    { label: 'Equipment', value: dj.equipmentUsed },
+  ].filter((tile) => Boolean(tile.value));
+  const socialEntries = dj.socialLinks?.filter((link) => Boolean(link.url)) ?? [];
+
   return (
-    <div className="bg-gradient-to-b from-[#120602] via-[#050202] to-black text-white min-h-screen">
-      <section className="relative">
+    <div className="bg-[#050214] text-white min-h-screen">
+      <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroBackground} alt={dj.stageName} className="w-full h-[480px] object-cover opacity-60" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/30" />
+          <img src={heroBackground} alt={dj.stageName} className="h-[540px] w-full object-cover opacity-60" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#050010] via-[#080016]/90 to-transparent" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(255,0,128,0.32),transparent_45%)] mix-blend-screen" />
         </div>
-        <div className="relative max-w-6xl mx-auto px-6 lg:px-10 py-24 flex flex-col md:flex-row gap-10">
-          <div className="flex-shrink-0">
-            <div className="h-48 w-48 rounded-[32px] border border-white/20 overflow-hidden shadow-[0_25px_80px_rgba(0,0,0,0.6)] bg-black/40">
-              {dj.profilePictureUrl ? (
-                <img src={dj.profilePictureUrl} alt={dj.stageName} className="h-full w-full object-cover" />
-              ) : (
-                <div className="h-full w-full flex items-center justify-center text-5xl font-bold text-white/50">
-                  {dj.stageName.charAt(0)}
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="flex-1 space-y-4">
-            <div>
-              <p className="text-xs uppercase tracking-[0.6em] text-orange-300">Featured DJ</p>
-              <h1 className="text-5xl font-black mt-2">{dj.stageName}</h1>
-              {dj.tagline && <p className="text-lg text-gray-300 mt-2">{dj.tagline}</p>}
-            </div>
-            <p className="text-gray-300 text-lg max-w-3xl">{dj.bio}</p>
-            <div className="flex flex-wrap gap-6 pt-4">
-              <div>
-                <p className="text-xs uppercase tracking-[0.5em] text-gray-500">Followers</p>
-                <p className="text-2xl font-semibold text-white">{dj.followerCount}</p>
+
+        <div className="relative max-w-6xl mx-auto px-6 lg:px-10 py-16">
+          <div className="grid grid-cols-1 lg:grid-cols-[320px_minmax(0,1fr)_260px] gap-10 items-center">
+            {/* Left rail */}
+            <div className="space-y-8 border-l border-white/10 pl-6">
+              <div className="space-y-3">
+                <p className="text-xs uppercase tracking-[0.6em] text-orange-300">Featured DJ</p>
+                <h1 className="text-5xl font-black leading-tight">{dj.stageName}</h1>
+                {dj.tagline && <p className="text-lg text-gray-300">{dj.tagline}</p>}
               </div>
-              {dj.yearsExperience && (
-                <div>
-                  <p className="text-xs uppercase tracking-[0.5em] text-gray-500">Years active</p>
-                  <p className="text-2xl font-semibold text-white">{dj.yearsExperience}</p>
+              <p className="text-sm text-gray-300 leading-relaxed">{dj.bio}</p>
+              <div className="flex flex-wrap gap-2">
+                {genreTags.slice(0, 4).map((genre) => (
+                  <span
+                    key={genre}
+                    className="rounded-full border border-white/20 px-3 py-1 text-[0.65rem] uppercase tracking-[0.35em] text-gray-200"
+                  >
+                    {genre}
+                  </span>
+                ))}
+                {genreTags.length === 0 && (
+                  <span className="rounded-full border border-white/20 px-3 py-1 text-[0.65rem] uppercase tracking-[0.35em] text-gray-200">
+                    genre blend
+                  </span>
+                )}
+              </div>
+              <div className="text-sm space-y-2">
+                <div className="flex gap-6">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.5em] text-gray-500">Followers</p>
+                    <p className="text-3xl font-semibold text-white">{dj.followerCount.toLocaleString()}</p>
+                  </div>
+                  {dj.yearsExperience && (
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.5em] text-gray-500">Years Active</p>
+                      <p className="text-3xl font-semibold text-white">{dj.yearsExperience}</p>
+                    </div>
+                  )}
                 </div>
-              )}
-              <div>
-                <p className="text-xs uppercase tracking-[0.5em] text-gray-500">Genres</p>
-                <p className="text-2xl font-semibold text-white">{dj.genre || 'Experimental'}</p>
+                {dj.specialties && (
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.5em] text-gray-500">Specialties</p>
+                    <p className="text-gray-200">{dj.specialties}</p>
+                  </div>
+                )}
               </div>
             </div>
-            <div className="flex flex-wrap gap-4">
+
+            {/* Center hero portrait */}
+            <div className="relative">
+              <div className="absolute -left-12 -right-12 -top-6 -bottom-6 bg-gradient-to-b from-white/10 to-transparent opacity-40 blur-[120px]" />
+              <div className="relative h-[460px] rounded-[60px] border border-white/10 overflow-hidden shadow-[0_40px_120px_rgba(0,0,0,0.45)]">
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/80" />
+                <img
+                  src={dj.profilePictureUrl ?? heroBackground}
+                  alt={dj.stageName}
+                  className="h-full w-full object-cover object-top"
+                />
+              </div>
+            </div>
+
+            {/* Right rail */}
+            <div className="space-y-5">
               <button
                 type="button"
                 onClick={handleFollowClick}
                 disabled={followLoading || unfollowLoading || followStatusLoading}
-                className={`px-8 py-3 rounded-full text-sm font-semibold tracking-[0.3em] uppercase ${
+                className={`w-full px-8 py-3 rounded-full text-xs font-semibold tracking-[0.3em] uppercase ${
                   isFollowing ? 'bg-white text-black' : 'bg-gradient-to-r from-orange-400 to-pink-500 text-black'
                 } disabled:opacity-60`}
               >
@@ -174,93 +210,89 @@ const DJProfilePage = () => {
               </button>
               <Link
                 to="/events"
-                className="px-8 py-3 rounded-full border border-white/20 text-sm font-semibold tracking-[0.3em] uppercase hover:border-orange-400 transition"
+                className="block w-full text-center px-8 py-3 rounded-full border border-white/20 text-xs font-semibold tracking-[0.3em] uppercase hover:border-orange-400 transition"
               >
                 Upcoming Sets
               </Link>
+              {socialEntries.length > 0 && (
+                <div className="space-y-2 text-sm">
+                  {socialEntries.map((entry) => (
+                    <a
+                      key={entry.label}
+                      href={entry.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center justify-between rounded-full border border-white/10 bg-white/5 px-4 py-2 text-gray-200 hover:border-orange-400 transition"
+                    >
+                      <span>{entry.label}</span>
+                      <span className="text-xs uppercase tracking-[0.4em]">↗</span>
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="max-w-6xl mx-auto px-6 lg:px-10 py-16 grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
-          {dj.longBio && (
-            <div className="rounded-[32px] border border-white/10 p-8 bg-black/30 space-y-4">
-              <p className="text-sm uppercase tracking-[0.5em] text-orange-400">Long Bio</p>
-              <p className="text-gray-200 leading-relaxed whitespace-pre-line">{dj.longBio}</p>
+      <section className="max-w-6xl mx-auto px-6 lg:px-10 py-20 space-y-16">
+        {dj.longBio && (
+          <div className="space-y-3">
+            <p className="text-xs uppercase tracking-[0.5em] text-orange-400">Storyline</p>
+            <p className="text-gray-200 leading-relaxed whitespace-pre-line">{dj.longBio}</p>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-10">
+          <div className="space-y-8">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs uppercase tracking-[0.5em] text-orange-400">Top Tracks</p>
+                <span className="text-xs uppercase tracking-[0.3em] text-gray-500">
+                  {dj.topTracks.length.toString().padStart(2, '0')}
+                </span>
+              </div>
+              {dj.topTracks.length === 0 ? (
+                <p className="text-gray-500">Top 10 list coming soon.</p>
+              ) : (
+                <div className="space-y-2">
+                  {dj.topTracks.map((track, index) => (
+                    <div
+                      key={`${track}-${index}`}
+                      className="flex items-center gap-3 rounded-2xl border border-white/10 bg-gradient-to-r from-white/10 to-transparent px-4 py-3 text-sm text-gray-200"
+                    >
+                      <span className="text-xs font-semibold text-orange-300">{String(index + 1).padStart(2, '0')}</span>
+                      <p className="flex-1">{track}</p>
+                      <span className="text-[0.65rem] uppercase tracking-[0.3em] text-gray-500">LISTEN</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
 
-          <div className="rounded-[32px] border border-white/10 p-8 bg-black/30 space-y-6">
-            <p className="text-sm uppercase tracking-[0.5em] text-orange-400">Top Tracks</p>
-            {dj.topTracks.length === 0 ? (
-              <p className="text-gray-500">Top 10 list coming soon.</p>
-            ) : (
-              <ol className="space-y-3 list-decimal list-inside text-gray-200">
-                {dj.topTracks.map((track, index) => (
-                  <li key={`${track}-${index}`} className="pl-2">
-                    {track}
-                  </li>
-                ))}
-              </ol>
-            )}
+            <div className="space-y-4">
+              <p className="text-xs uppercase tracking-[0.5em] text-orange-400">Creative DNA</p>
+              {creativeTiles.length === 0 ? (
+                <p className="text-gray-500 text-sm">More details coming soon.</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {creativeTiles.map((tile) => (
+                    <div
+                      key={tile.label}
+                      className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-gray-200 space-y-2"
+                    >
+                      <p className="text-xs uppercase tracking-[0.4em] text-gray-500">{tile.label}</p>
+                      <p>{tile.value}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {dj.influencedBy && (
-              <div className="rounded-[24px] border border-white/10 p-6 bg-black/30 space-y-2">
-                <p className="text-xs uppercase tracking-[0.5em] text-gray-500">Influences</p>
-                <p className="text-gray-200">{dj.influencedBy}</p>
-              </div>
-            )}
-            {dj.equipmentUsed && (
-              <div className="rounded-[24px] border border-white/10 p-6 bg-black/30 space-y-2">
-                <p className="text-xs uppercase tracking-[0.5em] text-gray-500">Equipment</p>
-                <p className="text-gray-200">{dj.equipmentUsed}</p>
-              </div>
-            )}
-            {dj.specialties && (
-              <div className="rounded-[24px] border border-white/10 p-6 bg-black/30 space-y-2">
-                <p className="text-xs uppercase tracking-[0.5em] text-gray-500">Specialties</p>
-                <p className="text-gray-200">{dj.specialties}</p>
-              </div>
-            )}
-            {dj.achievements && (
-              <div className="rounded-[24px] border border-white/10 p-6 bg-black/30 space-y-2">
-                <p className="text-xs uppercase tracking-[0.5em] text-gray-500">Achievements</p>
-                <p className="text-gray-200">{dj.achievements}</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div className="space-y-8">
-          <div className="rounded-[32px] border border-white/10 p-8 bg-black/30 space-y-4">
-            <p className="text-sm uppercase tracking-[0.5em] text-orange-400">Connect</p>
-            {socialEntries.length === 0 ? (
-              <p className="text-gray-500">Social links coming soon.</p>
-            ) : (
-              <div className="space-y-3">
-                {socialEntries.map(({ label, url }) => (
-                  <a
-                    key={label}
-                    href={url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center justify-between text-gray-200 hover:text-orange-300 transition"
-                  >
-                    <span>{label}</span>
-                    <span className="text-xs uppercase tracking-[0.4em]">↗</span>
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="rounded-[32px] border border-white/10 p-8 bg-black/30 space-y-6">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <p className="text-sm uppercase tracking-[0.5em] text-orange-400">Upcoming Sets</p>
+              <p className="text-xs uppercase tracking-[0.5em] text-orange-400">Upcoming Sets</p>
               <Link to="/events" className="text-xs uppercase tracking-[0.3em] text-gray-400 hover:text-white">
                 View all
               </Link>
@@ -275,21 +307,19 @@ const DJProfilePage = () => {
                     to={`/events/${event.eventId}`}
                     className="flex gap-4 items-center rounded-[20px] border border-white/10 p-4 hover:border-orange-400 transition"
                   >
-                    {event.imageUrl ? (
-                      <img src={event.imageUrl} alt={event.title} className="h-16 w-16 rounded-[16px] object-cover" />
-                    ) : (
-                      <div className="h-16 w-16 rounded-[16px] bg-white/5 flex items-center justify-center text-white/30">
-                        {new Date(event.date).getDate()}
-                      </div>
-                    )}
-                    <div>
+                    <img
+                      src={event.imageUrl ?? defaultEventImage}
+                      alt={event.title}
+                      className="h-16 w-16 rounded-[16px] object-cover border border-white/10"
+                    />
+                    <div className="flex-1">
                       <p className="text-white font-semibold">{event.title}</p>
                       <p className="text-sm text-gray-400">
                         {new Date(event.date).toLocaleDateString()} · {event.venueName}
                         {event.city ? `, ${event.city}` : ''}
                       </p>
+                      <p className="text-sm text-gray-300">{event.price ? `$${event.price}` : 'Free entry'}</p>
                     </div>
-                    <div className="ml-auto text-right text-sm text-orange-300 font-semibold">${event.price}</div>
                   </Link>
                 ))}
               </div>

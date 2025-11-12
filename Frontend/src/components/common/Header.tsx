@@ -1,12 +1,15 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 
 const Header = () => {
   const { isAuthenticated, isAdmin, logout } = useAuth();
+  const { siteSettings } = useSiteSettings();
   const navigate = useNavigate();
   const navLinks = [
     { label: 'Events', to: '/events' },
     { label: 'DJs', to: '/djs' },
+    { label: 'Playlists', to: '/playlists' },
     { label: 'Gallery', to: '/gallery' },
     { label: 'Tickets', to: '/tickets' },
     { label: 'Contact', to: '/contact' },
@@ -17,12 +20,12 @@ const Header = () => {
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-3">
           <img
-            src="/icons/lets-go-klubn-320.png"
-            alt="Lets Go KlubN"
+            src={siteSettings.logoUrl || '/icons/lets-go-klubn-320.png'}
+            alt={siteSettings.siteName}
             className="h-24 w-auto drop-shadow-[0_12px_30px_rgba(0,0,0,0.45)]"
             loading="lazy"
           />
-          <span className="sr-only">Lets Go KlubN</span>
+          <span className="sr-only">{siteSettings.siteName}</span>
         </Link>
 
         <div className="flex flex-1 items-center justify-end gap-4">

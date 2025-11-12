@@ -1,5 +1,4 @@
 using System.Text;
-using Application.DTO.DJProfile;
 using DJDiP.Application.DTO.DJProfileDTO;
 using DJDiP.Application.DTO.EventDTO;
 using DJDiP.Application.DTO.GenreDTO;
@@ -8,6 +7,8 @@ using DJDiP.Application.DTO.VenueDTO;
 using DJDiP.Application.DTO.ContactMessageDTO;
 using DJDiP.Application.DTO.DJTop10DTO;
 using DJDiP.Application.DTO.TicketDTO;
+using DJDiP.Application.DTO.SongDTO;
+using DJDiP.Application.DTO.SiteSettingsDTO;
 using DJDiP.Application.DTO.Auth;
 using DJDiP.Application.Interfaces;
 using DJDiP.Application.Services;
@@ -76,6 +77,8 @@ builder.Services.AddScoped<IDJTop10Service, DJTop10Service>();
 builder.Services.AddScoped<IFollowService, FollowService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<ISongService, SongService>();
+builder.Services.AddScoped<ISiteSettingsService, SiteSettingsService>();
 
 // ========== GRAPHQL ==========
 builder.Services
@@ -192,6 +195,13 @@ public class Query
         return await ticketService.GetTicketsByUserIdAsync(userId);
     }
 
+    public async Task<IEnumerable<TicketDto>> TicketsByEvent(
+        Guid eventId,
+        [Service] ITicketService ticketService)
+    {
+        return await ticketService.GetTicketsByEventIdAsync(eventId);
+    }
+
     public async Task<TicketDto?> Ticket(
         Guid id,
         [Service] ITicketService ticketService)
@@ -248,6 +258,27 @@ public class Query
         [Service] IDJTop10Service djTop10Service)
     {
         return await djTop10Service.GetByIdAsync(id);
+    }
+
+    // Songs
+    public async Task<IEnumerable<SongDto>> Songs(
+        [Service] ISongService songService)
+    {
+        return await songService.GetAllSongsAsync();
+    }
+
+    public async Task<SongDto?> Song(
+        Guid id,
+        [Service] ISongService songService)
+    {
+        return await songService.GetSongByIdAsync(id);
+    }
+
+    // Site settings
+    public async Task<SiteSettingsDto> SiteSettings(
+        [Service] ISiteSettingsService siteSettingsService)
+    {
+        return await siteSettingsService.GetAsync();
     }
 }
 
@@ -351,11 +382,19 @@ public class Mutation
             FullName = input.FullName,
             Email = input.Email,
             Bio = input.Bio,
+            LongBio = input.LongBio,
+            Tagline = input.Tagline,
             Genre = input.Genre,
             SocialLinks = input.SocialLinks,
             ProfilePictureUrl = input.ProfilePictureUrl,
+            CoverImageUrl = input.CoverImageUrl,
+            Specialties = input.Specialties,
+            Achievements = input.Achievements,
+            YearsExperience = input.YearsExperience,
+            InfluencedBy = input.InfluencedBy,
+            EquipmentUsed = input.EquipmentUsed,
             UserId = input.UserId,
-            Top10SongTitles = input.Top10SongTitles
+            TopTracks = input.TopTracks
         };
 
         return await djs.CreateAsync(dto);
@@ -370,11 +409,20 @@ public class Mutation
         {
             Id = id,
             StageName = input.StageName,
+            FullName = input.FullName,
             Bio = input.Bio,
+            LongBio = input.LongBio,
+            Tagline = input.Tagline,
             Genre = input.Genre,
             SocialLinks = input.SocialLinks,
             ProfilePictureUrl = input.ProfilePictureUrl,
-            Top10SongTitles = input.Top10SongTitles
+            CoverImageUrl = input.CoverImageUrl,
+            Specialties = input.Specialties,
+            Achievements = input.Achievements,
+            YearsExperience = input.YearsExperience,
+            InfluencedBy = input.InfluencedBy,
+            EquipmentUsed = input.EquipmentUsed,
+            TopTracks = input.TopTracks
         };
 
         await djs.UpdateAsync(id, dto);
@@ -528,6 +576,71 @@ public class Mutation
         return true;
     }
 
+    // SONG MUTATIONS
+    public async Task<Guid> CreateSong(
+        CreateSongInput input,
+        [Service] ISongService songService)
+    {
+        var dto = new CreateSongDto
+        {
+            Title = input.Title,
+            Artist = input.Artist,
+            Album = input.Album,
+            Duration = input.Duration,
+            SpotifyId = input.SpotifyId
+        };
+
+        return await songService.AddSongAsync(dto);
+    }
+
+    // SITE SETTINGS MUTATIONS
+    public async Task<SiteSettingsDto> UpdateSiteSettings(
+        UpdateSiteSettingsInput input,
+        [Service] ISiteSettingsService siteSettingsService)
+    {
+        var dto = new UpdateSiteSettingsDto
+        {
+            Id = input.Id,
+            SiteName = input.SiteName,
+            Tagline = input.Tagline,
+            LogoUrl = input.LogoUrl,
+            FaviconUrl = input.FaviconUrl,
+            PrimaryColor = input.PrimaryColor,
+            SecondaryColor = input.SecondaryColor,
+            AccentColor = input.AccentColor,
+            HeroTitle = input.HeroTitle,
+            HeroSubtitle = input.HeroSubtitle,
+            HeroCtaText = input.HeroCtaText,
+            HeroCtaLink = input.HeroCtaLink,
+            HeroBackgroundImageUrl = input.HeroBackgroundImageUrl,
+            HeroBackgroundVideoUrl = input.HeroBackgroundVideoUrl,
+            HeroOverlayOpacity = input.HeroOverlayOpacity,
+            ContactEmail = input.ContactEmail,
+            ContactPhone = input.ContactPhone,
+            ContactAddress = input.ContactAddress,
+            FacebookUrl = input.FacebookUrl,
+            InstagramUrl = input.InstagramUrl,
+            TwitterUrl = input.TwitterUrl,
+            YouTubeUrl = input.YouTubeUrl,
+            TikTokUrl = input.TikTokUrl,
+            SoundCloudUrl = input.SoundCloudUrl,
+            DefaultEventImageUrl = input.DefaultEventImageUrl,
+            DefaultDjImageUrl = input.DefaultDjImageUrl,
+            DefaultVenueImageUrl = input.DefaultVenueImageUrl,
+            EnableNewsletter = input.EnableNewsletter,
+            EnableNotifications = input.EnableNotifications,
+            EnableReviews = input.EnableReviews,
+            EnableGamification = input.EnableGamification,
+            EnableSubscriptions = input.EnableSubscriptions,
+            MetaDescription = input.MetaDescription,
+            MetaKeywords = input.MetaKeywords,
+            FooterText = input.FooterText,
+            CopyrightText = input.CopyrightText
+        };
+
+        return await siteSettingsService.UpdateAsync(dto);
+    }
+
     // FOLLOW MUTATIONS
     public async Task<bool> FollowDj(
         FollowDjInput input,
@@ -564,6 +677,21 @@ public class Mutation
         [Service] ITicketService ticketService)
     {
         return await ticketService.CheckInTicketAsync(ticketId);
+    }
+
+    public async Task<bool> InvalidateTicket(
+        Guid ticketId,
+        [Service] ITicketService ticketService)
+    {
+        return await ticketService.InvalidateTicketAsync(ticketId);
+    }
+
+    public async Task<bool> DeleteTicket(
+        Guid ticketId,
+        [Service] ITicketService ticketService)
+    {
+        await ticketService.DeleteAsync(ticketId);
+        return true;
     }
 }
 
@@ -612,21 +740,38 @@ public class CreateDjInput
     public string? FullName { get; set; }
     public string? Email { get; set; }
     public string Bio { get; set; } = string.Empty;
+    public string? LongBio { get; set; }
+    public string? Tagline { get; set; }
     public string Genre { get; set; } = string.Empty;
     public string SocialLinks { get; set; } = string.Empty;
     public string ProfilePictureUrl { get; set; } = string.Empty;
+    public string? CoverImageUrl { get; set; }
+    public string? Specialties { get; set; }
+    public string? Achievements { get; set; }
+    public int? YearsExperience { get; set; }
+    public string? InfluencedBy { get; set; }
+    public string? EquipmentUsed { get; set; }
     public string UserId { get; set; } = string.Empty;
-    public List<string>? Top10SongTitles { get; set; }
+    public List<string>? TopTracks { get; set; }
 }
 
 public class UpdateDjInput
 {
     public string StageName { get; set; } = string.Empty;
+    public string? FullName { get; set; }
     public string Bio { get; set; } = string.Empty;
+    public string? LongBio { get; set; }
+    public string? Tagline { get; set; }
     public string Genre { get; set; } = string.Empty;
     public string SocialLinks { get; set; } = string.Empty;
     public string ProfilePictureUrl { get; set; } = string.Empty;
-    public List<string>? Top10SongTitles { get; set; }
+    public string? CoverImageUrl { get; set; }
+    public string? Specialties { get; set; }
+    public string? Achievements { get; set; }
+    public int? YearsExperience { get; set; }
+    public string? InfluencedBy { get; set; }
+    public string? EquipmentUsed { get; set; }
+    public List<string>? TopTracks { get; set; }
 }
 
 public class CreateGenreInput
@@ -686,4 +831,53 @@ public class PurchaseTicketInput
 {
     public Guid EventId { get; set; }
     public string UserId { get; set; } = string.Empty;
+}
+
+public class CreateSongInput
+{
+    public string Title { get; set; } = string.Empty;
+    public string Artist { get; set; } = string.Empty;
+    public string? Album { get; set; }
+    public int Duration { get; set; }
+    public string? SpotifyId { get; set; }
+}
+
+public class UpdateSiteSettingsInput
+{
+    public Guid Id { get; set; }
+    public string SiteName { get; set; } = string.Empty;
+    public string Tagline { get; set; } = string.Empty;
+    public string LogoUrl { get; set; } = string.Empty;
+    public string FaviconUrl { get; set; } = string.Empty;
+    public string PrimaryColor { get; set; } = string.Empty;
+    public string SecondaryColor { get; set; } = string.Empty;
+    public string AccentColor { get; set; } = string.Empty;
+    public string HeroTitle { get; set; } = string.Empty;
+    public string HeroSubtitle { get; set; } = string.Empty;
+    public string HeroCtaText { get; set; } = string.Empty;
+    public string HeroCtaLink { get; set; } = string.Empty;
+    public string HeroBackgroundImageUrl { get; set; } = string.Empty;
+    public string HeroBackgroundVideoUrl { get; set; } = string.Empty;
+    public decimal HeroOverlayOpacity { get; set; }
+    public string ContactEmail { get; set; } = string.Empty;
+    public string ContactPhone { get; set; } = string.Empty;
+    public string ContactAddress { get; set; } = string.Empty;
+    public string FacebookUrl { get; set; } = string.Empty;
+    public string InstagramUrl { get; set; } = string.Empty;
+    public string TwitterUrl { get; set; } = string.Empty;
+    public string YouTubeUrl { get; set; } = string.Empty;
+    public string TikTokUrl { get; set; } = string.Empty;
+    public string SoundCloudUrl { get; set; } = string.Empty;
+    public string DefaultEventImageUrl { get; set; } = string.Empty;
+    public string DefaultDjImageUrl { get; set; } = string.Empty;
+    public string DefaultVenueImageUrl { get; set; } = string.Empty;
+    public bool EnableNewsletter { get; set; }
+    public bool EnableNotifications { get; set; }
+    public bool EnableReviews { get; set; }
+    public bool EnableGamification { get; set; }
+    public bool EnableSubscriptions { get; set; }
+    public string MetaDescription { get; set; } = string.Empty;
+    public string MetaKeywords { get; set; } = string.Empty;
+    public string FooterText { get; set; } = string.Empty;
+    public string CopyrightText { get; set; } = string.Empty;
 }

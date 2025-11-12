@@ -7,15 +7,18 @@ import './index.css';
 import './App.css';
 import { apolloClient } from './apollo-client';
 import { AuthProvider } from './context/AuthContext.tsx';
+import { SiteSettingsProvider } from './context/SiteSettingsContext.tsx';
 import { registerServiceWorker, setupInstallPrompt } from './utils/pwa.ts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ApolloProvider client={apolloClient}>
       <BrowserRouter>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <SiteSettingsProvider>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </SiteSettingsProvider>
       </BrowserRouter>
     </ApolloProvider>
   </StrictMode>,

@@ -14,6 +14,7 @@ import OrdersPage from './pages/OrdersPage';
 import UploadMediaPage from './pages/UploadMediaPage';
 import GamificationPage from './pages/GamificationPage';
 import GalleryPage from './pages/GalleryPage';
+import PlaylistDiscoveryPage from './pages/PlaylistDiscoveryPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -24,6 +25,10 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminEventsPage from './pages/admin/AdminEventsPage';
 import AdminVenuesPage from './pages/admin/AdminVenuesPage';
 import AdminDJsPage from './pages/admin/AdminDJsPage';
+import AdminPlaylistsPage from './pages/admin/AdminPlaylistsPage';
+import AdminTicketsPage from './pages/admin/AdminTicketsPage';
+import AdminSiteSettingsPage from './pages/admin/AdminSiteSettingsPage';
+import AdminLayout from './components/admin/AdminLayout';
 
 const App = () => (
   <Routes>
@@ -77,6 +82,7 @@ const App = () => (
         }
       />
       <Route path="gallery" element={<GalleryPage />} />
+      <Route path="playlists" element={<PlaylistDiscoveryPage />} />
       <Route path="gamification" element={<GamificationPage />} />
       <Route path="login" element={<LoginPage />} />
       <Route path="register" element={<RegisterPage />} />
@@ -87,7 +93,7 @@ const App = () => (
       path="/admin"
       element={
         <AdminRoute>
-          <Layout />
+          <AdminLayout />
         </AdminRoute>
       }
     >
@@ -95,6 +101,9 @@ const App = () => (
       <Route path="events" element={<AdminEventsPage />} />
       <Route path="venues" element={<AdminVenuesPage />} />
       <Route path="djs" element={<AdminDJsPage />} />
+      <Route path="tickets" element={<AdminTicketsPage />} />
+      <Route path="playlists" element={<AdminPlaylistsPage />} />
+      <Route path="site-settings" element={<AdminSiteSettingsPage />} />
     </Route>
   </Routes>
 );

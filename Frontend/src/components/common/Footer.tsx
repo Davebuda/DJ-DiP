@@ -1,69 +1,85 @@
-const Footer = () => (
-  <footer className="mt-24 border-t border-white/10 bg-gradient-to-b from-[#050202] to-black py-14 text-sm text-gray-400">
-    <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
-      <div className="space-y-3">
-        <p className="text-lg font-bold tracking-[0.4em] text-white">Lets Go KlubN</p>
-        <p className="text-gray-400">
-          Nightlife technology for the selectors, venues, and fans pushing culture forward.
-        </p>
-      </div>
+import { useSiteSettings } from '../../context/SiteSettingsContext';
 
-      <div className="space-y-3">
-        <p className="text-xs uppercase tracking-[0.4em] text-white/70">Platform</p>
-        <div className="flex flex-col space-y-2">
-          <a href="/events" className="hover:text-white transition">
-            Events
-          </a>
-          <a href="/tickets" className="hover:text-white transition">
-            Tickets
-          </a>
-          <a href="/gallery" className="hover:text-white transition">
-            Gallery
-          </a>
-          <a href="/contact" className="hover:text-white transition">
-            Contact
-          </a>
+const Footer = () => {
+  const { siteSettings } = useSiteSettings();
+  const contactEmail = siteSettings.contactEmail || 'hello@djdip.com';
+  const footerText =
+    siteSettings.footerText ||
+    'Nightlife technology for the selectors, venues, and fans pushing culture forward.';
+
+  const socialLinks = [
+    { label: 'Instagram', url: siteSettings.instagramUrl },
+    { label: 'Twitter', url: siteSettings.twitterUrl },
+    { label: 'YouTube', url: siteSettings.youTubeUrl },
+    { label: 'TikTok', url: siteSettings.tikTokUrl },
+    { label: 'SoundCloud', url: siteSettings.soundCloudUrl },
+  ].filter((item) => Boolean(item.url));
+
+  return (
+    <footer className="mt-24 border-t border-white/10 bg-gradient-to-b from-[#050202] to-black py-14 text-sm text-gray-400">
+      <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className="space-y-3">
+          <p className="text-lg font-bold tracking-[0.4em] text-white">{siteSettings.siteName}</p>
+          <p className="text-gray-400">{footerText}</p>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-xs uppercase tracking-[0.4em] text-white/70">Platform</p>
+          <div className="flex flex-col space-y-2">
+            <a href="/events" className="hover:text-white transition">
+              Events
+            </a>
+            <a href="/tickets" className="hover:text-white transition">
+              Tickets
+            </a>
+            <a href="/gallery" className="hover:text-white transition">
+              Gallery
+            </a>
+            <a href="/contact" className="hover:text-white transition">
+              Contact
+            </a>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-xs uppercase tracking-[0.4em] text-white/70">Connect</p>
+          <div className="flex flex-col space-y-2">
+            <a href={`mailto:${contactEmail}`} className="hover:text-white transition">
+              {contactEmail}
+            </a>
+            {socialLinks.map((link) => (
+              <a key={link.label} href={link.url!} target="_blank" rel="noreferrer" className="hover:text-white transition">
+                {link.label}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <p className="text-xs uppercase tracking-[0.4em] text-white/70">Stay in the loop</p>
+          <p>Weekly drops, openings, and presale codes. One email. No noise.</p>
+          <form className="flex flex-col sm:flex-row gap-3">
+            <input
+              className="flex-1 rounded-full border border-white/10 bg-black/40 px-4 py-2 text-white placeholder-gray-500 focus:border-orange-400 focus:outline-none"
+              type="email"
+              placeholder="Email address"
+            />
+            <button
+              type="submit"
+              className="rounded-full bg-white text-black px-5 py-2 text-xs font-semibold tracking-[0.3em] uppercase"
+            >
+              Join
+            </button>
+          </form>
         </div>
       </div>
 
-      <div className="space-y-3">
-        <p className="text-xs uppercase tracking-[0.4em] text-white/70">Connect</p>
-        <div className="flex flex-col space-y-2">
-          <a href="mailto:hello@djdip.com" className="hover:text-white transition">
-            hello@djdip.com
-          </a>
-          <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-white transition">
-            Instagram
-          </a>
-          <a href="https://soundcloud.com" target="_blank" rel="noreferrer" className="hover:text-white transition">
-            SoundCloud
-          </a>
-        </div>
+      <div className="mt-10 border-t border-white/5 pt-6 text-center text-xs tracking-[0.4em] text-gray-500">
+        {siteSettings.copyrightText ||
+          `© ${new Date().getFullYear()} ${siteSettings.siteName}. Crafted for the culture.`}
       </div>
-
-      <div className="space-y-3">
-        <p className="text-xs uppercase tracking-[0.4em] text-white/70">Stay in the loop</p>
-        <p>Weekly drops, openings, and presale codes. One email. No noise.</p>
-        <form className="flex flex-col sm:flex-row gap-3">
-          <input
-            className="flex-1 rounded-full border border-white/10 bg-black/40 px-4 py-2 text-white placeholder-gray-500 focus:border-orange-400 focus:outline-none"
-            type="email"
-            placeholder="Email address"
-          />
-          <button
-            type="submit"
-            className="rounded-full bg-white text-black px-5 py-2 text-xs font-semibold tracking-[0.3em] uppercase"
-          >
-            Join
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <div className="mt-10 border-t border-white/5 pt-6 text-center text-xs tracking-[0.4em] text-gray-500">
-      © {new Date().getFullYear()} Lets Go KlubN. Crafted for the culture.
-    </div>
-  </footer>
-);
+    </footer>
+  );
+};
 
 export default Footer;

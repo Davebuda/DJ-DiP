@@ -3,6 +3,7 @@ import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { GET_LANDING_DATA } from '../graphql/queries';
 import NewsletterSignup from '../components/common/NewsletterSignup';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 type ShowcaseItem = {
   label: string;
@@ -17,10 +18,21 @@ const HeroSection = ({
   highlight,
   stats,
   showcaseItems,
+  siteSettings,
 }: {
   highlight?: any;
   stats: { label: string; value: number }[];
   showcaseItems: ShowcaseItem[];
+  siteSettings: {
+    heroTitle?: string;
+    heroSubtitle?: string;
+    heroCtaText?: string;
+    heroCtaLink?: string;
+    heroBackgroundImageUrl?: string;
+    heroBackgroundVideoUrl?: string;
+    heroOverlayOpacity?: number;
+    tagline?: string;
+  };
 }) => {
   const [activeShowcaseIndex, setActiveShowcaseIndex] = useState(0);
   const hasShowcase = showcaseItems.length > 0;
@@ -28,7 +40,8 @@ const HeroSection = ({
     ? ((activeShowcaseIndex % showcaseItems.length) + showcaseItems.length) % showcaseItems.length
     : 0;
   const activeShowcase = hasShowcase ? showcaseItems[safeIndex] : undefined;
-  const featuredImage = highlight?.imageUrl ?? '/media/sections/hero/KlubN12.07 screen (1) copy.png';
+  const featuredImage =
+    highlight?.imageUrl ?? siteSettings.heroBackgroundImageUrl ?? '/media/sections/hero/KlubN12.07 screen (1) copy.png';
 
   useEffect(() => {
     if (!hasShowcase) {
@@ -54,30 +67,45 @@ const HeroSection = ({
         loop
         playsInline
         preload="auto"
-        poster="/media/sections/hero/KlubN12.07 screen (1) copy.png"
+        poster={featuredImage}
       >
-        {['/media/hero/0721-copy.mp4', '/media/sections/hero/0721-copy.mp4'].map((src) => (
-          <source key={src} src={src} type="video/mp4" />
-        ))}
+        {[siteSettings.heroBackgroundVideoUrl, '/media/hero/0721-copy.mp4', '/media/sections/hero/0721-copy.mp4']
+          .filter(Boolean)
+          .map((src) => (
+            <source key={src} src={src as string} type="video/mp4" />
+          ))}
       </video>
-      <div className="absolute inset-0 bg-gradient-to-r from-[#050202] via-[#120703]/85 to-transparent" />
+      <div
+        className="absolute inset-0 bg-gradient-to-r from-[#050202] via-[#120703]/85 to-transparent"
+        style={{ opacity: siteSettings.heroOverlayOpacity ?? 1 }}
+      />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_right,_rgba(255,87,34,0.25),_transparent_55%)]" />
 
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col-reverse gap-12 px-6 py-20 lg:flex-row lg:items-center lg:gap-16 lg:px-10 lg:py-28">
         <div className="flex-1 space-y-10">
           <div className="space-y-5">
-            <p className="text-xs uppercase tracking-[0.65em] text-orange-200">High life sound system</p>
+            {siteSettings.tagline && (
+              <p className="text-xs uppercase tracking-[0.65em] text-orange-200">{siteSettings.tagline}</p>
+            )}
             <h1 className="text-5xl md:text-6xl font-black leading-tight">
-              Lets Go <span className="text-orange-300">KlubN</span>
+              {siteSettings.heroTitle ?? (
+                <>
+                  Lets Go <span className="text-orange-300">KlubN</span>
+                </>
+              )}
             </h1>
             <p className="text-lg text-gray-200 max-w-2xl">
-              Culture-forward bookings, immersive visuals, and the club technology powering tomorrow’s dance floors.
+              {siteSettings.heroSubtitle ??
+                'Culture-forward bookings, immersive visuals, and the club technology powering tomorrow’s dance floors.'}
             </p>
           </div>
 
           <div className="flex flex-wrap gap-4 text-xs font-semibold uppercase tracking-[0.4em]">
-            <Link to="/events" className="px-8 py-3 rounded-full bg-white text-black">
-              Discover Events
+            <Link
+              to={siteSettings.heroCtaLink || '/events'}
+              className="px-8 py-3 rounded-full bg-white text-black"
+            >
+              {siteSettings.heroCtaText || 'Discover Events'}
             </Link>
             <Link
               to="/tickets"
@@ -183,9 +211,11 @@ const HeroSection = ({
 
 const LandingPage = () => {
   const { data, loading, error } = useQuery(GET_LANDING_DATA);
+  const { siteSettings } = useSiteSettings();
   const events = data?.landing?.events ?? [];
   const djs = data?.landing?.dJs ?? [];
-  const featuredImageFallback = '/media/sections/hero/KlubN12.07 screen (1) copy.png';
+  const featuredImageFallback =
+    siteSettings.heroBackgroundImageUrl ?? '/media/sections/hero/KlubN12.07 screen (1) copy.png';
 
   const highlightEvent = events[0];
   const latestDrops = events.slice(0, 3);
@@ -194,6 +224,8 @@ const LandingPage = () => {
     { label: 'Resident DJs', value: djs.length || 42 },
     { label: 'Cities Live', value: 12 },
   ];
+  const defaultEventImage = siteSettings.defaultEventImageUrl ?? featuredImageFallback;
+  const defaultDjImage = siteSettings.defaultDjImageUrl ?? '/media/defaults/dj.jpg';
   const featureTiles = latestDrops.length ? latestDrops : djs.slice(0, 3);
   const featuredDjs = djs.slice(0, 4);
   const galleryPreview = events.slice(0, 5);
@@ -271,7 +303,12 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1c0b02] via-[#080505] to-black text-white">
-      <HeroSection highlight={highlightEvent} stats={heroStats} showcaseItems={heroShowcaseItems} />
+      <HeroSection
+        highlight={highlightEvent}
+        stats={heroStats}
+        showcaseItems={heroShowcaseItems}
+        siteSettings={siteSettings}
+      />
 
       <section className="max-w-6xl mx-auto px-6 lg:px-10 py-12 space-y-8">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -290,9 +327,11 @@ const LandingPage = () => {
               to={`/events/${event.id}`}
               className="tile h-[420px] flex flex-col"
               style={
-                event.imageUrl
-                  ? { backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.9)), url(${event.imageUrl})` }
-                  : undefined
+                {
+                  backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.9)), url(${
+                    event.imageUrl ?? defaultEventImage
+                  })`,
+                }
               }
             >
               <div className="tile-content p-6 flex flex-col justify-end space-y-3">
@@ -323,26 +362,28 @@ const LandingPage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {featureTiles.map((tile: any, idx: number) => (
-            <Link
-              key={`${tile.id ?? idx}-tile`}
-              to={tile.id ? `/events/${tile.id}` : '/gallery'}
-              className="tile h-[360px] flex flex-col"
-              style={
-                tile.imageUrl
-                  ? { backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.9)), url(${tile.imageUrl})` }
-                  : undefined
-              }
-            >
-              <div className="tile-content p-6 flex flex-col justify-end space-y-2">
-                <p className="text-xs uppercase tracking-[0.5em] text-gray-300">Feature</p>
-                <h3 className="text-2xl font-semibold">{tile.title ?? tile.name ?? 'New Editorial'}</h3>
-                <p className="text-gray-300 text-sm line-clamp-3">
-                  {tile.description ?? tile.bio ?? 'Stories from the booth and beyond.'}
-                </p>
-              </div>
-            </Link>
-          ))}
+          {featureTiles.map((tile: any, idx: number) => {
+            const tileBackground =
+              tile.imageUrl || tile.profilePictureUrl || tile.coverImageUrl || defaultEventImage;
+            return (
+              <Link
+                key={`${tile.id ?? idx}-tile`}
+                to={tile.id ? `/events/${tile.id}` : '/gallery'}
+                className="tile h-[360px] flex flex-col"
+                style={{
+                  backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.9)), url(${tileBackground})`,
+                }}
+              >
+                <div className="tile-content p-6 flex flex-col justify-end space-y-2">
+                  <p className="text-xs uppercase tracking-[0.5em] text-gray-300">Feature</p>
+                  <h3 className="text-2xl font-semibold">{tile.title ?? tile.name ?? 'New Editorial'}</h3>
+                  <p className="text-gray-300 text-sm line-clamp-3">
+                    {tile.description ?? tile.bio ?? 'Stories from the booth and beyond.'}
+                  </p>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
@@ -363,14 +404,57 @@ const LandingPage = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {featuredDjs.map((dj: any) => (
-            <Link key={dj.id} to={`/djs/${dj.id}`} className="tile h-[280px]">
-              <div className="tile-content p-6 flex flex-col space-y-3">
-                <div className="h-14 w-14 rounded-xl bg-white/10 flex items-center justify-center text-xl font-bold text-white/70">
-                  {dj.stageName?.[0] ?? dj.name?.[0] ?? 'DJ'}
+            <Link
+              key={dj.id}
+              to={`/djs/${dj.id}`}
+              className="tile relative h-[280px] overflow-hidden"
+              style={{
+                backgroundImage: 'linear-gradient(180deg, rgba(0,0,0,0.4), rgba(0,0,0,0.95))',
+              }}
+            >
+              <div className="absolute inset-x-0 top-0" style={{ height: '70%' }}>
+                <div
+                  className="relative h-full w-full"
+                  style={{
+                    backgroundImage: `url(${dj.profilePictureUrl ?? defaultDjImage})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/40 to-black/80" />
                 </div>
-                <div>
-                  <p className="text-xs uppercase tracking-[0.4em] text-gray-400">Stage Name</p>
-                  <p className="text-xl font-semibold text-white">{dj.stageName ?? dj.name}</p>
+              </div>
+              <div className="tile-content relative z-10 p-6 flex flex-col space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-14 w-14 rounded-full border border-white/20 overflow-hidden bg-white/10">
+                    <img
+                      src={dj.profilePictureUrl ?? defaultDjImage}
+                      alt={dj.stageName ?? dj.name}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.4em] text-gray-400">Resident</p>
+                    <p className="text-xl font-semibold text-white">{dj.stageName ?? dj.name}</p>
+                    <p className="text-[0.65rem] uppercase tracking-[0.35em] text-gray-500">
+                      {dj.tagline ?? 'Sonic curator'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {(dj.genre ?? '')
+                    .split(',')
+                    .map((genre: string) => genre.trim())
+                    .filter(Boolean)
+                    .slice(0, 3)
+                    .map((genre: string) => (
+                      <span
+                        key={`${dj.id}-${genre}`}
+                        className="rounded-full border border-white/15 px-3 py-0.5 text-[0.6rem] uppercase tracking-[0.35em] text-gray-200"
+                      >
+                        {genre}
+                      </span>
+                    ))}
                 </div>
                 <p className="text-gray-300 text-sm line-clamp-4">{dj.bio}</p>
               </div>
