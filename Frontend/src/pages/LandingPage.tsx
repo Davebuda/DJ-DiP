@@ -59,7 +59,7 @@ const HeroSection = ({
   };
 
   return (
-    <section className="relative isolate flex min-h-[92vh] w-full flex-col justify-center overflow-hidden bg-black text-white">
+    <section className="relative isolate flex min-h-[80vh] w-full flex-col justify-center overflow-hidden bg-black text-white">
       <video
         className="absolute inset-0 h-full w-full object-cover"
         autoPlay
@@ -80,6 +80,7 @@ const HeroSection = ({
         style={{ opacity: siteSettings.heroOverlayOpacity ?? 1 }}
       />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_right,_rgba(255,87,34,0.25),_transparent_55%)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent via-black/40 to-black" />
 
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col-reverse gap-12 px-6 py-20 lg:flex-row lg:items-center lg:gap-16 lg:px-10 lg:py-28">
         <div className="flex-1 space-y-10">
