@@ -7,6 +7,7 @@ import {
   GET_VENUES,
   UPDATE_VENUE,
 } from '../../graphql/queries';
+import ImageUpload from '../../components/common/ImageUpload';
 
 interface VenueFormState {
   name: string;
@@ -309,16 +310,15 @@ const AdminVenuesPage = () => {
               onChange={(e) => setForm((prev) => ({ ...prev, phoneNumber: e.target.value }))}
             />
           </label>
-          <label className="space-y-1 text-sm font-semibold text-gray-300">
-            Image URL
-            <input
-              type="url"
-              className={inputClass}
-              value={form.imageUrl}
-              onChange={(e) => setForm((prev) => ({ ...prev, imageUrl: e.target.value }))}
-            />
-          </label>
         </div>
+
+        <ImageUpload
+          currentImageUrl={form.imageUrl}
+          onImageUploaded={(url) => setForm((prev) => ({ ...prev, imageUrl: url }))}
+          folder="venues"
+          label="Venue Image"
+          aspectRatio="aspect-video"
+        />
 
         <div className="flex items-center gap-3">
           <button

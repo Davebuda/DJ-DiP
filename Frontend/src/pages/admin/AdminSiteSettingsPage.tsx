@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { UPDATE_SITE_SETTINGS } from '../../graphql/queries';
 import { SiteSettings, defaultSiteSettings, useSiteSettings } from '../../context/SiteSettingsContext';
+import ImageUpload from '../../components/common/ImageUpload';
 
 const AdminSiteSettingsPage = () => {
   const inputClass =
@@ -106,24 +107,20 @@ const AdminSiteSettingsPage = () => {
                 onChange={(e) => handleChange('tagline', e.target.value)}
               />
             </label>
-            <label className="space-y-1 text-sm font-semibold text-gray-300">
-              Logo URL
-              <input
-                type="url"
-                className={inputClass}
-                value={form.logoUrl}
-                onChange={(e) => handleChange('logoUrl', e.target.value)}
-              />
-            </label>
-            <label className="space-y-1 text-sm font-semibold text-gray-300">
-              Favicon URL
-              <input
-                type="url"
-                className={inputClass}
-                value={form.faviconUrl}
-                onChange={(e) => handleChange('faviconUrl', e.target.value)}
-              />
-            </label>
+            <ImageUpload
+              currentImageUrl={form.logoUrl}
+              onImageUploaded={(url) => handleChange('logoUrl', url)}
+              folder="site-settings"
+              label="Logo"
+              aspectRatio="aspect-video"
+            />
+            <ImageUpload
+              currentImageUrl={form.faviconUrl}
+              onImageUploaded={(url) => handleChange('faviconUrl', url)}
+              folder="site-settings"
+              label="Favicon"
+              aspectRatio="aspect-square"
+            />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {(['primaryColor', 'secondaryColor', 'accentColor'] as const).map((field) => (
@@ -182,15 +179,15 @@ const AdminSiteSettingsPage = () => {
                 onChange={(e) => handleChange('heroCtaLink', e.target.value)}
               />
             </label>
-            <label className="space-y-1 text-sm font-semibold text-gray-300">
-              Background Image
-              <input
-                type="url"
-                className={inputClass}
-                value={form.heroBackgroundImageUrl}
-                onChange={(e) => handleChange('heroBackgroundImageUrl', e.target.value)}
-              />
-            </label>
+          </div>
+          <ImageUpload
+            currentImageUrl={form.heroBackgroundImageUrl}
+            onImageUploaded={(url) => handleChange('heroBackgroundImageUrl', url)}
+            folder="site-settings"
+            label="Hero Background Image"
+            aspectRatio="aspect-video"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <label className="space-y-1 text-sm font-semibold text-gray-300">
               Background Video
               <input
@@ -273,23 +270,27 @@ const AdminSiteSettingsPage = () => {
         <section className="card space-y-4">
           <h2 className="text-lg font-semibold">Default Media</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {(
-              [
-                'defaultEventImageUrl',
-                'defaultDjImageUrl',
-                'defaultVenueImageUrl',
-              ] as const
-            ).map((field) => (
-              <label key={field} className="space-y-1 text-sm font-semibold text-gray-300">
-                {field.replace('default', '').replace('ImageUrl', '')} Image
-                <input
-                  type="url"
-                  className={inputClass}
-                  value={form[field]}
-                  onChange={(e) => handleChange(field, e.target.value)}
-                />
-              </label>
-            ))}
+            <ImageUpload
+              currentImageUrl={form.defaultEventImageUrl}
+              onImageUploaded={(url) => handleChange('defaultEventImageUrl', url)}
+              folder="site-settings"
+              label="Default Event Image"
+              aspectRatio="aspect-video"
+            />
+            <ImageUpload
+              currentImageUrl={form.defaultDjImageUrl}
+              onImageUploaded={(url) => handleChange('defaultDjImageUrl', url)}
+              folder="site-settings"
+              label="Default DJ Image"
+              aspectRatio="aspect-square"
+            />
+            <ImageUpload
+              currentImageUrl={form.defaultVenueImageUrl}
+              onImageUploaded={(url) => handleChange('defaultVenueImageUrl', url)}
+              folder="site-settings"
+              label="Default Venue Image"
+              aspectRatio="aspect-video"
+            />
           </div>
         </section>
 

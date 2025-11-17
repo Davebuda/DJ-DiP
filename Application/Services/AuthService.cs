@@ -72,6 +72,7 @@ namespace DJDiP.Application.Services
             var claims = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Sub, user.Id),
+                new("userId", user.Id), // Add userId claim for GraphQL mutations
                 new(JwtRegisteredClaimNames.Email, user.Email),
                 new(ClaimTypes.Name, user.FullName),
                 new(ClaimTypes.Role, MapRole(user.Role))

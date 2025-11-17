@@ -26,6 +26,7 @@ namespace DJDiP.Infrastructure.Persistance
         public DbSet<Song> Songs => Set<Song>();
         public DbSet<Ticket> Tickets => Set<Ticket>();
         public DbSet<Venue> Venues => Set<Venue>();
+        public DbSet<GalleryMedia> GalleryMedia => Set<GalleryMedia>();
 
         // Phase 2-4 Entities
         public DbSet<Badge> Badges => Set<Badge>();

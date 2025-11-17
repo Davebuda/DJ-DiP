@@ -7,6 +7,7 @@ import {
   GET_DJS,
   UPDATE_DJ,
 } from '../../graphql/queries';
+import ImageUpload from '../../components/common/ImageUpload';
 
 interface SocialLinkField {
   label: string;
@@ -143,31 +144,40 @@ const AdminDJsPage = () => {
   };
 
   const handleEdit = async (id: string) => {
-    const response = await fetchDetail({ variables: { id } });
-    const detail = response.data?.dj;
-    if (!detail) return;
+    try {
+      const response = await fetchDetail({ variables: { id } });
+      const detail = response.data?.dj;
+      if (!detail) {
+        throw new Error('DJ details not found.');
+      }
 
-    setEditingId(id);
-    setFeedback(null);
-    setForm({
-      stageName: detail.stageName ?? '',
-      fullName: detail.name ?? '',
-      email: '',
-      userId: '',
-      bio: detail.bio ?? '',
-      longBio: detail.longBio ?? '',
-      tagline: detail.tagline ?? '',
-      genre: detail.genre ?? '',
-      profilePictureUrl: detail.profilePictureUrl ?? '',
-      coverImageUrl: detail.coverImageUrl ?? '',
-      specialties: detail.specialties ?? '',
-      achievements: detail.achievements ?? '',
-      yearsExperience: detail.yearsExperience?.toString() ?? '',
-      influencedBy: detail.influencedBy ?? '',
-      equipmentUsed: detail.equipmentUsed ?? '',
-      socialLinks: parseSocialLinks(detail.socialLinks),
-      topTracks: (detail.topTracks ?? []).join('\n'),
-    });
+      setEditingId(id);
+      setFeedback(null);
+      setForm({
+        stageName: detail.stageName ?? '',
+        fullName: detail.name ?? '',
+        email: '',
+        userId: '',
+        bio: detail.bio ?? '',
+        longBio: detail.longBio ?? '',
+        tagline: detail.tagline ?? '',
+        genre: detail.genre ?? '',
+        profilePictureUrl: detail.profilePictureUrl ?? '',
+        coverImageUrl: detail.coverImageUrl ?? '',
+        specialties: detail.specialties ?? '',
+        achievements: detail.achievements ?? '',
+        yearsExperience: detail.yearsExperience?.toString() ?? '',
+        influencedBy: detail.influencedBy ?? '',
+        equipmentUsed: detail.equipmentUsed ?? '',
+        socialLinks: parseSocialLinks(detail.socialLinks),
+        topTracks: (detail.topTracks ?? []).join('\n'),
+      });
+    } catch (editError) {
+      const message =
+        editError instanceof Error ? editError.message : 'Failed to load DJ details.';
+      setFeedback({ type: 'error', text: message });
+      setEditingId(null);
+    }
   };
 
   const handleSubmit = async (event: FormEvent) => {
@@ -403,27 +413,20 @@ const AdminDJsPage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <label className="space-y-1 text-sm font-semibold text-gray-300">
-            Profile Picture URL
-            <input
-              type="url"
-              className={inputClass}
-              value={form.profilePictureUrl}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, profilePictureUrl: e.target.value }))
-              }
-              required
-            />
-          </label>
-          <label className="space-y-1 text-sm font-semibold text-gray-300">
-            Cover Image URL
-            <input
-              type="url"
-              className={inputClass}
-              value={form.coverImageUrl}
-              onChange={(e) => setForm((prev) => ({ ...prev, coverImageUrl: e.target.value }))}
-            />
-          </label>
+          <ImageUpload
+            currentImageUrl={form.profilePictureUrl}
+            onImageUploaded={(url) => setForm((prev) => ({ ...prev, profilePictureUrl: url }))}
+            folder="djs/profile"
+            label="Profile Picture *"
+            aspectRatio="aspect-square"
+          />
+          <ImageUpload
+            currentImageUrl={form.coverImageUrl}
+            onImageUploaded={(url) => setForm((prev) => ({ ...prev, coverImageUrl: url }))}
+            folder="djs/covers"
+            label="Cover Image"
+            aspectRatio="aspect-video"
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -22,6 +22,7 @@ namespace DJDiP.Application.Interfaces
         IRepository<EventDJ> EventDJs { get; }
         IUserFollowDJRepository UserFollowDJs { get; }
         IRepository<SiteSetting> SiteSettings { get; }
+        IRepository<GalleryMedia> GalleryMedia { get; }
 
         Task<int> SaveChangesAsync();
         Task BeginTransactionAsync();

@@ -506,3 +506,73 @@ export const CREATE_CONTACT_MESSAGE = gql`
     }
   }
 `;
+
+export const GET_GALLERY_MEDIA = gql`
+  query GetGalleryMedia($approvedOnly: Boolean) {
+    galleryMedia(approvedOnly: $approvedOnly) {
+      id
+      title
+      description
+      mediaUrl
+      mediaType
+      thumbnailUrl
+      userId
+      userName
+      eventId
+      eventTitle
+      uploadedAt
+      isApproved
+      isFeatured
+      viewCount
+      likeCount
+      tags
+    }
+  }
+`;
+
+export const GET_FEATURED_GALLERY_MEDIA = gql`
+  query GetFeaturedGalleryMedia {
+    featuredGalleryMedia {
+      id
+      title
+      description
+      mediaUrl
+      mediaType
+      thumbnailUrl
+      userId
+      userName
+      eventId
+      eventTitle
+      uploadedAt
+      isApproved
+      isFeatured
+      viewCount
+      likeCount
+      tags
+    }
+  }
+`;
+
+export const CREATE_GALLERY_MEDIA = gql`
+  mutation CreateGalleryMedia($input: CreateGalleryMediaInput!) {
+    createGalleryMedia(input: $input)
+  }
+`;
+
+export const UPDATE_GALLERY_MEDIA = gql`
+  mutation UpdateGalleryMedia($id: UUID!, $input: UpdateGalleryMediaInput!) {
+    updateGalleryMedia(id: $id, input: $input)
+  }
+`;
+
+export const DELETE_GALLERY_MEDIA = gql`
+  mutation DeleteGalleryMedia($id: UUID!) {
+    deleteGalleryMedia(id: $id)
+  }
+`;
+
+export const LIKE_GALLERY_MEDIA = gql`
+  mutation LikeGalleryMedia($id: UUID!) {
+    likeGalleryMedia(id: $id)
+  }
+`;

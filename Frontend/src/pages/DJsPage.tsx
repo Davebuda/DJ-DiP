@@ -132,55 +132,65 @@ const DJsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#130602] via-[#050202] to-black text-white">
-      <section className="max-w-7xl mx-auto px-6 lg:px-10 py-16 space-y-6">
-        <div className="space-y-4">
-          <p className="text-sm uppercase tracking-[0.6em] text-orange-500">Digital Residency</p>
-          <h1 className="text-5xl md:text-6xl font-black leading-tight">
-            Curated <span className="text-orange-200">DJ Roster</span>
-          </h1>
-          <p className="text-lg text-gray-300 max-w-3xl">
-            Deep dives into the selectors shaping nightlife. Explore full bios, sonic influences, and follow the artists
-            powering the KlubN ecosystem.
-          </p>
-        </div>
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      {/* Hero with animated gradient background */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-red-950/20 via-transparent to-purple-950/20" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,0,50,0.08),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,0,139,0.08),transparent_50%)]" />
 
-        <div className="flex flex-wrap gap-8 pt-4">
-          <div>
-            <p className="text-3xl font-bold text-white">{data?.dJs?.length ?? 0}</p>
-            <p className="text-xs uppercase tracking-[0.5em] text-orange-200">Profiles</p>
+        <section className="relative max-w-7xl mx-auto px-6 lg:px-10 py-20 space-y-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-1 w-12 bg-gradient-to-r from-red-500 to-transparent rounded-full" />
+              <p className="text-sm uppercase tracking-[0.6em] text-red-400 font-bold">Digital Residency</p>
+            </div>
+            <h1 className="text-6xl md:text-7xl font-black leading-tight">
+              Curated <span className="bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">DJ Roster</span>
+            </h1>
+            <p className="text-lg text-gray-400 max-w-3xl leading-relaxed">
+              Deep dives into the selectors shaping nightlife. Explore full bios, sonic influences, and follow the artists
+              powering the KlubN ecosystem.
+            </p>
           </div>
-          <div>
-            <p className="text-3xl font-bold text-white">{genreOptions.length}</p>
-            <p className="text-xs uppercase tracking-[0.5em] text-orange-200">Genres</p>
+
+          <div className="flex flex-wrap gap-10 pt-6">
+            <div className="group">
+              <p className="text-4xl font-black bg-gradient-to-br from-white to-gray-400 bg-clip-text text-transparent group-hover:from-red-400 group-hover:to-pink-400 transition-all duration-300">{data?.dJs?.length ?? 0}</p>
+              <p className="text-xs uppercase tracking-[0.5em] text-gray-500 group-hover:text-red-400 transition-colors">Profiles</p>
+            </div>
+            <div className="group">
+              <p className="text-4xl font-black bg-gradient-to-br from-white to-gray-400 bg-clip-text text-transparent group-hover:from-red-400 group-hover:to-pink-400 transition-all duration-300">{genreOptions.length}</p>
+              <p className="text-xs uppercase tracking-[0.5em] text-gray-500 group-hover:text-red-400 transition-colors">Genres</p>
+            </div>
+            <div className="group">
+              <p className="text-4xl font-black bg-gradient-to-br from-white to-gray-400 bg-clip-text text-transparent group-hover:from-red-400 group-hover:to-pink-400 transition-all duration-300">{followedIds.size}</p>
+              <p className="text-xs uppercase tracking-[0.5em] text-gray-500 group-hover:text-red-400 transition-colors">You Follow</p>
+            </div>
           </div>
-          <div>
-            <p className="text-3xl font-bold text-white">{followedIds.size}</p>
-            <p className="text-xs uppercase tracking-[0.5em] text-orange-200">You Follow</p>
-          </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       <section className="max-w-7xl mx-auto px-6 lg:px-10 pb-12">
-        <div className="rounded-[32px] border border-white/10 bg-gradient-to-b from-[#140707] to-[#060303] p-8 space-y-6">
+        <div className="rounded-3xl border border-white/5 bg-gradient-to-br from-zinc-900/50 via-zinc-950/50 to-black/50 backdrop-blur-sm p-8 space-y-6 shadow-2xl">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
-              <label className="block text-sm uppercase tracking-[0.4em] text-gray-400 mb-3">Search</label>
+              <label className="block text-sm uppercase tracking-[0.4em] text-gray-500 mb-3 font-bold">Search</label>
               <input
                 type="text"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search by name, style, or bio..."
-                className="w-full px-6 py-4 rounded-full bg-black/50 border border-white/20 text-white placeholder-gray-500 focus:border-orange-400 focus:outline-none transition"
+                className="w-full px-6 py-4 rounded-2xl bg-black/60 border border-white/10 text-white placeholder-gray-600 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-sm uppercase tracking-[0.4em] text-gray-400 mb-3">Genre</label>
+              <label className="block text-sm uppercase tracking-[0.4em] text-gray-500 mb-3 font-bold">Genre</label>
               <select
                 value={genreFilter}
                 onChange={(event) => setGenreFilter(event.target.value)}
-                className="w-full px-6 py-4 rounded-full bg-black/50 border border-white/20 text-white focus:border-orange-400 focus:outline-none transition appearance-none cursor-pointer"
+                className="w-full px-6 py-4 rounded-2xl bg-black/60 border border-white/10 text-white focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all appearance-none cursor-pointer"
               >
                 <option value="all">All Styles</option>
                 {genreOptions.map((genre) => (
@@ -192,11 +202,11 @@ const DJsPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm uppercase tracking-[0.4em] text-gray-400 mb-3">Sort</label>
+              <label className="block text-sm uppercase tracking-[0.4em] text-gray-500 mb-3 font-bold">Sort</label>
               <select
                 value={sortBy}
                 onChange={(event) => setSortBy(event.target.value as 'popularity' | 'name')}
-                className="w-full px-6 py-4 rounded-full bg-black/50 border border-white/20 text-white focus:border-orange-400 focus:outline-none transition appearance-none cursor-pointer"
+                className="w-full px-6 py-4 rounded-2xl bg-black/60 border border-white/10 text-white focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition-all appearance-none cursor-pointer"
               >
                 {sortOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -217,73 +227,119 @@ const DJsPage = () => {
             <p className="text-gray-500">Try another genre or reset your search.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredDjs.map((dj) => {
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 auto-rows-auto">
+            {filteredDjs.map((dj, index) => {
               const isFollowing = followedIds.has(dj.id);
+              // Create varied widths: some span 2 columns on larger screens
+              const spanTwo = index % 5 === 0 || index % 7 === 0;
+
               return (
                 <div
                   key={dj.id}
-                  className="rounded-[32px] border border-white/10 bg-gradient-to-b from-[#1a0903] to-[#050303] overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.45)] flex flex-col"
+                  className={`relative group ${spanTwo ? 'md:col-span-2' : 'md:col-span-1'}`}
                 >
-                  {dj.coverImageUrl && (
-                    <div className="relative h-48 w-full overflow-hidden">
-                      <img src={dj.coverImageUrl} alt={dj.stageName} className="h-full w-full object-cover" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                    </div>
-                  )}
-                  <div className="p-6 flex flex-col flex-1 space-y-4">
-                    <div className="flex items-center gap-4">
-                      <div className="h-16 w-16 rounded-full border border-white/20 overflow-hidden bg-black/30">
-                        {dj.profilePictureUrl ? (
-                          <img src={dj.profilePictureUrl} alt={dj.stageName} className="h-full w-full object-cover" />
+                  {/* Neon glow effect on hover */}
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-red-600 via-pink-600 to-purple-600 rounded-3xl opacity-0 group-hover:opacity-75 blur-xl transition-all duration-500" />
+
+                  <Link
+                    to={`/djs/${dj.id}`}
+                    className="relative block rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900 to-black overflow-hidden transition-all duration-300"
+                  >
+                    <div className={`flex ${spanTwo ? 'flex-row' : 'flex-col'}`}>
+                      {/* DJ Cover Image */}
+                      <div className={`relative overflow-hidden ${spanTwo ? 'w-1/2' : 'w-full h-56'}`}>
+                        {dj.coverImageUrl ? (
+                          <>
+                            <img
+                              src={dj.coverImageUrl}
+                              alt={dj.stageName}
+                              className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            />
+                            {/* Lighter vignette with color tint */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                            <div className="absolute inset-0 bg-gradient-to-br from-red-900/10 to-purple-900/10" />
+                          </>
                         ) : (
-                          <div className="h-full w-full flex items-center justify-center text-xl font-semibold text-white/50">
-                            {dj.stageName.charAt(0)}
+                          <div className="h-full w-full bg-gradient-to-br from-red-950/30 via-zinc-900 to-purple-950/30 flex items-center justify-center">
+                            <p className="text-white/20 text-6xl font-black">{dj.stageName.charAt(0)}</p>
                           </div>
                         )}
+
+                        {/* Profile Picture Badge */}
+                        <div className="absolute bottom-4 left-4">
+                          <div className="h-16 w-16 rounded-full border-2 border-white/30 overflow-hidden bg-black/50 backdrop-blur-sm shadow-2xl ring-4 ring-black/30">
+                            {dj.profilePictureUrl ? (
+                              <img src={dj.profilePictureUrl} alt={dj.stageName} className="h-full w-full object-cover" />
+                            ) : (
+                              <div className="h-full w-full flex items-center justify-center text-xl font-bold text-white/70">
+                                {dj.stageName.charAt(0)}
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.4em] text-gray-500">DJ</p>
-                        <p className="text-2xl font-semibold text-white">{dj.stageName}</p>
-                        <p className="text-sm text-gray-400">{dj.tagline ?? dj.genre}</p>
-                      </div>
-                      <div className="ml-auto text-right">
-                        <p className="text-xs uppercase tracking-[0.4em] text-gray-500">Followers</p>
-                        <p className="text-lg font-semibold text-orange-300">{dj.followerCount}</p>
+
+                      {/* DJ Info */}
+                      <div className={`p-6 flex flex-col justify-between ${spanTwo ? 'w-1/2' : 'w-full'}`}>
+                        <div className="space-y-4">
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="h-1 w-8 bg-gradient-to-r from-red-500 to-transparent rounded-full" />
+                              <p className="text-xs uppercase tracking-[0.4em] text-gray-600 font-bold">DJ</p>
+                            </div>
+                            <h3 className="text-3xl font-black bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent group-hover:from-red-400 group-hover:to-pink-400 transition-all duration-300">
+                              {dj.stageName}
+                            </h3>
+                            {dj.tagline && (
+                              <p className="text-sm text-gray-500 italic mt-1">{dj.tagline}</p>
+                            )}
+                          </div>
+
+                          <p className="text-gray-400 text-sm leading-relaxed line-clamp-3">{dj.bio}</p>
+
+                          <div className="flex flex-wrap gap-2">
+                            {dj.genre
+                              .split(',')
+                              .slice(0, 3)
+                              .map((genre) => (
+                                <span
+                                  key={genre}
+                                  className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider bg-gradient-to-r from-red-950/50 to-purple-950/50 text-red-300 border border-red-900/30"
+                                >
+                                  {genre.trim()}
+                                </span>
+                              ))}
+                          </div>
+                        </div>
+
+                        <div className="space-y-4 mt-6">
+                          <div className="flex items-center justify-between p-4 rounded-2xl bg-black/30 border border-white/5">
+                            <div>
+                              <p className="text-xs uppercase tracking-[0.3em] text-gray-600 font-bold">Followers</p>
+                              <p className="text-2xl font-black bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent">
+                                {dj.followerCount}
+                              </p>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleFollowToggle(dj, isFollowing);
+                              }}
+                              disabled={followMutationLoading || unfollowMutationLoading || followLoading}
+                              className={`px-6 py-3 rounded-xl font-bold text-sm tracking-wide transition-all duration-300 ${
+                                isFollowing
+                                  ? 'bg-white text-black hover:bg-gray-200'
+                                  : 'bg-gradient-to-r from-red-600 via-pink-600 to-purple-600 text-white hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] hover:scale-105'
+                              } disabled:opacity-50 disabled:cursor-not-allowed`}
+                            >
+                              {isFollowing ? 'Following' : 'Follow'}
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <p className="text-gray-300 text-sm line-clamp-3 flex-1">{dj.bio}</p>
-                    <div className="flex items-center gap-3">
-                      {dj.genre
-                        .split(',')
-                        .slice(0, 2)
-                        .map((genre) => (
-                          <span key={genre} className="px-3 py-1 rounded-full text-xs tracking-[0.2em] bg-white/5 text-gray-300">
-                            {genre.trim()}
-                          </span>
-                        ))}
-                    </div>
-                    <div className="flex items-center gap-4 pt-2">
-                      <Link
-                        to={`/djs/${dj.id}`}
-                        className="flex-1 px-6 py-3 rounded-full border border-white/20 text-white text-sm tracking-[0.3em] uppercase text-center hover:border-orange-400 transition"
-                      >
-                        Profile
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => handleFollowToggle(dj, isFollowing)}
-                        disabled={followMutationLoading || unfollowMutationLoading || followLoading}
-                        className={`px-6 py-3 rounded-full text-sm font-semibold tracking-[0.2em] uppercase ${
-                          isFollowing
-                            ? 'bg-white text-black'
-                            : 'bg-gradient-to-r from-orange-400 to-pink-500 text-black'
-                        } disabled:opacity-60`}
-                      >
-                        {isFollowing ? 'Following' : 'Follow'}
-                      </button>
-                    </div>
-                  </div>
+                  </Link>
                 </div>
               );
             })}

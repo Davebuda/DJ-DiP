@@ -9,6 +9,7 @@ using DJDiP.Application.DTO.DJTop10DTO;
 using DJDiP.Application.DTO.TicketDTO;
 using DJDiP.Application.DTO.SongDTO;
 using DJDiP.Application.DTO.SiteSettingsDTO;
+using DJDiP.Application.DTO.GalleryDTO;
 using DJDiP.Application.DTO.Auth;
 using DJDiP.Application.Interfaces;
 using DJDiP.Application.Services;
@@ -45,6 +46,9 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+// ========== HTTP CONTEXT ACCESSOR ==========
+builder.Services.AddHttpContextAccessor();
+
 // ========== CORS ==========
 builder.Services.AddCors(options =>
 {
@@ -79,6 +83,18 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<ISongService, SongService>();
 builder.Services.AddScoped<ISiteSettingsService, SiteSettingsService>();
+builder.Services.AddScoped<IGalleryMediaService, GalleryMediaService>();
+builder.Services.AddScoped<IFileUploadService>(sp =>
+{
+    var env = sp.GetRequiredService<IWebHostEnvironment>();
+    var config = sp.GetRequiredService<IConfiguration>();
+    var uploadPath = System.IO.Path.Combine(env.WebRootPath, "uploads");
+    var baseUrl = config["AppSettings:BaseUrl"] ?? "http://localhost:5000";
+    return new FileUploadService(uploadPath, baseUrl);
+});
+
+// ========== CONTROLLERS (for file upload endpoint) ==========
+builder.Services.AddControllers();
 
 // ========== GRAPHQL ==========
 builder.Services
@@ -107,10 +123,16 @@ using (var scope = app.Services.CreateScope())
 
 // ========== MIDDLEWARE ==========
 app.UseCors("Frontend");
+
+// Serve static files (uploaded images)
+app.UseStaticFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 // ========== ROUTES ==========
+app.MapControllers(); // Map REST API controllers (file upload)
+
 app.MapGet("/", () => "DJ-DiP API is running! Visit /graphql for GraphQL playground.");
 
 // GraphQL endpoint
@@ -279,6 +301,41 @@ public class Query
         [Service] ISiteSettingsService siteSettingsService)
     {
         return await siteSettingsService.GetAsync();
+    }
+
+    // Gallery Media
+    public async Task<IEnumerable<GalleryMediaDto>> GalleryMedia(
+        bool? approvedOnly,
+        [Service] IGalleryMediaService galleryMediaService)
+    {
+        return await galleryMediaService.GetAllAsync(approvedOnly ?? true);
+    }
+
+    public async Task<IEnumerable<GalleryMediaDto>> FeaturedGalleryMedia(
+        [Service] IGalleryMediaService galleryMediaService)
+    {
+        return await galleryMediaService.GetFeaturedAsync();
+    }
+
+    public async Task<GalleryMediaDto?> GalleryMediaItem(
+        Guid id,
+        [Service] IGalleryMediaService galleryMediaService)
+    {
+        return await galleryMediaService.GetByIdAsync(id);
+    }
+
+    public async Task<IEnumerable<GalleryMediaDto>> GalleryMediaByEvent(
+        Guid eventId,
+        [Service] IGalleryMediaService galleryMediaService)
+    {
+        return await galleryMediaService.GetByEventAsync(eventId);
+    }
+
+    public async Task<IEnumerable<GalleryMediaDto>> GalleryMediaByUser(
+        string userId,
+        [Service] IGalleryMediaService galleryMediaService)
+    {
+        return await galleryMediaService.GetByUserAsync(userId);
     }
 }
 
@@ -641,6 +698,70 @@ public class Mutation
         return await siteSettingsService.UpdateAsync(dto);
     }
 
+    // GALLERY MEDIA MUTATIONS
+    public async Task<Guid> CreateGalleryMedia(
+        CreateGalleryMediaInput input,
+        [Service] IGalleryMediaService galleryMediaService,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        var userIdClaim = httpContextAccessor.HttpContext?.User.FindFirst("userId")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim))
+        {
+            throw new GraphQLException("User must be authenticated to upload media");
+        }
+
+        var dto = new CreateGalleryMediaDto
+        {
+            Title = input.Title,
+            Description = input.Description,
+            MediaUrl = input.MediaUrl,
+            MediaType = input.MediaType,
+            ThumbnailUrl = input.ThumbnailUrl,
+            EventId = input.EventId,
+            Tags = input.Tags
+        };
+
+        return await galleryMediaService.CreateAsync(dto, userIdClaim);
+    }
+
+    public async Task<bool> UpdateGalleryMedia(
+        Guid id,
+        UpdateGalleryMediaInput input,
+        [Service] IGalleryMediaService galleryMediaService)
+    {
+        var dto = new UpdateGalleryMediaDto
+        {
+            Title = input.Title,
+            Description = input.Description,
+            IsApproved = input.IsApproved,
+            IsFeatured = input.IsFeatured,
+            Tags = input.Tags
+        };
+
+        return await galleryMediaService.UpdateAsync(id, dto);
+    }
+
+    public async Task<bool> DeleteGalleryMedia(
+        Guid id,
+        [Service] IGalleryMediaService galleryMediaService)
+    {
+        return await galleryMediaService.DeleteAsync(id);
+    }
+
+    public async Task<bool> LikeGalleryMedia(
+        Guid id,
+        [Service] IGalleryMediaService galleryMediaService,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        var userIdClaim = httpContextAccessor.HttpContext?.User.FindFirst("userId")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim))
+        {
+            throw new GraphQLException("User must be authenticated to like media");
+        }
+
+        return await galleryMediaService.ToggleLikeAsync(id, userIdClaim);
+    }
+
     // FOLLOW MUTATIONS
     public async Task<bool> FollowDj(
         FollowDjInput input,
@@ -880,4 +1001,24 @@ public class UpdateSiteSettingsInput
     public string MetaKeywords { get; set; } = string.Empty;
     public string FooterText { get; set; } = string.Empty;
     public string CopyrightText { get; set; } = string.Empty;
+}
+
+public class CreateGalleryMediaInput
+{
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string MediaUrl { get; set; } = string.Empty;
+    public string MediaType { get; set; } = "image";
+    public string? ThumbnailUrl { get; set; }
+    public Guid? EventId { get; set; }
+    public string? Tags { get; set; }
+}
+
+public class UpdateGalleryMediaInput
+{
+    public string? Title { get; set; }
+    public string? Description { get; set; }
+    public bool? IsApproved { get; set; }
+    public bool? IsFeatured { get; set; }
+    public string? Tags { get; set; }
 }

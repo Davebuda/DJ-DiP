@@ -28,6 +28,7 @@ namespace DJDiP.Infrastructure.Persistance
         private IRepository<EventDJ>? _eventDJs;
         private IUserFollowDJRepository? _userFollowDJs;
         private IRepository<SiteSetting>? _siteSettings;
+        private IRepository<GalleryMedia>? _galleryMedia;
 
         public UnitOfWork(AppDbContext context)
         {
@@ -52,6 +53,7 @@ namespace DJDiP.Infrastructure.Persistance
         public IRepository<EventDJ> EventDJs => _eventDJs ??= new Repository<EventDJ>(_context);
         public IUserFollowDJRepository UserFollowDJs => _userFollowDJs ??= new UserFollowDJRepository(_context);
         public IRepository<SiteSetting> SiteSettings => _siteSettings ??= new Repository<SiteSetting>(_context);
+        public IRepository<GalleryMedia> GalleryMedia => _galleryMedia ??= new Repository<GalleryMedia>(_context);
 
         public async Task<int> SaveChangesAsync()
         {

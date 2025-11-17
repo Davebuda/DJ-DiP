@@ -61,11 +61,29 @@ namespace DJDiP.Application.Services
                 Id = Guid.NewGuid(),
                 Title = dto.Title,
                 Date = dto.Date,
+                VenueId = dto.VenueId, // Set VenueId (required)
                 Price = dto.Price,
                 Description = dto.Description,
                 ImageUrl = dto.ImageUrl,
                 VideoUrl = dto.VideoUrl
             };
+
+            // Associate Genres
+            if (dto.GenreIds != null && dto.GenreIds.Any())
+            {
+                var genres = await _unitOfWork.Genres.GetAllAsync();
+                ev.Genres = genres.Where(g => dto.GenreIds.Contains(g.Id)).ToList();
+            }
+
+            // Associate DJs through EventDJ join table
+            if (dto.DJIds != null && dto.DJIds.Any())
+            {
+                ev.EventDJs = dto.DJIds.Select(djId => new EventDJ
+                {
+                    EventId = ev.Id,
+                    DJId = djId
+                }).ToList();
+            }
 
             await _unitOfWork.Events.AddAsync(ev);
             await _unitOfWork.SaveChangesAsync();
@@ -79,10 +97,29 @@ namespace DJDiP.Application.Services
 
             ev.Title = dto.Title;
             ev.Date = dto.Date;
+            ev.VenueId = dto.VenueId; // Update VenueId
             ev.Price = dto.Price;
             ev.Description = dto.Description;
             ev.ImageUrl = dto.ImageUrl;
             ev.VideoUrl = dto.VideoUrl;
+
+            // Update Genres
+            if (dto.GenreIds != null)
+            {
+                var genres = await _unitOfWork.Genres.GetAllAsync();
+                ev.Genres = genres.Where(g => dto.GenreIds.Contains(g.Id)).ToList();
+            }
+
+            // Update DJs - clear existing and add new
+            if (dto.DJIds != null)
+            {
+                ev.EventDJs.Clear();
+                ev.EventDJs = dto.DJIds.Select(djId => new EventDJ
+                {
+                    EventId = ev.Id,
+                    DJId = djId
+                }).ToList();
+            }
 
             await _unitOfWork.Events.UpdateAsync(ev);
             await _unitOfWork.SaveChangesAsync();

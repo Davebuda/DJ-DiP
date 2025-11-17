@@ -32,5 +32,6 @@ namespace DJDiP.Domain.Models
         public List<PushSubscription> PushSubscriptions { get; set; } = new();
         public List<UserBadge> Badges { get; set; } = new();
         public UserPoints? Points { get; set; }
+        public List<GalleryMedia> GalleryMedia { get; set; } = new();
     }
 }

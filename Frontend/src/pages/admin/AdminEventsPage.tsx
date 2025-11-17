@@ -10,6 +10,7 @@ import {
   GET_VENUES,
   UPDATE_EVENT,
 } from '../../graphql/queries';
+import ImageUpload from '../../components/common/ImageUpload';
 
 interface EventFormState {
   title: string;
@@ -236,26 +237,24 @@ const AdminEventsPage = () => {
           </label>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <label className="space-y-1 text-sm font-semibold text-gray-300">
-            Image URL
-            <input
-              type="url"
-              className={inputClass}
-              value={form.imageUrl}
-              onChange={(e) => setForm((prev) => ({ ...prev, imageUrl: e.target.value }))}
-            />
-          </label>
-          <label className="space-y-1 text-sm font-semibold text-gray-300">
-            Video URL
-            <input
-              type="url"
-              className={inputClass}
-              value={form.videoUrl}
-              onChange={(e) => setForm((prev) => ({ ...prev, videoUrl: e.target.value }))}
-            />
-          </label>
-        </div>
+        <ImageUpload
+          currentImageUrl={form.imageUrl}
+          onImageUploaded={(url) => setForm((prev) => ({ ...prev, imageUrl: url }))}
+          folder="events"
+          label="Event Image"
+          aspectRatio="aspect-video"
+        />
+
+        <label className="space-y-1 text-sm font-semibold text-gray-300">
+          Video URL (Optional)
+          <input
+            type="url"
+            className={inputClass}
+            value={form.videoUrl}
+            onChange={(e) => setForm((prev) => ({ ...prev, videoUrl: e.target.value }))}
+            placeholder="https://youtube.com/..."
+          />
+        </label>
 
         <div className="flex items-center gap-3">
           <button

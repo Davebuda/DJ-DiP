@@ -29,7 +29,7 @@ const NewsletterSignup = () => {
         },
       });
       setStatus('success');
-      setMessage('Check your inbox for fresh drops and curated events.');
+      setMessage('Welcome! Check your inbox to confirm your subscription.');
     } catch (err) {
       setStatus('error');
       setMessage(err instanceof Error ? err.message : 'Something went wrong.');
@@ -39,10 +39,10 @@ const NewsletterSignup = () => {
   return (
     <section className="rounded-[32px] border border-white/10 bg-gradient-to-r from-[#1a0903] via-[#0b0505] to-[#050505] p-8 space-y-6">
       <div className="space-y-2">
-        <p className="text-sm uppercase tracking-[0.5em] text-orange-400">Stay in the loop</p>
-        <h3 className="text-3xl font-semibold text-white">Weekly drops, artist features, and presale codes.</h3>
+        <p className="text-sm uppercase tracking-[0.5em] text-orange-400">Join Our Community</p>
+        <h3 className="text-3xl font-semibold text-white">Get Exclusive Access to Events & DJ Lineups</h3>
         <p className="text-gray-400 text-sm md:text-base">
-          We send one beautifully curated email per week. No spam, just the essentials from the underground circuit.
+          Subscribe to receive weekly event updates, artist features, presale codes, and exclusive offers. No spam, just the best of electronic music culture.
         </p>
       </div>
 

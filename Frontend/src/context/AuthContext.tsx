@@ -19,6 +19,7 @@ interface User {
 
 interface AuthContextValue {
   user: User | null;
+  token: string | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
   loading: boolean;
@@ -31,14 +32,19 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [loginMutation] = useMutation(LOGIN);
   const [registerMutation] = useMutation(REGISTER);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('accessToken');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
+    }
+    if (storedToken) {
+      setToken(storedToken);
     }
     setLoading(false);
   }, []);
@@ -47,6 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('accessToken', accessToken);
     localStorage.setItem('refreshToken', refreshToken);
     localStorage.setItem('user', JSON.stringify(account));
+    setToken(accessToken);
     setUser(account);
   };
 
@@ -79,11 +86,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     setUser(null);
+    setToken(null);
   }, []);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
+      token,
       loading,
       login,
       register,
@@ -93,7 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         !!user &&
         (user.role === 'Admin' || user.email?.toLowerCase() === '2djdip@gmail.com'),
     }),
-    [user, loading, login, register, logout],
+    [user, token, loading, login, register, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
