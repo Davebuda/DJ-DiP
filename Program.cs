@@ -19,9 +19,28 @@ using HotChocolate;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
+using AspNetCoreRateLimit;
 using VenueDetailsDto = DJDiP.Application.DTO.VenueDTO.VenueDto;
 
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.AspNetCore", Serilog.Events.LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("logs/djdip-.log", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+try
+{
+    Log.Information("Starting DJ-DiP application");
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Use Serilog for logging
+builder.Host.UseSerilog();
 
 builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("Jwt"));
 
@@ -45,6 +64,40 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
+
+// ========== HEALTH CHECKS ==========
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<AppDbContext>();
+
+// ========== RATE LIMITING ==========
+builder.Services.AddMemoryCache();
+builder.Services.Configure<IpRateLimitOptions>(options =>
+{
+    options.EnableEndpointRateLimiting = true;
+    options.StackBlockedRequests = false;
+    options.HttpStatusCode = 429;
+    options.RealIpHeader = "X-Real-IP";
+    options.ClientIdHeader = "X-ClientId";
+    options.GeneralRules = new List<RateLimitRule>
+    {
+        new RateLimitRule
+        {
+            Endpoint = "*",
+            Period = "1m",
+            Limit = 100
+        },
+        new RateLimitRule
+        {
+            Endpoint = "*",
+            Period = "1h",
+            Limit = 1000
+        }
+    };
+});
+builder.Services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+builder.Services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+builder.Services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
 
 // ========== HTTP CONTEXT ACCESSOR ==========
 builder.Services.AddHttpContextAccessor();
@@ -122,6 +175,22 @@ using (var scope = app.Services.CreateScope())
 }
 
 // ========== MIDDLEWARE ==========
+// Security Headers
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Add("X-Frame-Options", "DENY");
+    context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+    context.Response.Headers.Add("Referrer-Policy", "no-referrer-when-downgrade");
+    context.Response.Headers.Add("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+    // Remove Server header
+    context.Response.Headers.Remove("Server");
+    await next();
+});
+
+// Rate limiting (must be before other middleware)
+app.UseIpRateLimiting();
+
 app.UseCors("Frontend");
 
 // Serve static files (uploaded images)
@@ -133,12 +202,27 @@ app.UseAuthorization();
 // ========== ROUTES ==========
 app.MapControllers(); // Map REST API controllers (file upload)
 
+// Health check endpoint
+app.MapHealthChecks("/health");
+
 app.MapGet("/", () => "DJ-DiP API is running! Visit /graphql for GraphQL playground.");
 
 // GraphQL endpoint
 app.MapGraphQL("/graphql");
 
+Log.Information("DJ-DiP application started successfully");
 app.Run();
+
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+    throw;
+}
+finally
+{
+    Log.CloseAndFlush();
+}
 
 public class Query
 {

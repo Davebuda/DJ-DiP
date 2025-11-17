@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: djdip-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-djdip_db}
+      POSTGRES_USER: ${POSTGRES_USER:-djdip_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    networks:
+      - djdip-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-djdip_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: djdip-backend
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+      ASPNETCORE_URLS: http://+:5000
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-djdip_db};Username=${POSTGRES_USER:-djdip_user};Password=${POSTGRES_PASSWORD:-changeme}"
+      Jwt__Key: ${JWT_SECRET_KEY}
+      Jwt__Issuer: ${JWT_ISSUER:-DJDiP}
+      Jwt__Audience: ${JWT_AUDIENCE:-DJDiP}
+      Jwt__AccessTokenMinutes: ${JWT_ACCESS_TOKEN_MINUTES:-60}
+      CORS__AllowedOrigins: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://localhost}
+      AppSettings__BaseUrl: ${BACKEND_URL:-http://localhost:5000}
+      AppSettings__FrontendUrl: ${FRONTEND_URL:-http://localhost}
+    ports:
+      - "${BACKEND_PORT:-5000}:5000"
+    volumes:
+      - uploads:/app/wwwroot/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - djdip-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Frontend
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000/graphql}
+        VITE_WS_URL: ${VITE_WS_URL:-ws://localhost:5000/graphql}
+        VITE_UPLOAD_API_URL: ${VITE_UPLOAD_API_URL:-http://localhost:5000/api/upload}
+    container_name: djdip-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    depends_on:
+      - backend
+    networks:
+      - djdip-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # Redis Cache (optional, for scaling)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: djdip-redis
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - djdip-network
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+networks:
+  djdip-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  uploads:
+    driver: local
+  # redis_data:
+  #   driver: local

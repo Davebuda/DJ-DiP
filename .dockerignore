@@ -1,0 +1,91 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+Documentation/
+docs/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build outputs
+bin/
+obj/
+out/
+publish/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+DJDIP.db*
+
+# Test files
+test-*.sh
+*.Test/
+*.Tests/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Frontend
+Frontend/node_modules/
+Frontend/dist/
+Frontend/build/
+Frontend/.vite/
+Frontend/.next/
+
+# Docker
+docker-compose.override.yml
+docker-compose.dev.yml
+Dockerfile.dev
+
+# Uploads (use volumes instead)
+wwwroot/uploads/*
+!wwwroot/uploads/.gitkeep
+
+# Backup files
+backups/
+*.bak
+*.backup
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+*~
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Package files
+*.nupkg
+*.snupkg
+packages/

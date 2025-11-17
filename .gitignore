@@ -498,3 +498,42 @@ $RECYCLE.BIN/
 
 # Mockups (design files - optional, can be removed if you want to track these)
 Mockups/
+
+# ========== DEPLOYMENT & SECURITY ==========
+
+# Environment files (IMPORTANT: Never commit these!)
+.env
+.env.local
+.env.production
+.env.development
+.env.*.local
+!.env.example
+
+# Docker override files (may contain secrets)
+docker-compose.override.yml
+
+# Secrets and keys
+*.key
+*.pem
+*.crt
+*.cert
+secrets/
+*.secret
+
+# Backup files
+backups/
+*.backup
+*.bak
+*.sql.gz
+
+# Logs
+logs/
+*.log
+serilog-*.txt
+
+# Production configuration (use environment variables instead)
+appsettings.Production.json.user
+
+# Database dumps
+*.dump
+*.sql

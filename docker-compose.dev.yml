@@ -1,0 +1,44 @@
+version: '3.8'
+
+# Development-specific docker-compose override
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  postgres:
+    environment:
+      POSTGRES_DB: djdip_dev
+      POSTGRES_USER: djdip_dev
+      POSTGRES_PASSWORD: dev_password_123
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=djdip_dev;Username=djdip_dev;Password=dev_password_123"
+      Jwt__Key: "dev-secret-key-change-me-please-123456789"
+      CORS__AllowedOrigins: "http://localhost:3000,http://localhost:5173,http://localhost:5174,http://localhost:5175"
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./wwwroot/uploads:/app/wwwroot/uploads
+      - .:/src
+    command: dotnet watch run --project /src/DJDiP.csproj --urls http://+:5000
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+      target: build
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./Frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host 0.0.0.0 --port 3000
