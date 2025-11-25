@@ -4,6 +4,10 @@ namespace DJDiP.Domain.Models
     {
         public Guid Id { get; set; }
 
+        // Owner/User Link (CRITICAL: Links DJ profile to ApplicationUser)
+        public required string UserId { get; set; }
+        public ApplicationUser? User { get; set; }
+
         // Basic Info
         public required string Name { get; set; }
         public string? StageName { get; set; }
