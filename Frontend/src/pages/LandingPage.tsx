@@ -60,7 +60,7 @@ const HeroSection = ({
   };
 
   return (
-    <section className="relative isolate flex min-h-[92vh] w-full flex-col justify-center overflow-hidden bg-black text-white">
+    <section className="relative isolate flex min-h-[80vh] w-full flex-col justify-center overflow-hidden bg-black text-white">
       <video
         className="absolute inset-0 h-full w-full object-cover"
         autoPlay
@@ -80,8 +80,8 @@ const HeroSection = ({
         className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-transparent"
         style={{ opacity: siteSettings.heroOverlayOpacity ?? 0.95 }}
       />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_right,_rgba(255,87,34,0.35),_transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_rgba(220,38,38,0.25),_transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_right,_rgba(255,87,34,0.25),_transparent_55%)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent via-black/40 to-black" />
 
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col-reverse gap-8 px-6 py-12 lg:flex-row lg:items-center lg:gap-12 lg:px-8 lg:py-16">
         <div className="flex-1 space-y-6">
@@ -225,7 +225,6 @@ const LandingPage = () => {
   ];
   const defaultEventImage = siteSettings.defaultEventImageUrl ?? featuredImageFallback;
   const defaultDjImage = siteSettings.defaultDjImageUrl ?? '/media/defaults/dj.jpg';
-  const featureTiles = latestDrops.length ? latestDrops : djs.slice(0, 3);
   const featuredDjs = djs.slice(0, 4);
   const galleryPreview = events.slice(0, 5);
 
@@ -301,7 +300,7 @@ const LandingPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#1c0b02] via-[#080505] to-black text-white">
+    <div className="min-h-screen bg-gradient-to-b from-[#121016] via-[#0c0c12] to-[#0a0a10] text-white">
       <HeroSection
         highlight={highlightEvent}
         stats={heroStats}
@@ -323,22 +322,23 @@ const LandingPage = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {latestDrops.map((event: any, index: number) => {
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {latestDrops.map((event: any) => {
             return (
               <Link
                 key={event.id}
                 to={`/events/${event.id}`}
-                className="group block rounded-xl border border-orange-600/30 bg-gradient-to-br from-zinc-900/70 to-black/80 overflow-hidden hover:border-orange-500/60 transition-all shadow-lg shadow-orange-900/20"
+                className="group block rounded-xl border border-orange-600/30 bg-gradient-to-br from-zinc-900/70 to-black/80 overflow-hidden hover:border-orange-500/60 transition-all shadow-lg shadow-orange-900/20 neon-red-hover"
               >
-                <div className="flex flex-col h-[340px]">
-                  <div className="relative overflow-hidden h-40">
+                <div className="flex flex-col">
+                  <div className="relative overflow-hidden aspect-[16/9] min-h-[220px]">
                     <img
                       src={event.imageUrl ?? defaultEventImage}
                       alt={event.title}
                       className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-orange-950/40 via-black/30 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/15 to-transparent" />
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.35),transparent_60%)]" />
                   </div>
 
                   <div className="p-4 flex flex-col justify-between flex-1">
