@@ -57,6 +57,57 @@ namespace DJDiP.Infrastructure.Persistance
 
             await context.ApplicationUsers.AddAsync(adminUser);
 
+            // Seed DJ Users for profiles
+            var djUsers = new List<ApplicationUser>
+            {
+                new ApplicationUser
+                {
+                    Id = "seed-user-1",
+                    Email = "djshadow@example.com",
+                    FullName = "DJ Shadow",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("DJPass123!"),
+                    Role = 1, // DJ
+                    IsEmailVerified = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                },
+                new ApplicationUser
+                {
+                    Id = "seed-user-2",
+                    Email = "lunabeats@example.com",
+                    FullName = "Luna Beats",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("DJPass123!"),
+                    Role = 1, // DJ
+                    IsEmailVerified = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                },
+                new ApplicationUser
+                {
+                    Id = "seed-user-3",
+                    Email = "echopulse@example.com",
+                    FullName = "Echo Pulse",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("DJPass123!"),
+                    Role = 1, // DJ
+                    IsEmailVerified = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                },
+                new ApplicationUser
+                {
+                    Id = "seed-user-4",
+                    Email = "neonflux@example.com",
+                    FullName = "Neon Flux",
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("DJPass123!"),
+                    Role = 1, // DJ
+                    IsEmailVerified = true,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                }
+            };
+
+            await context.ApplicationUsers.AddRangeAsync(djUsers);
+
             // Seed Sample Genres
             var genres = new List<Genre>
             {
@@ -89,6 +140,7 @@ namespace DJDiP.Infrastructure.Persistance
                 new DJProfile
                 {
                     Id = Guid.NewGuid(),
+                    UserId = "seed-user-1",
                     Name = "DJ Shadow",
                     StageName = "Shadow",
                     Bio = "Pioneer of underground techno",
@@ -99,6 +151,7 @@ namespace DJDiP.Infrastructure.Persistance
                 new DJProfile
                 {
                     Id = Guid.NewGuid(),
+                    UserId = "seed-user-2",
                     Name = "Luna Beats",
                     StageName = "Luna",
                     Bio = "House music specialist",
@@ -109,6 +162,7 @@ namespace DJDiP.Infrastructure.Persistance
                 new DJProfile
                 {
                     Id = Guid.NewGuid(),
+                    UserId = "seed-user-3",
                     Name = "Echo Pulse",
                     StageName = "Echo",
                     Bio = "Trance and progressive",
@@ -119,6 +173,7 @@ namespace DJDiP.Infrastructure.Persistance
                 new DJProfile
                 {
                     Id = Guid.NewGuid(),
+                    UserId = "seed-user-4",
                     Name = "Neon Flux",
                     StageName = "Neon",
                     Bio = "Electronic music producer",

@@ -12,5 +12,6 @@ namespace DJDiP.Application.DTO.EventDTO
         public List<Guid> DJIds { get; set; } = new();
         public string? ImageUrl { get; set; }
         public string? VideoUrl { get; set; }
+        public EventVenueDto Venue { get; set; } = null!;
     }
 }

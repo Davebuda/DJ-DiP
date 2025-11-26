@@ -28,7 +28,15 @@ import AdminDJsPage from './pages/admin/AdminDJsPage';
 import AdminPlaylistsPage from './pages/admin/AdminPlaylistsPage';
 import AdminTicketsPage from './pages/admin/AdminTicketsPage';
 import AdminSiteSettingsPage from './pages/admin/AdminSiteSettingsPage';
+import AdminDJApplicationsPage from './pages/AdminDJApplicationsPage';
 import AdminLayout from './components/admin/AdminLayout';
+import DJRoute from './components/auth/DJRoute';
+import DJLayout from './components/dj/DJLayout';
+import DJDashboard from './pages/dj/DJDashboard';
+import DJProfileEditor from './pages/dj/DJProfileEditor';
+import DJTop10Manager from './pages/dj/DJTop10Manager';
+import DJEventsList from './pages/dj/DJEventsList';
+import DJAnalytics from './pages/dj/DJAnalytics';
 
 const App = () => (
   <Routes>
@@ -90,6 +98,21 @@ const App = () => (
     </Route>
 
     <Route
+      path="/dj-dashboard"
+      element={
+        <DJRoute>
+          <DJLayout />
+        </DJRoute>
+      }
+    >
+      <Route index element={<DJDashboard />} />
+      <Route path="edit-profile" element={<DJProfileEditor />} />
+      <Route path="top10" element={<DJTop10Manager />} />
+      <Route path="events" element={<DJEventsList />} />
+      <Route path="stats" element={<DJAnalytics />} />
+    </Route>
+
+    <Route
       path="/admin"
       element={
         <AdminRoute>
@@ -101,6 +124,7 @@ const App = () => (
       <Route path="events" element={<AdminEventsPage />} />
       <Route path="venues" element={<AdminVenuesPage />} />
       <Route path="djs" element={<AdminDJsPage />} />
+      <Route path="dj-applications" element={<AdminDJApplicationsPage />} />
       <Route path="tickets" element={<AdminTicketsPage />} />
       <Route path="playlists" element={<AdminPlaylistsPage />} />
       <Route path="site-settings" element={<AdminSiteSettingsPage />} />

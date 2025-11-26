@@ -1,18 +1,16 @@
-import { useState } from 'react';
-import { useMutation, useQuery } from '@apollo/client';
-import { Link, useParams } from 'react-router-dom';
-import { GET_EVENT_BY_ID, PURCHASE_TICKET } from '../graphql/queries';
+import { useQuery } from '@apollo/client';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { GET_EVENT_BY_ID } from '../graphql/queries';
 import { useAuth } from '../context/AuthContext';
 
 const EventDetailPage = () => {
   const { id } = useParams();
-  const { user, isAuthenticated } = useAuth();
-  const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const { data, loading, error } = useQuery(GET_EVENT_BY_ID, {
     variables: { id },
     skip: !id,
   });
-  const [purchaseTicket, { loading: purchasing }] = useMutation(PURCHASE_TICKET);
 
   if (!id) {
     return <div className="text-center text-white py-20">Missing event id.</div>;
@@ -39,23 +37,6 @@ const EventDetailPage = () => {
   }
 
   const event = data.event;
-  const handlePurchase = async () => {
-    if (!user) return;
-    setStatus(null);
-    try {
-      await purchaseTicket({
-        variables: {
-          input: { eventId: event.id, userId: user.id },
-        },
-      });
-      setStatus({ type: 'success', message: 'Ticket added to your wallet.' });
-    } catch (err) {
-      setStatus({
-        type: 'error',
-        message: err instanceof Error ? err.message : 'Unable to complete purchase.',
-      });
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#140603] via-[#050202] to-black text-white px-6 py-16">
@@ -94,19 +75,13 @@ const EventDetailPage = () => {
           <div className="rounded-[32px] border border-white/10 bg-black/60 p-6 space-y-4">
             <p className="text-xs uppercase tracking-[0.5em] text-gray-500">Tickets</p>
             <p className="text-3xl font-bold text-white">${event.price.toFixed(2)}</p>
-            {status && (
-              <p className={`text-sm ${status.type === 'error' ? 'text-red-400' : 'text-green-400'}`}>
-                {status.message}
-              </p>
-            )}
             {isAuthenticated ? (
               <button
                 type="button"
-                onClick={handlePurchase}
-                disabled={purchasing}
-                className="w-full rounded-full bg-gradient-to-r from-orange-400 to-pink-500 px-6 py-3 text-black font-semibold tracking-[0.3em] uppercase disabled:opacity-60"
+                onClick={() => navigate(`/checkout?eventId=${event.id}`)}
+                className="w-full rounded-full bg-gradient-to-r from-orange-400 to-pink-500 px-6 py-3 text-black font-semibold tracking-[0.3em] uppercase"
               >
-                {purchasing ? 'Processing...' : 'Purchase Ticket'}
+                Pay with Card
               </button>
             ) : (
               <Link

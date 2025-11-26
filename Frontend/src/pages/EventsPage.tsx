@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { GET_EVENTS, GET_GENRES } from '../graphql/queries';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 type Event = {
   id: string;
@@ -26,6 +27,7 @@ type Genre = {
 const EventsPage = () => {
   const { data: eventsData, loading: eventsLoading, error: eventsError } = useQuery(GET_EVENTS);
   const { data: genresData } = useQuery(GET_GENRES);
+  const { siteSettings } = useSiteSettings();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState<string>('all');
@@ -34,6 +36,7 @@ const EventsPage = () => {
 
   const events: Event[] = eventsData?.events ?? [];
   const genres: Genre[] = genresData?.genres ?? [];
+  const defaultEventImage = siteSettings.defaultEventImageUrl ?? '/media/defaults/event.svg';
 
   // Filter and sort events
   const filteredEvents = useMemo(() => {
@@ -212,20 +215,18 @@ const EventsPage = () => {
               <Link
                 key={event.id}
                 to={`/events/${event.id}`}
-                className="rounded-[32px] border border-white/10 bg-gradient-to-b from-[#140707] to-[#060303] hover:border-orange-400 transition-all duration-300 group overflow-hidden hover:scale-[1.02]"
+                className="rounded-[32px] border border-white/10 bg-gradient-to-b from-[#140707] to-[#060303] transition-all duration-300 group overflow-hidden hover:scale-[1.02] neon-red-hover"
               >
                 {/* Event Image */}
-                {event.imageUrl ? (
+                <div className="relative overflow-hidden aspect-[3/2] min-h-[220px]">
                   <img
-                    src={event.imageUrl}
+                    src={event.imageUrl || defaultEventImage}
                     alt={event.title}
-                    className="h-56 w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
-                ) : (
-                  <div className="h-56 w-full bg-gradient-to-br from-orange-900/30 to-pink-900/30 flex items-center justify-center">
-                    <p className="text-white/30 text-4xl font-bold">{event.title.charAt(0)}</p>
-                  </div>
-                )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/15 to-transparent" />
+                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.35),transparent_60%)]" />
+                </div>
 
                 {/* Event Info */}
                 <div className="p-6 space-y-3">
@@ -252,9 +253,20 @@ const EventsPage = () => {
                     </div>
                   </div>
 
-                  <button className="w-full mt-4 px-6 py-3 rounded-full bg-gradient-to-r from-orange-400 to-pink-500 text-black font-semibold text-sm tracking-wide hover:from-orange-300 hover:to-pink-400 transition-all">
-                    View Event
-                  </button>
+                  <div className="flex gap-2 mt-4">
+                    <Link
+                      to={`/events/${event.id}`}
+                      className="flex-1 px-4 py-3 rounded-full bg-white/10 border border-white/15 text-white text-sm font-semibold text-center hover:border-orange-400 transition"
+                    >
+                      Details
+                    </Link>
+                    <Link
+                      to={`/checkout?eventId=${event.id}`}
+                      className="flex-1 px-4 py-3 rounded-full bg-gradient-to-r from-orange-400 to-pink-500 text-black font-semibold text-sm tracking-wide text-center hover:from-orange-300 hover:to-pink-400 transition"
+                    >
+                      Buy Ticket
+                    </Link>
+                  </div>
                 </div>
               </Link>
             ))}

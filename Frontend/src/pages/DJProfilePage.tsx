@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client';
-import { FOLLOW_DJ, GET_DJ_BY_ID, IS_FOLLOWING_DJ, UNFOLLOW_DJ } from '../graphql/queries';
+import { FOLLOW_DJ, GET_DJ_BY_ID, GET_DJ_TOP10_LISTS, IS_FOLLOWING_DJ, UNFOLLOW_DJ } from '../graphql/queries';
 import { useAuth } from '../context/AuthContext';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 
@@ -18,6 +18,24 @@ type EventSummary = {
 type SocialLink = {
   label: string;
   url: string;
+};
+
+type Song = {
+  id: string;
+  title: string;
+  artist: string;
+  genre?: string;
+  duration: number;
+  coverImageUrl?: string;
+  audioPreviewUrl?: string;
+};
+
+type Top10Entry = {
+  id: string;
+  djId: string;
+  songId: string;
+  songTitle: string;
+  song?: Song;
 };
 
 type DJProfile = {
@@ -66,6 +84,8 @@ const DJProfilePage = () => {
     skip: !id,
   });
 
+  const { data: top10Data } = useQuery(GET_DJ_TOP10_LISTS);
+
   const {
     data: followStatus,
     refetch: refetchFollowStatus,
@@ -80,6 +100,10 @@ const DJProfilePage = () => {
 
   const dj: DJProfile | undefined = data?.dj;
   const isFollowing = Boolean(followStatus?.isFollowingDj);
+
+  // Get Top 10 tracks for this DJ from the relationship
+  const myTop10 = top10Data?.djTop10Lists?.find((list: any) => list.djId === id);
+  const top10Tracks: Top10Entry[] = myTop10?.top10Songs || [];
 
   const handleFollowClick = async () => {
     if (!dj || !id || !resolvedUserId) return;
@@ -249,23 +273,38 @@ const DJProfilePage = () => {
               <div className="flex items-center justify-between">
                 <p className="text-xs uppercase tracking-[0.5em] text-orange-400">Top Tracks</p>
                 <span className="text-xs uppercase tracking-[0.3em] text-gray-500">
-                  {dj.topTracks.length.toString().padStart(2, '0')}
+                  {top10Tracks.length.toString().padStart(2, '0')}
                 </span>
               </div>
-              {dj.topTracks.length === 0 ? (
+              {top10Tracks.length === 0 ? (
                 <p className="text-gray-500">Top 10 list coming soon.</p>
               ) : (
                 <div className="space-y-2">
-                  {dj.topTracks.map((track, index) => (
-                    <div
-                      key={`${track}-${index}`}
-                      className="flex items-center gap-3 rounded-2xl border border-white/10 bg-gradient-to-r from-white/10 to-transparent px-4 py-3 text-sm text-gray-200"
-                    >
-                      <span className="text-xs font-semibold text-orange-300">{String(index + 1).padStart(2, '0')}</span>
-                      <p className="flex-1">{track}</p>
-                      <span className="text-[0.65rem] uppercase tracking-[0.3em] text-gray-500">LISTEN</span>
-                    </div>
-                  ))}
+                  {top10Tracks.map((entry, index) => {
+                    const song = entry.song;
+                    const title = song?.title || entry.songTitle || 'Unknown Track';
+                    const artist = song?.artist || 'Unknown Artist';
+                    const duration = song?.duration || 0;
+                    const minutes = Math.floor(duration / 60);
+                    const seconds = duration % 60;
+
+                    return (
+                      <div
+                        key={entry.id}
+                        className="flex items-center gap-3 rounded-2xl border border-white/10 bg-gradient-to-r from-white/10 to-transparent px-4 py-3 text-sm hover:border-orange-400/30 transition"
+                      >
+                        <span className="text-xs font-semibold text-orange-300 w-6">{String(index + 1).padStart(2, '0')}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white font-medium truncate">{title}</p>
+                          <p className="text-xs text-gray-400 truncate">{artist}</p>
+                        </div>
+                        {duration > 0 && (
+                          <span className="text-xs text-gray-500">{minutes}:{String(seconds).padStart(2, '0')}</span>
+                        )}
+                        <span className="text-[0.65rem] uppercase tracking-[0.3em] text-gray-500">♫</span>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

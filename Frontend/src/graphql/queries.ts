@@ -260,6 +260,15 @@ export const GET_DJ_TOP10_LISTS = gql`
         djId
         songId
         songTitle
+        song {
+          id
+          title
+          artist
+          genre
+          duration
+          coverImageUrl
+          audioPreviewUrl
+        }
       }
     }
   }
@@ -283,9 +292,10 @@ export const GET_SONGS = gql`
       id
       title
       artist
-      album
+      genre
       duration
-      spotifyId
+      coverImageUrl
+      audioPreviewUrl
     }
   }
 `;
@@ -384,6 +394,41 @@ export const PURCHASE_TICKET = gql`
       ticketNumber
       price
       purchaseDate
+      event {
+        id
+        title
+        date
+      }
+    }
+  }
+`;
+
+export const CREATE_EVENT_PAYMENT_INTENT = gql`
+  mutation CreateEventPaymentIntent($eventId: UUID!, $userId: String!, $email: String!) {
+    createEventPaymentIntent(eventId: $eventId, userId: $userId, email: $email) {
+      paymentIntentId
+      clientSecret
+      amount
+      currency
+    }
+  }
+`;
+
+export const CONFIRM_STRIPE_PAYMENT = gql`
+  mutation ConfirmStripePayment(
+    $paymentIntentId: String!
+    $eventId: UUID!
+    $userId: String!
+    $email: String!
+  ) {
+    confirmStripePaymentAndIssueTicket(
+      paymentIntentId: $paymentIntentId
+      eventId: $eventId
+      userId: $userId
+      email: $email
+    ) {
+      id
+      ticketNumber
       event {
         id
         title
@@ -574,5 +619,94 @@ export const DELETE_GALLERY_MEDIA = gql`
 export const LIKE_GALLERY_MEDIA = gql`
   mutation LikeGalleryMedia($id: UUID!) {
     likeGalleryMedia(id: $id)
+  }
+`;
+
+// DJ APPLICATION QUERIES & MUTATIONS
+export const SUBMIT_DJ_APPLICATION = gql`
+  mutation SubmitDJApplication($input: CreateDJApplicationInput!) {
+    submitDJApplication(input: $input) {
+      id
+      userId
+      stageName
+      bio
+      genre
+      yearsExperience
+      status
+      submittedAt
+    }
+  }
+`;
+
+export const GET_DJ_APPLICATION_BY_USER = gql`
+  query GetDJApplicationByUser($userId: String!) {
+    djApplicationByUser(userId: $userId) {
+      id
+      userId
+      stageName
+      bio
+      genre
+      yearsExperience
+      specialties
+      influencedBy
+      equipmentUsed
+      socialLinks
+      profileImageUrl
+      coverImageUrl
+      status
+      submittedAt
+      reviewedAt
+      rejectionReason
+    }
+  }
+`;
+
+export const HAS_PENDING_DJ_APPLICATION = gql`
+  query HasPendingDJApplication($userId: String!) {
+    hasPendingDjApplication(userId: $userId)
+  }
+`;
+
+export const GET_PENDING_DJ_APPLICATIONS = gql`
+  query GetPendingDJApplications {
+    pendingDjApplications {
+      id
+      userId
+      stageName
+      bio
+      genre
+      yearsExperience
+      specialties
+      influencedBy
+      equipmentUsed
+      socialLinks
+      profileImageUrl
+      coverImageUrl
+      status
+      submittedAt
+      userEmail
+      userName
+    }
+  }
+`;
+
+export const APPROVE_DJ_APPLICATION = gql`
+  mutation ApproveDJApplication($applicationId: UUID!, $reviewedByAdminId: String!) {
+    approveDJApplication(applicationId: $applicationId, reviewedByAdminId: $reviewedByAdminId) {
+      id
+      status
+      reviewedAt
+    }
+  }
+`;
+
+export const REJECT_DJ_APPLICATION = gql`
+  mutation RejectDJApplication($applicationId: UUID!, $reviewedByAdminId: String!, $rejectionReason: String) {
+    rejectDJApplication(applicationId: $applicationId, reviewedByAdminId: $reviewedByAdminId, rejectionReason: $rejectionReason) {
+      id
+      status
+      reviewedAt
+      rejectionReason
+    }
   }
 `;

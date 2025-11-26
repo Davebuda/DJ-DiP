@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import Header from '../common/Header';
 import Footer from '../common/Footer';
+import ErrorBoundary from '../common/ErrorBoundary';
 
 const adminNav = [
   { label: 'Overview', path: '/admin' },
@@ -38,7 +39,9 @@ const AdminLayout = () => (
         </nav>
 
         <section className="flex-1 space-y-8">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </section>
       </div>
     </main>

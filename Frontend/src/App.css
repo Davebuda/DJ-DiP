@@ -1,12 +1,17 @@
 :root {
   font-family: 'Space Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background-color: #050505;
+  background-color: #0c0c12;
   color: #fff;
 }
 
 body {
   margin: 0;
-  background-color: #050505;
+  background-color: #0c0c12;
+}
+
+/* Soften "black" utility backgrounds slightly across the site */
+.bg-black {
+  background-color: #0d0d13 !important;
 }
 
 .tile {
@@ -51,4 +56,41 @@ body {
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: linear-gradient(135deg, rgba(7, 7, 7, 0.75), rgba(255, 102, 0, 0.15));
+}
+
+.neon-red-hover {
+  position: relative;
+  transition: box-shadow 0.35s ease, border-color 0.35s ease, transform 0.35s ease;
+  box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.18);
+}
+
+.neon-red-hover:hover {
+  border-color: rgba(248, 113, 113, 0.85) !important;
+  box-shadow:
+    0 0 10px rgba(248, 113, 113, 0.45),
+    0 0 30px rgba(220, 38, 38, 0.6),
+    0 0 55px rgba(153, 27, 27, 0.35);
+  transform: translateY(-4px);
+}
+
+.neon-red-hover::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  background: radial-gradient(circle, rgba(248, 113, 113, 0.35) 0%, rgba(120, 20, 20, 0.15) 60%, transparent 70%);
+  opacity: 0;
+  filter: blur(12px);
+  transition: opacity 0.35s ease, filter 0.35s ease;
+  z-index: 0;
+}
+
+.neon-red-hover:hover::before {
+  opacity: 1;
+  filter: blur(18px);
+}
+
+.neon-red-hover > * {
+  position: relative;
+  z-index: 1;
 }

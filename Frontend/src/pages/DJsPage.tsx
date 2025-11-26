@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
-import { FOLLOW_DJ, GET_DJS, GET_FOLLOWED_DJS, UNFOLLOW_DJ } from '../graphql/queries';
+import { FOLLOW_DJ, GET_DJS, GET_FOLLOWED_DJS, UNFOLLOW_DJ, GET_DJ_APPLICATION_BY_USER } from '../graphql/queries';
 import { useAuth } from '../context/AuthContext';
+import DJApplicationForm from '../components/DJApplicationForm';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 
 type DJ = {
   id: string;
@@ -22,11 +24,14 @@ const sortOptions = [
 ];
 
 const DJsPage = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isDJ, isAdmin } = useAuth();
+  const { siteSettings } = useSiteSettings();
   const [search, setSearch] = useState('');
   const [genreFilter, setGenreFilter] = useState('all');
   const [sortBy, setSortBy] = useState<'popularity' | 'name'>('popularity');
   const [ctaMessage, setCtaMessage] = useState<string | null>(null);
+  const [isApplicationFormOpen, setIsApplicationFormOpen] = useState(false);
+  const [applicationSuccess, setApplicationSuccess] = useState(false);
 
   const resolvedUserId = useMemo(() => {
     if (user?.id) return user.id;
@@ -55,6 +60,17 @@ const DJsPage = () => {
 
   const [followDjMutation, { loading: followMutationLoading }] = useMutation(FOLLOW_DJ);
   const [unfollowDjMutation, { loading: unfollowMutationLoading }] = useMutation(UNFOLLOW_DJ);
+
+  // Check if user has a DJ application
+  const { data: applicationData, refetch: refetchApplication } = useQuery(GET_DJ_APPLICATION_BY_USER, {
+    variables: { userId: user?.id || '' },
+    skip: !user?.id,
+  });
+
+  const userApplication = applicationData?.djApplicationByUser;
+  const isAlreadyDJ = isDJ || isAdmin;
+  const defaultDjImage = siteSettings.defaultDjImageUrl ?? '/media/defaults/dj.svg';
+  const defaultCoverImage = siteSettings.heroBackgroundImageUrl ?? defaultDjImage;
 
   const followedIds = useMemo(() => {
     if (!followedData?.followedDjs) return new Set<string>();
@@ -168,6 +184,45 @@ const DJsPage = () => {
               <p className="text-xs uppercase tracking-[0.5em] text-gray-500 group-hover:text-red-400 transition-colors">You Follow</p>
             </div>
           </div>
+
+          {/* Apply as DJ Button */}
+          {isAuthenticated && !isAlreadyDJ && (
+            <div className="pt-8">
+              {userApplication ? (
+                <div className="inline-block px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-950/50 to-orange-950/50 border border-amber-900/30">
+                  <div className="flex items-center gap-3">
+                    <div className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+                    <div>
+                      <p className="text-sm font-bold text-amber-300">Application {userApplication.status === 0 ? 'Pending Review' : userApplication.status === 2 ? 'Rejected' : 'Approved'}</p>
+                      <p className="text-xs text-amber-500/70">Submitted {new Date(userApplication.submittedAt).toLocaleDateString()}</p>
+                      {userApplication.rejectionReason && (
+                        <p className="text-xs text-red-400 mt-1">Reason: {userApplication.rejectionReason}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : applicationSuccess ? (
+                <div className="inline-block px-8 py-4 rounded-2xl bg-gradient-to-r from-green-950/50 to-emerald-950/50 border border-green-900/30">
+                  <div className="flex items-center gap-3">
+                    <svg className="w-5 h-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <p className="text-sm font-bold text-green-300">Application Submitted Successfully!</p>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setIsApplicationFormOpen(true)}
+                  className="group px-8 py-4 rounded-2xl font-bold text-sm tracking-wide bg-gradient-to-r from-red-600 via-pink-600 to-purple-600 text-white hover:shadow-[0_0_40px_rgba(220,38,38,0.8)] hover:scale-105 transition-all duration-300 flex items-center gap-3"
+                >
+                  <svg className="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Apply as a DJ
+                </button>
+              )}
+            </div>
+          )}
         </section>
       </div>
 
@@ -243,38 +298,28 @@ const DJsPage = () => {
 
                   <Link
                     to={`/djs/${dj.id}`}
-                    className="relative block rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900 to-black overflow-hidden transition-all duration-300"
+                    className="relative block rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900 to-black overflow-hidden transition-all duration-300 neon-red-hover"
                   >
                     <div className={`flex ${spanTwo ? 'flex-row' : 'flex-col'}`}>
                       {/* DJ Cover Image */}
                       <div className={`relative overflow-hidden ${spanTwo ? 'w-1/2' : 'w-full h-56'}`}>
-                        {dj.coverImageUrl ? (
-                          <>
-                            <img
-                              src={dj.coverImageUrl}
-                              alt={dj.stageName}
-                              className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
-                            />
-                            {/* Lighter vignette with color tint */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                            <div className="absolute inset-0 bg-gradient-to-br from-red-900/10 to-purple-900/10" />
-                          </>
-                        ) : (
-                          <div className="h-full w-full bg-gradient-to-br from-red-950/30 via-zinc-900 to-purple-950/30 flex items-center justify-center">
-                            <p className="text-white/20 text-6xl font-black">{dj.stageName.charAt(0)}</p>
-                          </div>
-                        )}
+                        <img
+                          src={dj.coverImageUrl || dj.profilePictureUrl || defaultCoverImage}
+                          alt={dj.stageName}
+                          className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        />
+                        {/* Lighter vignette with color tint */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-red-900/10 to-purple-900/10" />
 
                         {/* Profile Picture Badge */}
                         <div className="absolute bottom-4 left-4">
                           <div className="h-16 w-16 rounded-full border-2 border-white/30 overflow-hidden bg-black/50 backdrop-blur-sm shadow-2xl ring-4 ring-black/30">
-                            {dj.profilePictureUrl ? (
-                              <img src={dj.profilePictureUrl} alt={dj.stageName} className="h-full w-full object-cover" />
-                            ) : (
-                              <div className="h-full w-full flex items-center justify-center text-xl font-bold text-white/70">
-                                {dj.stageName.charAt(0)}
-                              </div>
-                            )}
+                            <img
+                              src={dj.profilePictureUrl || dj.coverImageUrl || defaultDjImage}
+                              alt={dj.stageName}
+                              className="h-full w-full object-cover"
+                            />
                           </div>
                         </div>
                       </div>
@@ -346,6 +391,17 @@ const DJsPage = () => {
           </div>
         )}
       </section>
+
+      {/* DJ Application Form Modal */}
+      <DJApplicationForm
+        isOpen={isApplicationFormOpen}
+        onClose={() => setIsApplicationFormOpen(false)}
+        onSuccess={() => {
+          setApplicationSuccess(true);
+          refetchApplication();
+          setTimeout(() => setApplicationSuccess(false), 5000);
+        }}
+      />
     </div>
   );
 };

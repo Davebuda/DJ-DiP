@@ -1,0 +1,133 @@
+/**
+ * Performance Optimizations for Resize Events
+ *
+ * This file contains CSS optimizations to prevent crashes and improve
+ * performance during window resize events.
+ */
+
+/* Optimize expensive properties during transitions */
+* {
+  /* Force GPU acceleration for transforms and opacity only */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  perspective: 1000;
+}
+
+/* Optimize sticky/fixed elements */
+header[class*="sticky"],
+aside[class*="fixed"],
+nav[class*="sticky"] {
+  will-change: transform;
+  transform: translateZ(0);
+  contain: layout style paint;
+}
+
+/* Reduce repaints on complex gradients */
+[class*="bg-gradient-to"] {
+  /* Composite gradients on their own layer */
+  will-change: auto;
+  transform: translateZ(0);
+}
+
+/* Optimize backdrop-blur alternatives */
+[class*="backdrop-blur"] {
+  /* Use less expensive blur values */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Debounce expensive animations during resize */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Optimize shadow rendering */
+[class*="shadow-"] {
+  /* Composite shadows on GPU */
+  transform: translateZ(0);
+}
+
+/* Prevent layout thrashing on responsive changes */
+img,
+video,
+iframe {
+  /* Contain image repaints */
+  contain: layout paint;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Optimize form inputs to prevent reflow */
+input,
+select,
+textarea {
+  contain: layout style;
+}
+
+/* Reduce GPU load on hover states during resize */
+button,
+a {
+  will-change: auto;
+}
+
+button:hover,
+a:hover,
+button:focus,
+a:focus {
+  will-change: transform, opacity;
+}
+
+/* Optimize table rendering in admin pages */
+table {
+  contain: layout;
+  table-layout: fixed;
+}
+
+/* Prevent excessive repaints on scroll containers */
+[class*="overflow-"],
+[class*="overflow-y-"],
+[class*="overflow-x-"] {
+  contain: paint;
+  will-change: scroll-position;
+}
+
+/* Optimize complex layouts */
+.card,
+[class*="rounded-"] {
+  /* Isolate expensive border-radius calculations */
+  isolation: isolate;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  /* Reduce complexity on mobile */
+  [class*="backdrop-blur"] {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-color: rgba(0, 0, 0, 0.9);
+  }
+
+  /* Simplify gradients on mobile */
+  [class*="bg-gradient-to"] {
+    background-image: none;
+    background-color: #000;
+  }
+}
+
+/* Prevent crashes from infinite re-renders */
+@supports (content-visibility: auto) {
+  /* Virtual scrolling hint for long lists */
+  tbody tr,
+  ul > li,
+  [class*="grid"] > * {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 50px;
+  }
+}

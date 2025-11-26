@@ -1,4 +1,5 @@
 using DJDiP.Application.DTO.DJTop10DTO;
+using DJDiP.Application.DTO.SongDTO;
 using DJDiP.Application.Interfaces;
 using DJDiP.Domain.Models;
 
@@ -20,7 +21,8 @@ namespace DJDiP.Application.Services
             var songs = await _unitOfWork.Songs.GetAllAsync();
 
             var djLookup = djs.ToDictionary(d => d.Id, d => d.StageName ?? d.Name ?? string.Empty);
-            var songLookup = songs.ToDictionary(s => s.Id, s => s.Title ?? string.Empty);
+            var songTitleLookup = songs.ToDictionary(s => s.Id, s => s.Title ?? string.Empty);
+            var songObjectLookup = songs.ToDictionary(s => s.Id, s => s);
 
             return entries
                 .GroupBy(entry => entry.DJId)
@@ -28,7 +30,7 @@ namespace DJDiP.Application.Services
                 {
                     DJId = group.Key,
                     DJStageName = djLookup.TryGetValue(group.Key, out var stageName) ? stageName : "Unknown DJ",
-                    Top10Songs = group.Select(entry => MapToReadDto(entry, djLookup, songLookup)).ToList()
+                    Top10Songs = group.Select(entry => MapToReadDto(entry, djLookup, songTitleLookup, songObjectLookup)).ToList()
                 })
                 .ToList();
         }
@@ -50,7 +52,17 @@ namespace DJDiP.Application.Services
                 DJId = entry.DJId,
                 DJStageName = dj?.StageName ?? dj?.Name ?? "Unknown DJ",
                 SongId = entry.SongId,
-                SongTitle = song?.Title ?? "Unknown Track"
+                SongTitle = song?.Title ?? "Unknown Track",
+                Song = song != null ? new SongDto
+                {
+                    Id = song.Id,
+                    Title = song.Title ?? "Unknown Track",
+                    Artist = song.Artist ?? "Unknown Artist",
+                    Genre = song.Genre,
+                    Duration = song.Duration.HasValue ? (int)song.Duration.Value.TotalSeconds : 0,
+                    CoverImageUrl = song.CoverImageUrl,
+                    AudioPreviewUrl = song.AudioPreviewUrl
+                } : null
             };
         }
 
@@ -96,8 +108,12 @@ namespace DJDiP.Application.Services
         private static DJTop10ReadDto MapToReadDto(
             DJTop10 entry,
             IReadOnlyDictionary<Guid, string> djLookup,
-            IReadOnlyDictionary<Guid, string> songLookup)
+            IReadOnlyDictionary<Guid, string> songTitleLookup,
+            IReadOnlyDictionary<Guid, Song> songObjectLookup)
         {
+            songTitleLookup.TryGetValue(entry.SongId, out var title);
+            songObjectLookup.TryGetValue(entry.SongId, out var songEntity);
+
             return new DJTop10ReadDto
             {
                 Id = entry.Id,
@@ -106,9 +122,17 @@ namespace DJDiP.Application.Services
                     ? stageName
                     : "Unknown DJ",
                 SongId = entry.SongId,
-                SongTitle = songLookup.TryGetValue(entry.SongId, out var title) && !string.IsNullOrWhiteSpace(title)
-                    ? title
-                    : "Unknown Track"
+                SongTitle = !string.IsNullOrWhiteSpace(title) ? title : "Unknown Track",
+                Song = songEntity != null ? new SongDto
+                {
+                    Id = songEntity.Id,
+                    Title = songEntity.Title ?? "Unknown Track",
+                    Artist = songEntity.Artist ?? "Unknown Artist",
+                    Genre = songEntity.Genre,
+                    Duration = songEntity.Duration.HasValue ? (int)songEntity.Duration.Value.TotalSeconds : 0,
+                    CoverImageUrl = songEntity.CoverImageUrl,
+                    AudioPreviewUrl = songEntity.AudioPreviewUrl
+                } : null
             };
         }
     }

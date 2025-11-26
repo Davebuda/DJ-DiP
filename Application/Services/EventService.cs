@@ -50,7 +50,16 @@ namespace DJDiP.Application.Services
                 GenreIds = ev.Genres.Select(g => g.Id).ToList(),
                 DJIds = ev.EventDJs.Select(d => d.DJId).ToList(),
                 ImageUrl = ev.ImageUrl,
-                VideoUrl = ev.VideoUrl
+                VideoUrl = ev.VideoUrl,
+                Venue = new EventVenueDto
+                {
+                    Id = ev.Venue.Id,
+                    Name = ev.Venue.Name,
+                    Description = ev.Venue.Description,
+                    Address = ev.Venue.Address,
+                    City = ev.Venue.City,
+                    Country = ev.Venue.Country
+                }
             };
         }
 

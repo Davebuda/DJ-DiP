@@ -52,9 +52,10 @@ namespace DJDiP.Application.Services
                 Id = song.Id,
                 Title = song.Title,
                 Artist = song.Artist,
-                Album = null,
+                Genre = song.Genre,
                 Duration = song.Duration.HasValue ? (int)song.Duration.Value.TotalSeconds : 0,
-                SpotifyId = null
+                CoverImageUrl = song.CoverImageUrl,
+                AudioPreviewUrl = song.AudioPreviewUrl
             };
         }
     }

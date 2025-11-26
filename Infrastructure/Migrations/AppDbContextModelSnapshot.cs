@@ -146,6 +146,71 @@ namespace Infrastructure.Migrations
                     b.ToTable("ContactMessages");
                 });
 
+            modelBuilder.Entity("DJDiP.Domain.Models.DJApplication", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Bio")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CoverImageUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EquipmentUsed")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Genre")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("InfluencedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ProfileImageUrl")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ReviewedByAdminId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SocialLinks")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Specialties")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StageName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("YearsExperience")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("DJApplications");
+                });
+
             modelBuilder.Entity("DJDiP.Domain.Models.DJProfile", b =>
                 {
                     b.Property<Guid>("Id")
@@ -202,10 +267,17 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<int?>("YearsExperience")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("DJProfiles");
                 });
@@ -363,10 +435,7 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("UploadedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId1")
+                    b.Property<string>("UserId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ViewCount")
@@ -376,7 +445,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("GalleryMedia");
                 });
@@ -1190,7 +1259,22 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<decimal>("BasePrice")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CancellationReason")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("CancelledDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime?>("CheckInTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ConfirmationEmailSentDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ConfirmationEmailSentTo")
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("EventId")
@@ -1202,9 +1286,6 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsValid")
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime>("PurchaseDate")
                         .HasColumnType("TEXT");
 
@@ -1212,12 +1293,42 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("RefundTransactionId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("RefundedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("TermsAccepted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("TermsAcceptedDate")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("TicketNumber")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("TransferredDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TransferredFromUserId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("UserId")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("VATAmount")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("VATRate")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -1387,6 +1498,28 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DJDiP.Domain.Models.DJApplication", b =>
+                {
+                    b.HasOne("DJDiP.Domain.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DJDiP.Domain.Models.DJProfile", b =>
+                {
+                    b.HasOne("DJDiP.Domain.Models.ApplicationUser", "User")
+                        .WithOne("DJProfile")
+                        .HasForeignKey("DJDiP.Domain.Models.DJProfile", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DJDiP.Domain.Models.DJReview", b =>
                 {
                     b.HasOne("DJDiP.Domain.Models.DJProfile", "DJ")
@@ -1467,7 +1600,7 @@ namespace Infrastructure.Migrations
 
                     b.HasOne("DJDiP.Domain.Models.ApplicationUser", "User")
                         .WithMany("GalleryMedia")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Event");
 
@@ -1794,6 +1927,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("Badges");
 
                     b.Navigation("ContactMessages");
+
+                    b.Navigation("DJProfile");
 
                     b.Navigation("FollowedDJs");
 

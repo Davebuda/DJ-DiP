@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
 
 const Header = () => {
-  const { isAuthenticated, isAdmin, logout } = useAuth();
+  const { isAuthenticated, isAdmin, isDJ, logout } = useAuth();
   const { siteSettings } = useSiteSettings();
   const navigate = useNavigate();
   const navLinks = [
@@ -16,7 +16,7 @@ const Header = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-30 bg-black/60 backdrop-blur border-b border-white/5">
+    <header className="sticky top-0 z-30 bg-black/90 border-b border-white/5" style={{ willChange: 'transform' }}>
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-3">
           <img
@@ -72,6 +72,14 @@ const Header = () => {
               className="hidden md:inline-flex rounded-full border border-white/20 px-3 py-1.5 text-xs uppercase tracking-[0.4em] text-orange-400 hover:text-white"
             >
               Admin
+            </Link>
+          )}
+          {isDJ && !isAdmin && (
+            <Link
+              to="/dj-dashboard"
+              className="hidden md:inline-flex rounded-full border border-pink-500/40 bg-gradient-to-r from-pink-500/10 to-orange-500/10 px-3 py-1.5 text-xs uppercase tracking-[0.4em] text-pink-400 hover:text-white hover:border-pink-400"
+            >
+              DJ Dashboard
             </Link>
           )}
           {isAuthenticated ? (

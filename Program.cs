@@ -1,5 +1,6 @@
 using System.Text;
 using DJDiP.Application.DTO.DJProfileDTO;
+using DJDiP.Application.DTO.DJApplicationDTO;
 using DJDiP.Application.DTO.EventDTO;
 using DJDiP.Application.DTO.GenreDTO;
 using DJDiP.Application.DTO.NewsLetterDTO;
@@ -7,6 +8,7 @@ using DJDiP.Application.DTO.VenueDTO;
 using DJDiP.Application.DTO.ContactMessageDTO;
 using DJDiP.Application.DTO.DJTop10DTO;
 using DJDiP.Application.DTO.TicketDTO;
+using DJDiP.Application.DTO.PaymentDTO;
 using DJDiP.Application.DTO.SongDTO;
 using DJDiP.Application.DTO.SiteSettingsDTO;
 using DJDiP.Application.DTO.GalleryDTO;
@@ -15,12 +17,16 @@ using DJDiP.Application.Interfaces;
 using DJDiP.Application.Services;
 using DJDiP.Application.Options;
 using DJDiP.Infrastructure.Persistance;
+using DJDiP.Domain.Models;
 using HotChocolate;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using AspNetCoreRateLimit;
+using Microsoft.Extensions.Options;
+using Stripe;
+using EventServiceImpl = DJDiP.Application.Services.EventService;
 using VenueDetailsDto = DJDiP.Application.DTO.VenueDTO.VenueDto;
 
 // Configure Serilog
@@ -43,6 +49,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
 
 builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("Jwt"));
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 
 builder.Services.AddAuthentication(options =>
 {
@@ -66,8 +73,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 // ========== HEALTH CHECKS ==========
-builder.Services.AddHealthChecks()
-    .AddDbContextCheck<AppDbContext>();
+builder.Services.AddHealthChecks();
 
 // ========== RATE LIMITING ==========
 builder.Services.AddMemoryCache();
@@ -124,7 +130,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // ========== REGISTER SERVICES ==========
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IEventService, EventServiceImpl>();
 builder.Services.AddScoped<IDJService, DJService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<IVenueService, VenueService>();
@@ -134,7 +140,9 @@ builder.Services.AddScoped<IDJTop10Service, DJTop10Service>();
 builder.Services.AddScoped<IFollowService, FollowService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<IStripePaymentService, StripePaymentService>();
 builder.Services.AddScoped<ISongService, SongService>();
+builder.Services.AddScoped<IDJApplicationService, DJApplicationService>();
 builder.Services.AddScoped<ISiteSettingsService, SiteSettingsService>();
 builder.Services.AddScoped<IGalleryMediaService, GalleryMediaService>();
 builder.Services.AddScoped<IFileUploadService>(sp =>
@@ -145,6 +153,8 @@ builder.Services.AddScoped<IFileUploadService>(sp =>
     var baseUrl = config["AppSettings:BaseUrl"] ?? "http://localhost:5000";
     return new FileUploadService(uploadPath, baseUrl);
 });
+
+StripeConfiguration.ApiKey = builder.Configuration.GetValue<string>("Stripe:SecretKey");
 
 // ========== CONTROLLERS (for file upload endpoint) ==========
 builder.Services.AddControllers();
@@ -291,6 +301,40 @@ public class Query
         [Service] IFollowService followService)
     {
         return await followService.IsFollowingAsync(userId, djId);
+    }
+
+    // DJ Applications
+    public async Task<DJApplicationDto?> DjApplication(
+        Guid id,
+        [Service] IDJApplicationService djApplicationService)
+    {
+        return await djApplicationService.GetApplicationByIdAsync(id);
+    }
+
+    public async Task<DJApplicationDto?> DjApplicationByUser(
+        string userId,
+        [Service] IDJApplicationService djApplicationService)
+    {
+        return await djApplicationService.GetApplicationByUserIdAsync(userId);
+    }
+
+    public async Task<IEnumerable<DJApplicationDto>> DjApplications(
+        [Service] IDJApplicationService djApplicationService)
+    {
+        return await djApplicationService.GetAllApplicationsAsync();
+    }
+
+    public async Task<IEnumerable<DJApplicationDto>> PendingDjApplications(
+        [Service] IDJApplicationService djApplicationService)
+    {
+        return await djApplicationService.GetPendingApplicationsAsync();
+    }
+
+    public async Task<bool> HasPendingDjApplication(
+        string userId,
+        [Service] IDJApplicationService djApplicationService)
+    {
+        return await djApplicationService.HasPendingApplicationAsync(userId);
     }
 
     // Tickets
@@ -578,6 +622,82 @@ public class Mutation
         return true;
     }
 
+    // DJ APPLICATION MUTATIONS
+    public async Task<DJApplicationDto> SubmitDJApplication(
+        CreateDJApplicationInput input,
+        [Service] IDJApplicationService djApplicationService)
+    {
+        try
+        {
+            var dto = new CreateDJApplicationDto
+            {
+                UserId = input.UserId,
+                StageName = input.StageName,
+                Bio = input.Bio,
+                Genre = input.Genre,
+                YearsExperience = input.YearsExperience,
+                Specialties = input.Specialties,
+                InfluencedBy = input.InfluencedBy,
+                EquipmentUsed = input.EquipmentUsed,
+                SocialLinks = input.SocialLinks,
+                ProfileImageUrl = input.ProfileImageUrl,
+                CoverImageUrl = input.CoverImageUrl
+            };
+
+            return await djApplicationService.SubmitApplicationAsync(dto);
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new GraphQLException(ex.Message);
+        }
+    }
+
+    public async Task<DJApplicationDto> ApproveDJApplication(
+        Guid applicationId,
+        string reviewedByAdminId,
+        [Service] IDJApplicationService djApplicationService)
+    {
+        try
+        {
+            var dto = new UpdateApplicationStatusDto
+            {
+                ApplicationId = applicationId,
+                Status = ApplicationStatus.Approved,
+                ReviewedByAdminId = reviewedByAdminId
+            };
+
+            return await djApplicationService.ApproveApplicationAsync(dto);
+        }
+        catch (Exception ex)
+        {
+            throw new GraphQLException(ex.Message);
+        }
+    }
+
+    public async Task<DJApplicationDto> RejectDJApplication(
+        Guid applicationId,
+        string reviewedByAdminId,
+        string? rejectionReason,
+        [Service] IDJApplicationService djApplicationService)
+    {
+        try
+        {
+            var dto = new UpdateApplicationStatusDto
+            {
+                ApplicationId = applicationId,
+                Status = ApplicationStatus.Rejected,
+                ReviewedByAdminId = reviewedByAdminId,
+                RejectionReason = rejectionReason
+            };
+
+            return await djApplicationService.RejectApplicationAsync(dto);
+        }
+        catch (Exception ex)
+        {
+            throw new GraphQLException(ex.Message);
+        }
+    }
+
     // GENRE MUTATIONS
     public async Task<Guid> CreateGenre(
         CreateGenreInput input,
@@ -863,6 +983,68 @@ public class Mutation
         return true;
     }
 
+    // STRIPE PAYMENTS - Norwegian-compliant with 12% VAT
+    public async Task<PaymentIntentPayload> CreateEventPaymentIntent(
+        Guid eventId,
+        string userId,
+        string email,
+        [Service] IStripePaymentService stripeService)
+    {
+        try
+        {
+            var dto = new CreatePaymentIntentDto
+            {
+                EventId = eventId,
+                UserId = userId,
+                Email = email
+            };
+
+            var result = await stripeService.CreateEventPaymentIntentAsync(dto);
+
+            return new PaymentIntentPayload
+            {
+                PaymentIntentId = result.PaymentIntentId,
+                ClientSecret = result.ClientSecret,
+                Amount = result.Amount,
+                Currency = result.Currency
+            };
+        }
+        catch (Exception ex)
+        {
+            throw new GraphQLException($"Payment creation failed: {ex.Message}");
+        }
+    }
+
+    public async Task<TicketDto?> ConfirmStripePaymentAndIssueTicket(
+        string paymentIntentId,
+        Guid eventId,
+        string userId,
+        string email,
+        [Service] IStripePaymentService stripeService)
+    {
+        try
+        {
+            var dto = new ConfirmPaymentDto
+            {
+                PaymentIntentId = paymentIntentId,
+                EventId = eventId,
+                UserId = userId,
+                Email = email
+            };
+
+            var ticket = await stripeService.ConfirmStripePaymentAndIssueTicketAsync(dto);
+            return ticket;
+        }
+        catch (SecurityException ex)
+        {
+            throw new GraphQLException($"Security error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            throw new GraphQLException($"Payment confirmation failed: {ex.Message}");
+        }
+    }
+
     // TICKET MUTATIONS
     public async Task<TicketDto> PurchaseTicket(
         PurchaseTicketInput input,
@@ -871,7 +1053,9 @@ public class Mutation
         var dto = new CreateTicketDto
         {
             EventId = input.EventId,
-            UserId = input.UserId
+            UserId = input.UserId,
+            TermsAccepted = input.TermsAccepted,
+            Email = input.Email
         };
 
         return await ticketService.CreateTicketAsync(dto);
@@ -882,6 +1066,43 @@ public class Mutation
         [Service] ITicketService ticketService)
     {
         return await ticketService.CheckInTicketAsync(ticketId);
+    }
+
+    public async Task<TicketDto?> CancelTicket(
+        CancelTicketInput input,
+        [Service] ITicketService ticketService)
+    {
+        var dto = new CancelTicketDto
+        {
+            TicketId = input.TicketId,
+            Reason = input.Reason
+        };
+        return await ticketService.CancelTicketAsync(dto);
+    }
+
+    public async Task<TicketDto?> RefundTicket(
+        RefundTicketInput input,
+        [Service] ITicketService ticketService)
+    {
+        var dto = new RefundTicketDto
+        {
+            TicketId = input.TicketId,
+            PaymentMethod = input.PaymentMethod
+        };
+        return await ticketService.RefundTicketAsync(dto);
+    }
+
+    public async Task<TicketDto?> TransferTicket(
+        TransferTicketInput input,
+        [Service] ITicketService ticketService)
+    {
+        var dto = new TransferTicketDto
+        {
+            TicketId = input.TicketId,
+            ToUserId = input.ToUserId,
+            ToEmail = input.ToEmail
+        };
+        return await ticketService.TransferTicketAsync(dto);
     }
 
     public async Task<bool> InvalidateTicket(
@@ -979,6 +1200,21 @@ public class UpdateDjInput
     public List<string>? TopTracks { get; set; }
 }
 
+public class CreateDJApplicationInput
+{
+    public string UserId { get; set; } = string.Empty;
+    public string StageName { get; set; } = string.Empty;
+    public string Bio { get; set; } = string.Empty;
+    public string Genre { get; set; } = string.Empty;
+    public int YearsExperience { get; set; }
+    public string? Specialties { get; set; }
+    public string? InfluencedBy { get; set; }
+    public string? EquipmentUsed { get; set; }
+    public string? SocialLinks { get; set; }
+    public string? ProfileImageUrl { get; set; }
+    public string? CoverImageUrl { get; set; }
+}
+
 public class CreateGenreInput
 {
     public string Name { get; set; } = string.Empty;
@@ -1036,6 +1272,35 @@ public class PurchaseTicketInput
 {
     public Guid EventId { get; set; }
     public string UserId { get; set; } = string.Empty;
+    public bool TermsAccepted { get; set; }
+    public string Email { get; set; } = string.Empty;
+}
+
+public class PaymentIntentPayload
+{
+    public string PaymentIntentId { get; set; } = string.Empty;
+    public string ClientSecret { get; set; } = string.Empty;
+    public long Amount { get; set; }
+    public string Currency { get; set; } = string.Empty;
+}
+
+public class CancelTicketInput
+{
+    public Guid TicketId { get; set; }
+    public string Reason { get; set; } = string.Empty;
+}
+
+public class RefundTicketInput
+{
+    public Guid TicketId { get; set; }
+    public string PaymentMethod { get; set; } = string.Empty;
+}
+
+public class TransferTicketInput
+{
+    public Guid TicketId { get; set; }
+    public string ToUserId { get; set; } = string.Empty;
+    public string ToEmail { get; set; } = string.Empty;
 }
 
 public class CreateSongInput

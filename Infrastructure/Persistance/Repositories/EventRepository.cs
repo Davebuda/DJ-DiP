@@ -10,6 +10,19 @@ namespace DJDiP.Infrastructure.Persistance.Repositories
         {
         }
 
+        public override async Task<Event?> GetByIdAsync(object id)
+        {
+            if (id is Guid guidId)
+            {
+                return await _dbSet
+                    .Include(e => e.Venue)
+                    .Include(e => e.Genres)
+                    .Include(e => e.EventDJs)
+                    .FirstOrDefaultAsync(e => e.Id == guidId);
+            }
+            return null;
+        }
+
         public override async Task<IEnumerable<Event>> GetAllAsync()
         {
             return await _dbSet

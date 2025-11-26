@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff7c30"/>
+      <stop offset="50%" stop-color="#ff0080"/>
+      <stop offset="100%" stop-color="#0b0b0f"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="720" fill="#0b0b0f"/>
+  <rect width="1200" height="720" fill="url(#g)" opacity="0.55"/>
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"
+        font-family="Arial, sans-serif" font-size="64" font-weight="700"
+        fill="#ffffff" opacity="0.9" letter-spacing="6">
+    EVENT
+  </text>
+</svg>

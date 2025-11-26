@@ -23,6 +23,7 @@ namespace DJDiP.Application.Interfaces
         IUserFollowDJRepository UserFollowDJs { get; }
         IRepository<SiteSetting> SiteSettings { get; }
         IRepository<GalleryMedia> GalleryMedia { get; }
+        IDJApplicationRepository DJApplications { get; }
 
         Task<int> SaveChangesAsync();
         Task BeginTransactionAsync();

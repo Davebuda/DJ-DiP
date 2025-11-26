@@ -10,7 +10,9 @@ namespace DJDiP.Application.Interfaces
         Task<TicketDto> CreateTicketAsync(CreateTicketDto ticketDto);
         Task<bool> CheckInTicketAsync(Guid ticketId);
         Task<bool> InvalidateTicketAsync(Guid ticketId);
+        Task<TicketDto?> CancelTicketAsync(CancelTicketDto cancelDto);
+        Task<TicketDto?> RefundTicketAsync(RefundTicketDto refundDto);
+        Task<TicketDto?> TransferTicketAsync(TransferTicketDto transferDto);
         Task DeleteAsync(Guid ticketId);
-        
     }
 }

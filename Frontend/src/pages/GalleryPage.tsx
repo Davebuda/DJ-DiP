@@ -259,7 +259,7 @@ const UploadMomentModal = ({ onClose, onSuccess }: UploadMomentModalProps) => {
     formData.append('folder', 'gallery');
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('accessToken');
       const response = await fetch('http://localhost:5000/api/FileUpload/image', {
         method: 'POST',
         headers: {

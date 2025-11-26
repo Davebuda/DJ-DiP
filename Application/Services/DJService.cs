@@ -85,6 +85,7 @@ namespace DJDiP.Application.Services
             var dj = new DJProfile
             {
                 Id = Guid.NewGuid(),
+                UserId = dto.UserId,
                 Name = dto.FullName ?? dto.StageName,
                 StageName = dto.StageName,
                 Bio = dto.Bio,
