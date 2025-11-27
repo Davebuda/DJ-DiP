@@ -1,12 +1,17 @@
+import { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { ShoppingCart, ArrowRight } from 'lucide-react';
 import { GET_EVENT_BY_ID } from '../graphql/queries';
 import { useAuth } from '../context/AuthContext';
+import { useCartStore } from '../stores/cartStore';
 
 const EventDetailPage = () => {
   const { id } = useParams();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { addItem } = useCartStore();
+  const [addedToCart, setAddedToCart] = useState(false);
   const { data, loading, error } = useQuery(GET_EVENT_BY_ID, {
     variables: { id },
     skip: !id,
@@ -75,18 +80,56 @@ const EventDetailPage = () => {
           <div className="rounded-[32px] border border-white/10 bg-black/60 p-6 space-y-4">
             <p className="text-xs uppercase tracking-[0.5em] text-gray-500">Tickets</p>
             <p className="text-3xl font-bold text-white">${event.price.toFixed(2)}</p>
+
             {isAuthenticated ? (
-              <button
-                type="button"
-                onClick={() => navigate(`/checkout?eventId=${event.id}`)}
-                className="w-full rounded-full bg-gradient-to-r from-orange-400 to-pink-500 px-6 py-3 text-black font-semibold tracking-[0.3em] uppercase"
-              >
-                Pay with Card
-              </button>
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    addItem({
+                      eventId: event.id,
+                      eventTitle: event.title,
+                      eventDate: event.date,
+                      venueName: event.venue.name,
+                      price: event.price,
+                      imageUrl: event.imageUrl,
+                    });
+                    setAddedToCart(true);
+                    setTimeout(() => setAddedToCart(false), 2000);
+                  }}
+                  className={`w-full rounded-full px-6 py-3 font-semibold tracking-[0.2em] uppercase transition-all flex items-center justify-center gap-2 ${
+                    addedToCart
+                      ? 'bg-green-500 text-white'
+                      : 'bg-gradient-to-r from-orange-400 to-pink-500 text-black hover:from-orange-300 hover:to-pink-400'
+                  }`}
+                >
+                  <ShoppingCart className="w-5 h-5" />
+                  <span>{addedToCart ? 'Added to Cart!' : 'Add to Cart'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    addItem({
+                      eventId: event.id,
+                      eventTitle: event.title,
+                      eventDate: event.date,
+                      venueName: event.venue.name,
+                      price: event.price,
+                      imageUrl: event.imageUrl,
+                    });
+                    navigate('/checkout?eventIds=' + event.id);
+                  }}
+                  className="w-full rounded-full border border-white/20 px-6 py-3 text-white font-semibold tracking-[0.2em] uppercase hover:border-orange-400 transition-colors flex items-center justify-center gap-2"
+                >
+                  <span>Buy Now</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
             ) : (
               <Link
                 to="/login"
-                className="inline-flex w-full items-center justify-center rounded-full border border-white/20 px-6 py-3 text-sm uppercase tracking-[0.3em]"
+                className="inline-flex w-full items-center justify-center rounded-full border border-white/20 px-6 py-3 text-sm uppercase tracking-[0.3em] hover:border-orange-400 transition"
               >
                 Login to Purchase
               </Link>

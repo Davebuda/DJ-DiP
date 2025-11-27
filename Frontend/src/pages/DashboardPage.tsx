@@ -1,10 +1,281 @@
-const DashboardPage = () => (
-  <div className="max-w-6xl mx-auto px-6 py-16 space-y-6">
-    <h1 className="text-4xl font-bold uppercase tracking-[0.4em]">Dashboard</h1>
-    <p className="text-gray-400">
-      Cards for tickets, orders, upload, and leaderboard will be rebuilt alongside the notification + install widgets.
-    </p>
-  </div>
-);
+import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useQuery } from '@apollo/client';
+import { GET_USER_TICKETS } from '../graphql/queries';
+import { Ticket, Calendar, TrendingUp, Upload, Award, Music, Users, ShoppingCart } from 'lucide-react';
+import { useMemo } from 'react';
+import { useCartStore } from '../stores/cartStore';
+
+const DashboardPage = () => {
+  const { user, isAuthenticated } = useAuth();
+  const { getTotalItems } = useCartStore();
+  const cartItems = getTotalItems();
+
+  const { data, loading } = useQuery(GET_USER_TICKETS, {
+    variables: { userId: user?.id ?? '' },
+    skip: !user,
+    fetchPolicy: 'cache-and-network',
+  });
+
+  const tickets = data?.ticketsByUser ?? [];
+
+  const upcomingTickets = useMemo(() => {
+    return tickets.filter((ticket: any) => new Date(ticket.event.date) > new Date());
+  }, [tickets]);
+
+  const pastTickets = useMemo(() => {
+    return tickets.filter((ticket: any) => new Date(ticket.event.date) <= new Date());
+  }, [tickets]);
+
+  const stats = [
+    {
+      label: 'Active Tickets',
+      value: upcomingTickets.length,
+      icon: Ticket,
+      color: 'from-orange-500 to-pink-500',
+      link: '/tickets',
+    },
+    {
+      label: 'Events Attended',
+      value: pastTickets.length,
+      icon: Calendar,
+      color: 'from-purple-500 to-blue-500',
+      link: '/tickets',
+    },
+    {
+      label: 'Cart Items',
+      value: cartItems,
+      icon: ShoppingCart,
+      color: 'from-green-500 to-emerald-500',
+      link: '/cart',
+    },
+    {
+      label: 'Total Spent',
+      value: `$${tickets.reduce((sum: number, t: any) => sum + t.price, 0).toFixed(0)}`,
+      icon: TrendingUp,
+      color: 'from-yellow-500 to-orange-500',
+      link: '/orders',
+    },
+  ];
+
+  const quickActions = [
+    {
+      title: 'Browse Events',
+      description: 'Discover upcoming shows and performances',
+      icon: Calendar,
+      link: '/events',
+      color: 'from-orange-500 to-pink-500',
+    },
+    {
+      title: 'Explore DJs',
+      description: 'Follow your favorite artists',
+      icon: Users,
+      link: '/djs',
+      color: 'from-purple-500 to-pink-500',
+    },
+    {
+      title: 'Upload Media',
+      description: 'Share your event moments',
+      icon: Upload,
+      link: '/upload',
+      color: 'from-blue-500 to-cyan-500',
+    },
+    {
+      title: 'Gallery',
+      description: 'View event photos and videos',
+      icon: Music,
+      color: 'from-green-500 to-emerald-500',
+      link: '/gallery',
+    },
+    {
+      title: 'Leaderboard',
+      description: 'Check your ranking and points',
+      icon: Award,
+      color: 'from-yellow-500 to-orange-500',
+      link: '/gamification',
+    },
+    {
+      title: 'Playlists',
+      description: 'Discover curated music sets',
+      icon: Music,
+      color: 'from-pink-500 to-red-500',
+      link: '/playlists',
+    },
+  ];
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-6 py-16 text-center">
+        <div className="space-y-4">
+          <h1 className="text-3xl font-bold text-white">Please Login</h1>
+          <p className="text-gray-400">Sign in to access your personalized dashboard</p>
+          <Link
+            to="/login"
+            className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-black font-semibold hover:from-orange-400 hover:to-pink-400 transition-all"
+          >
+            Go to Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-[#0a0505] via-[#050202] to-black text-white">
+      <div className="max-w-7xl mx-auto px-6 py-16 space-y-12">
+        {/* Header */}
+        <div className="space-y-2">
+          <p className="text-sm uppercase tracking-[0.5em] text-orange-400">Welcome Back</p>
+          <h1 className="text-5xl font-bold">{user?.fullName || 'Music Lover'}</h1>
+          <p className="text-gray-400 text-lg">Your personalized music event hub</p>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <Link
+                key={index}
+                to={stat.link}
+                className="group relative rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6 hover:border-orange-500/30 transition-all"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity`} />
+                <div className="relative space-y-3">
+                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
+                    <Icon className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-3xl font-bold">{stat.value}</p>
+                    <p className="text-sm text-gray-400">{stat.label}</p>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Upcoming Tickets */}
+        {upcomingTickets.length > 0 && (
+          <section className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-bold">Upcoming Events</h2>
+              <Link
+                to="/tickets"
+                className="text-sm text-orange-400 hover:text-orange-300 transition-colors"
+              >
+                View All →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {upcomingTickets.slice(0, 3).map((ticket: any) => (
+                <Link
+                  key={ticket.id}
+                  to={`/events/${ticket.event.id}`}
+                  className="group rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 overflow-hidden hover:border-orange-500/30 transition-all"
+                >
+                  <div className="p-6 space-y-4">
+                    <div className="flex items-start justify-between">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                        <Ticket className="w-6 h-6 text-white" />
+                      </div>
+                      <span className="text-xs px-3 py-1 rounded-full bg-green-500/20 text-green-400 border border-green-500/30">
+                        Active
+                      </span>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold group-hover:text-orange-400 transition-colors">
+                        {ticket.event.title}
+                      </h3>
+                      <p className="text-sm text-gray-400 mt-1">
+                        {new Date(ticket.event.date).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {ticket.event.venueName}
+                        {ticket.event.city ? `, ${ticket.event.city}` : ''}
+                      </p>
+                    </div>
+                    <div className="pt-3 border-t border-white/10">
+                      <p className="text-xs text-gray-500">Ticket #{ticket.ticketNumber}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Quick Actions */}
+        <section className="space-y-6">
+          <h2 className="text-3xl font-bold">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {quickActions.map((action, index) => {
+              const Icon = action.icon;
+              return (
+                <Link
+                  key={index}
+                  to={action.link}
+                  className="group relative rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6 hover:border-orange-500/30 transition-all"
+                >
+                  <div className={`absolute inset-0 bg-gradient-to-br ${action.color} opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity`} />
+                  <div className="relative space-y-3">
+                    <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${action.color} flex items-center justify-center`}>
+                      <Icon className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold group-hover:text-orange-400 transition-colors">
+                        {action.title}
+                      </h3>
+                      <p className="text-sm text-gray-400">{action.description}</p>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Recent Activity */}
+        {loading ? (
+          <div className="flex justify-center py-10">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-400" />
+          </div>
+        ) : pastTickets.length > 0 ? (
+          <section className="space-y-6">
+            <h2 className="text-3xl font-bold">Recent Activity</h2>
+            <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 divide-y divide-white/10">
+              {pastTickets.slice(0, 5).map((ticket: any) => (
+                <div key={ticket.id} className="p-6 flex items-center justify-between hover:bg-white/5 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center flex-shrink-0">
+                      <Ticket className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold">{ticket.event.title}</p>
+                      <p className="text-sm text-gray-400">
+                        {new Date(ticket.event.date).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs px-3 py-1 rounded-full bg-gray-500/20 text-gray-400 border border-gray-500/30">
+                    {ticket.isCheckedIn ? 'Attended' : 'Past'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
+      </div>
+    </div>
+  );
+};
 
 export default DashboardPage;

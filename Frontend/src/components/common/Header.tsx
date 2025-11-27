@@ -1,11 +1,15 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { ShoppingCart } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
+import { useCartStore } from '../../stores/cartStore';
 
 const Header = () => {
   const { isAuthenticated, isAdmin, isDJ, logout } = useAuth();
   const { siteSettings } = useSiteSettings();
   const navigate = useNavigate();
+  const { getTotalItems } = useCartStore();
+  const cartItemCount = getTotalItems();
   const navLinks = [
     { label: 'Events', to: '/events' },
     { label: 'DJs', to: '/djs' },
@@ -82,6 +86,21 @@ const Header = () => {
               DJ Dashboard
             </Link>
           )}
+
+          {/* Cart Icon with Badge */}
+          <Link
+            to="/cart"
+            className="relative rounded-full border border-white/20 px-3 py-2 hover:border-orange-400 transition-colors"
+            aria-label="Shopping Cart"
+          >
+            <ShoppingCart className="w-5 h-5 text-gray-300 hover:text-white" />
+            {cartItemCount > 0 && (
+              <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-black text-xs font-bold flex items-center justify-center">
+                {cartItemCount > 9 ? '9+' : cartItemCount}
+              </span>
+            )}
+          </Link>
+
           {isAuthenticated ? (
             <button
               onClick={logout}

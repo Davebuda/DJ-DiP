@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
+import { ShoppingCart } from 'lucide-react';
 import { GET_EVENTS, GET_GENRES } from '../graphql/queries';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { useCartStore } from '../stores/cartStore';
 
 type Event = {
   id: string;
@@ -28,11 +30,13 @@ const EventsPage = () => {
   const { data: eventsData, loading: eventsLoading, error: eventsError } = useQuery(GET_EVENTS);
   const { data: genresData } = useQuery(GET_GENRES);
   const { siteSettings } = useSiteSettings();
+  const { addItem } = useCartStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedGenre, setSelectedGenre] = useState<string>('all');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 200]);
   const [sortBy, setSortBy] = useState<'date' | 'price'>('date');
+  const [addedToCart, setAddedToCart] = useState<Record<string, boolean>>({});
 
   const events: Event[] = eventsData?.events ?? [];
   const genres: Genre[] = genresData?.genres ?? [];
@@ -212,9 +216,8 @@ const EventsPage = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEvents.map((event) => (
-              <Link
+              <div
                 key={event.id}
-                to={`/events/${event.id}`}
                 className="rounded-[32px] border border-white/10 bg-gradient-to-b from-[#140707] to-[#060303] transition-all duration-300 group overflow-hidden hover:scale-[1.02] neon-red-hover"
               >
                 {/* Event Image */}
@@ -260,15 +263,35 @@ const EventsPage = () => {
                     >
                       Details
                     </Link>
-                    <Link
-                      to={`/checkout?eventId=${event.id}`}
-                      className="flex-1 px-4 py-3 rounded-full bg-gradient-to-r from-orange-400 to-pink-500 text-black font-semibold text-sm tracking-wide text-center hover:from-orange-300 hover:to-pink-400 transition"
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        addItem({
+                          eventId: event.id,
+                          eventTitle: event.title,
+                          eventDate: event.date,
+                          venueName: event.venue.name,
+                          price: event.price,
+                          imageUrl: event.imageUrl || defaultEventImage,
+                        });
+                        setAddedToCart((prev) => ({ ...prev, [event.id]: true }));
+                        setTimeout(() => {
+                          setAddedToCart((prev) => ({ ...prev, [event.id]: false }));
+                        }, 2000);
+                      }}
+                      className={`flex-1 px-4 py-3 rounded-full font-semibold text-sm tracking-wide text-center transition-all flex items-center justify-center gap-2 ${
+                        addedToCart[event.id]
+                          ? 'bg-green-500 text-white'
+                          : 'bg-gradient-to-r from-orange-400 to-pink-500 text-black hover:from-orange-300 hover:to-pink-400'
+                      }`}
                     >
-                      Buy Ticket
-                    </Link>
+                      <ShoppingCart className="w-4 h-4" />
+                      <span>{addedToCart[event.id] ? 'Added!' : 'Add to Cart'}</span>
+                    </button>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}
