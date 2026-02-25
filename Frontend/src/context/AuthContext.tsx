@@ -15,6 +15,7 @@ interface User {
   email: string;
   fullName: string;
   role: string;
+  profilePictureUrl?: string;
 }
 
 interface AuthContextValue {
@@ -27,6 +28,7 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, fullName: string) => Promise<void>;
   logout: () => void;
+  updateUserLocal: (updates: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -90,6 +92,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setToken(null);
   }, []);
 
+  // Update local user state + localStorage without re-authenticating
+  const updateUserLocal = useCallback((updates: Partial<User>) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev, ...updates };
+      localStorage.setItem('user', JSON.stringify(updated));
+      return updated;
+    });
+  }, []);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
@@ -98,13 +110,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       login,
       register,
       logout,
+      updateUserLocal,
       isAuthenticated: Boolean(user),
       isAdmin:
         !!user &&
         (user.role === 'Admin' || user.email?.toLowerCase() === '2djdip@gmail.com'),
       isDJ: !!user && user.role === 'DJ',
     }),
-    [user, token, loading, login, register, logout],
+    [user, token, loading, login, register, logout, updateUserLocal],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

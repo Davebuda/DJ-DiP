@@ -63,12 +63,12 @@ const TicketsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#110602] via-[#050202] to-black px-6 py-16">
+    <div className="min-h-screen bg-gradient-to-b from-[#0f0805] via-[#0a0505] to-black px-6 py-16">
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-sm uppercase tracking-[0.5em] text-orange-400">Wallet</p>
-            <h1 className="text-4xl font-bold text-white">Your Tickets</h1>
+            <h1 className="font-display text-4xl font-bold text-white tracking-tight">Your Tickets</h1>
           </div>
           <button
             type="button"
@@ -108,7 +108,7 @@ const TicketsPage = () => {
         <div className="space-y-6">
           {tickets.map((ticket: Ticket) => (
             <div key={ticket.id} className="tile flex flex-col md:flex-row overflow-hidden">
-              <div className="md:w-1/3 bg-gradient-to-b from-orange-400/20 to-pink-500/10 p-6 space-y-2">
+              <div className="md:w-1/3 bg-gradient-to-b from-orange-500/20 to-[#5D1725]/20 border-r border-white/5 p-6 space-y-2">
                 <p className="text-xs uppercase tracking-[0.5em] text-orange-300">Ticket</p>
                 <p className="text-white text-lg font-semibold break-words">{ticket.ticketNumber}</p>
                 <p className="text-sm text-gray-300">{ticket.isCheckedIn ? 'Checked In' : 'Active'}</p>

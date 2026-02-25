@@ -243,7 +243,7 @@ const DJApplicationForm = ({ isOpen, onClose, onSuccess }: DJApplicationFormProp
           {/* Media URLs Section */}
           <div className="space-y-6">
             <h3 className="text-xl font-bold text-white flex items-center gap-2">
-              <div className="h-1 w-8 bg-gradient-to-r from-pink-500 to-transparent rounded-full" />
+              <div className="h-1 w-8 bg-gradient-to-r from-[#FF6B35] to-transparent rounded-full" />
               Profile Media
             </h3>
 
@@ -288,7 +288,7 @@ const DJApplicationForm = ({ isOpen, onClose, onSuccess }: DJApplicationFormProp
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-6 py-4 rounded-xl font-bold text-sm tracking-wide bg-gradient-to-r from-red-600 via-pink-600 to-purple-600 text-white hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="flex-1 px-6 py-4 rounded-xl font-bold text-sm tracking-wide bg-gradient-to-r from-red-600 via-orange-600 to-purple-600 text-white hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
               {loading ? 'Submitting...' : 'Submit Application'}
             </button>

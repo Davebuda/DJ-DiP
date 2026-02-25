@@ -77,7 +77,7 @@ const DJTop10Manager = () => {
           <button
             onClick={() => setShowAddModal(true)}
             disabled={myTop10Songs.length >= 10}
-            className="px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white font-semibold transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#FF6B35] to-orange-500 hover:from-orange-600 hover:to-orange-600 text-white font-semibold transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Plus className="w-4 h-4" />
             Add Track
@@ -119,7 +119,7 @@ const DJTop10Manager = () => {
               <p className="text-sm text-gray-500 mb-6">Start building your signature sound by adding tracks</p>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="px-4 py-2 rounded-lg bg-pink-500/20 hover:bg-pink-500/30 border border-pink-500/30 text-pink-400 transition"
+                className="px-4 py-2 rounded-lg bg-pink-500/20 hover:bg-pink-500/30 border border-orange-500/30 text-orange-400 transition"
               >
                 Add Your First Track
               </button>
@@ -131,7 +131,7 @@ const DJTop10Manager = () => {
                   key={entry.id}
                   className="bg-black/30 border border-white/10 rounded-lg p-4 hover:bg-black/40 transition flex items-center gap-4"
                 >
-                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-pink-500 to-orange-500 flex items-center justify-center font-bold text-lg">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-[#FF6B35] to-orange-500 flex items-center justify-center font-bold text-lg">
                     {index + 1}
                   </div>
 
@@ -207,7 +207,7 @@ const DJTop10Manager = () => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search tracks by title or artist..."
-                    className="w-full pl-10 pr-4 py-3 rounded-lg bg-black/30 border border-white/10 text-white focus:border-pink-500 focus:outline-none"
+                    className="w-full pl-10 pr-4 py-3 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none"
                     autoFocus
                   />
                 </div>
@@ -224,7 +224,7 @@ const DJTop10Manager = () => {
                     <button
                       key={song.id}
                       onClick={() => handleAddSong(song.id)}
-                      className="w-full bg-black/30 hover:bg-black/50 border border-white/10 hover:border-pink-500/30 rounded-lg p-4 transition flex items-center gap-4 text-left"
+                      className="w-full bg-black/30 hover:bg-black/50 border border-white/10 hover:border-orange-500/30 rounded-lg p-4 transition flex items-center gap-4 text-left"
                     >
                       {song.coverImageUrl && (
                         <img

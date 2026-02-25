@@ -38,7 +38,7 @@ const emptyForm: EventFormState = {
 
 const AdminEventsPage = () => {
   const inputClass =
-    'w-full rounded border border-white/10 bg-black/40 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#FF0080]';
+    'w-full rounded border border-white/10 bg-black/40 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500';
   const textareaClass = `${inputClass} min-h-[120px]`;
   const [form, setForm] = useState<EventFormState>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -298,7 +298,7 @@ const AdminEventsPage = () => {
                 <td className="py-3 text-right space-x-2">
                   <button
                     type="button"
-                    className="text-xs uppercase tracking-wide text-[#FF0080]"
+                    className="text-xs uppercase tracking-wide text-orange-400"
                     onClick={() => handleEdit(event.id)}
                   >
                     Edit

@@ -44,11 +44,11 @@ const EventDetailPage = () => {
   const event = data.event;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#140603] via-[#050202] to-black text-white px-6 py-16">
+    <div className="min-h-screen bg-gradient-to-b from-[#0f0805] via-[#0a0505] to-black text-white px-6 py-16">
       <div className="max-w-5xl mx-auto space-y-10">
         <div className="space-y-4">
           <p className="text-sm uppercase tracking-[0.6em] text-orange-400">Event</p>
-          <h1 className="text-5xl font-black">{event.title}</h1>
+          <h1 className="font-display text-5xl font-black tracking-tight">{event.title}</h1>
           <p className="text-gray-300 max-w-3xl">{event.description}</p>
         </div>
 
@@ -100,7 +100,7 @@ const EventDetailPage = () => {
                   className={`w-full rounded-full px-6 py-3 font-semibold tracking-[0.2em] uppercase transition-all flex items-center justify-center gap-2 ${
                     addedToCart
                       ? 'bg-green-500 text-white'
-                      : 'bg-gradient-to-r from-orange-400 to-pink-500 text-black hover:from-orange-300 hover:to-pink-400'
+                      : 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-white hover:shadow-[0_0_25px_rgba(255,107,53,0.5)] hover:scale-[1.02]'
                   }`}
                 >
                   <ShoppingCart className="w-5 h-5" />

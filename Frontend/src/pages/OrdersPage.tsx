@@ -86,7 +86,7 @@ const OrdersPage = () => {
           <p className="text-gray-400">Sign in to view your order history</p>
           <Link
             to="/login"
-            className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-black font-semibold hover:from-orange-400 hover:to-pink-400 transition-all"
+            className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold hover:from-orange-400 hover:to-pink-400 transition-all"
           >
             Go to Login
           </Link>
@@ -152,7 +152,7 @@ const OrdersPage = () => {
 
           <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-[#FF6B35] flex items-center justify-center">
                 <CreditCard className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -237,7 +237,7 @@ const OrdersPage = () => {
             {orders.length === 0 && (
               <Link
                 to="/events"
-                className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-black font-semibold hover:from-orange-400 hover:to-pink-400 transition-all"
+                className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold hover:from-orange-400 hover:to-pink-400 transition-all"
               >
                 Browse Events
               </Link>
@@ -332,7 +332,7 @@ const OrdersPage = () => {
                             View Event
                           </Link>
                           <button
-                            className="px-5 py-2 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-black text-sm font-semibold hover:from-orange-400 hover:to-pink-400 transition-all flex items-center gap-2"
+                            className="px-5 py-2 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black text-sm font-semibold hover:from-orange-400 hover:to-pink-400 transition-all flex items-center gap-2"
                           >
                             <Download className="w-4 h-4" />
                             <span>Download Ticket</span>

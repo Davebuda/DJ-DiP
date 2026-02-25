@@ -234,7 +234,7 @@ const DJProfileEditor = () => {
                 type="text"
                 value={formData.stageName}
                 onChange={(e) => setFormData(prev => ({ ...prev, stageName: e.target.value }))}
-                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-pink-500 focus:outline-none"
+                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none"
                 required
               />
             </div>
@@ -248,7 +248,7 @@ const DJProfileEditor = () => {
                 value={formData.tagline}
                 onChange={(e) => setFormData(prev => ({ ...prev, tagline: e.target.value }))}
                 placeholder="e.g., Bringing the underground to the main stage"
-                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-pink-500 focus:outline-none"
+                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none"
               />
             </div>
 
@@ -261,7 +261,7 @@ const DJProfileEditor = () => {
                 value={formData.genre}
                 onChange={(e) => setFormData(prev => ({ ...prev, genre: e.target.value }))}
                 placeholder="e.g., Techno, House, Trance"
-                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-pink-500 focus:outline-none"
+                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none"
                 required
               />
             </div>
@@ -274,7 +274,7 @@ const DJProfileEditor = () => {
                 type="number"
                 value={formData.yearsExperience}
                 onChange={(e) => setFormData(prev => ({ ...prev, yearsExperience: parseInt(e.target.value) || 0 }))}
-                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-pink-500 focus:outline-none"
+                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none"
                 min="0"
               />
             </div>
@@ -293,7 +293,7 @@ const DJProfileEditor = () => {
                 onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
                 rows={3}
                 placeholder="A brief introduction shown on DJ cards..."
-                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-pink-500 focus:outline-none resize-none"
+                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none resize-none"
                 required
               />
             </div>
@@ -307,7 +307,7 @@ const DJProfileEditor = () => {
                 onChange={(e) => setFormData(prev => ({ ...prev, longBio: e.target.value }))}
                 rows={6}
                 placeholder="Your full story, musical journey, and what makes you unique..."
-                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-pink-500 focus:outline-none resize-none"
+                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none resize-none"
               />
             </div>
           </section>
@@ -325,7 +325,7 @@ const DJProfileEditor = () => {
                 onChange={(e) => setFormData(prev => ({ ...prev, specialties: e.target.value }))}
                 rows={2}
                 placeholder="e.g., Live mixing, vinyl sets, production"
-                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-pink-500 focus:outline-none resize-none"
+                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none resize-none"
               />
             </div>
 
@@ -338,7 +338,7 @@ const DJProfileEditor = () => {
                 onChange={(e) => setFormData(prev => ({ ...prev, achievements: e.target.value }))}
                 rows={2}
                 placeholder="Awards, notable gigs, releases..."
-                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-pink-500 focus:outline-none resize-none"
+                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none resize-none"
               />
             </div>
 
@@ -351,7 +351,7 @@ const DJProfileEditor = () => {
                 onChange={(e) => setFormData(prev => ({ ...prev, influencedBy: e.target.value }))}
                 rows={2}
                 placeholder="Artists and DJs who inspire you..."
-                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-pink-500 focus:outline-none resize-none"
+                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none resize-none"
               />
             </div>
 
@@ -364,7 +364,7 @@ const DJProfileEditor = () => {
                 onChange={(e) => setFormData(prev => ({ ...prev, equipmentUsed: e.target.value }))}
                 rows={2}
                 placeholder="CDJs, mixers, controllers, software..."
-                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-pink-500 focus:outline-none resize-none"
+                className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none resize-none"
               />
             </div>
           </section>
@@ -376,7 +376,7 @@ const DJProfileEditor = () => {
               <button
                 type="button"
                 onClick={addTopTrack}
-                className="px-3 py-1.5 rounded-lg bg-pink-500/20 hover:bg-pink-500/30 border border-pink-500/30 text-pink-400 text-sm flex items-center gap-2"
+                className="px-3 py-1.5 rounded-lg bg-pink-500/20 hover:bg-pink-500/30 border border-orange-500/30 text-orange-400 text-sm flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
                 Add Track
@@ -393,7 +393,7 @@ const DJProfileEditor = () => {
                   value={track}
                   onChange={(e) => updateTopTrack(index, e.target.value)}
                   placeholder="Track name"
-                  className="flex-1 px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-pink-500 focus:outline-none"
+                  className="flex-1 px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none"
                 />
                 <button
                   type="button"
@@ -433,14 +433,14 @@ const DJProfileEditor = () => {
                   value={link.label}
                   onChange={(e) => updateSocialLink(index, 'label', e.target.value)}
                   placeholder="Platform (e.g., SoundCloud)"
-                  className="w-1/3 px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-pink-500 focus:outline-none"
+                  className="w-1/3 px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none"
                 />
                 <input
                   type="url"
                   value={link.url}
                   onChange={(e) => updateSocialLink(index, 'url', e.target.value)}
                   placeholder="https://..."
-                  className="flex-1 px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-pink-500 focus:outline-none"
+                  className="flex-1 px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none"
                 />
                 <button
                   type="button"
@@ -471,7 +471,7 @@ const DJProfileEditor = () => {
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-3 rounded-lg bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white font-semibold transition flex items-center gap-2 disabled:opacity-50"
+              className="px-6 py-3 rounded-lg bg-gradient-to-r from-[#FF6B35] to-orange-500 hover:from-orange-600 hover:to-orange-600 text-white font-semibold transition flex items-center gap-2 disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               {saving ? 'Saving...' : 'Save Profile'}

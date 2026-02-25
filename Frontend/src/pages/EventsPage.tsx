@@ -283,7 +283,7 @@ const EventsPage = () => {
                       className={`flex-1 px-4 py-3 rounded-full font-semibold text-sm tracking-wide text-center transition-all flex items-center justify-center gap-2 ${
                         addedToCart[event.id]
                           ? 'bg-green-500 text-white'
-                          : 'bg-gradient-to-r from-orange-400 to-pink-500 text-black hover:from-orange-300 hover:to-pink-400'
+                          : 'bg-gradient-to-r from-orange-400 to-[#FF6B35] text-black hover:from-orange-300 hover:to-pink-400'
                       }`}
                     >
                       <ShoppingCart className="w-4 h-4" />

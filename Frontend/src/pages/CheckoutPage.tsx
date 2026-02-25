@@ -209,7 +209,7 @@ const CheckoutForm = () => {
         <button
           type="submit"
           disabled={!isAuthenticated || processing || !stripe}
-          className="w-full rounded-full bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-3 text-black font-semibold uppercase tracking-[0.3em] disabled:opacity-50"
+          className="w-full rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] px-6 py-3 text-black font-semibold uppercase tracking-[0.3em] disabled:opacity-50"
         >
           {processing ? 'Processing…' : 'Pay with Card'}
         </button>

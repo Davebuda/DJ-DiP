@@ -129,7 +129,7 @@ const AdminDJApplicationsPage = () => {
             <p className="text-sm uppercase tracking-[0.6em] text-red-400 font-bold">Admin Panel</p>
           </div>
           <h1 className="text-5xl font-black">
-            DJ Application <span className="bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">Review</span>
+            DJ Application <span className="bg-gradient-to-r from-red-500 via-orange-500 to-purple-500 bg-clip-text text-transparent">Review</span>
           </h1>
           <p className="text-gray-400 mt-4">Review and approve DJ applications</p>
         </div>
@@ -162,7 +162,7 @@ const AdminDJApplicationsPage = () => {
                   className="relative group rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-900 via-zinc-900 to-black overflow-hidden transition-all duration-300 hover:border-red-500/30"
                 >
                   {/* Glow effect */}
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-red-600/0 via-pink-600/0 to-purple-600/0 group-hover:from-red-600/20 group-hover:via-pink-600/20 group-hover:to-purple-600/20 rounded-3xl blur-xl transition-all duration-500" />
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-red-600/0 via-orange-600/0 to-purple-600/0 group-hover:from-red-600/20 group-hover:via-orange-600/20 group-hover:to-purple-600/20 rounded-3xl blur-xl transition-all duration-500" />
 
                   <div className="relative p-8">
                     <div className="flex flex-col lg:flex-row gap-8">
@@ -311,7 +311,7 @@ const AdminDJApplicationsPage = () => {
                 <button
                   onClick={handleReject}
                   disabled={rejecting}
-                  className="flex-1 px-6 py-4 rounded-xl font-bold text-sm tracking-wide bg-gradient-to-r from-red-600 to-pink-600 text-white hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  className="flex-1 px-6 py-4 rounded-xl font-bold text-sm tracking-wide bg-gradient-to-r from-red-600 to-[#5D1725] text-white hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
                   {rejecting ? 'Rejecting...' : 'Confirm Rejection'}
                 </button>

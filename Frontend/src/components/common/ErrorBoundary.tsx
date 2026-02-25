@@ -35,7 +35,7 @@ class ErrorBoundary extends Component<Props, State> {
           <div className="max-w-2xl w-full space-y-6">
             <div className="relative rounded-3xl border border-red-500/30 bg-gradient-to-br from-red-950/20 via-zinc-900 to-black p-8">
               {/* Glow effect */}
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-red-600/20 via-pink-600/20 to-purple-600/20 rounded-3xl blur-xl" />
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-red-600/20 via-orange-600/20 to-purple-600/20 rounded-3xl blur-xl" />
 
               <div className="relative space-y-4">
                 {/* Icon */}
@@ -75,7 +75,7 @@ class ErrorBoundary extends Component<Props, State> {
                 <div className="flex gap-3 pt-4">
                   <button
                     onClick={() => window.location.reload()}
-                    className="px-6 py-3 rounded-xl font-bold text-sm tracking-wide bg-gradient-to-r from-red-600 to-pink-600 text-white hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] hover:scale-105 transition-all"
+                    className="px-6 py-3 rounded-xl font-bold text-sm tracking-wide bg-gradient-to-r from-red-600 to-[#5D1725] text-white hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] hover:scale-105 transition-all"
                   >
                     Reload Page
                   </button>

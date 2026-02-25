@@ -96,7 +96,8 @@ namespace DJDiP.Application.Services
                     Id = user.Id,
                     Email = user.Email,
                     FullName = user.FullName,
-                    Role = MapRole(user.Role)
+                    Role = MapRole(user.Role),
+                    ProfilePictureUrl = user.ProfilePictureUrl
                 }
             };
         }

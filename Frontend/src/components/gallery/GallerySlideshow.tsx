@@ -143,7 +143,7 @@ const GallerySlideshow = () => {
       <div className="mt-6 text-center">
         <a
           href="/gallery"
-          className="inline-block px-8 py-3 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full font-bold uppercase tracking-wider text-white hover:scale-105 transition-transform"
+          className="inline-block px-8 py-3 bg-gradient-to-r from-orange-500 to-[#FF6B35] rounded-full font-bold uppercase tracking-wider text-white hover:scale-105 transition-transform"
         >
           View Full Gallery
         </a>

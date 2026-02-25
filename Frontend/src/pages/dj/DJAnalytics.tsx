@@ -60,7 +60,7 @@ const DJAnalytics = () => {
             label="Profile Views (30d)"
             value={stats.profileViews}
             change={+23}
-            color="from-purple-500 to-pink-500"
+            color="from-purple-500 to-[#FF6B35]"
           />
           <StatCard
             icon={<Music className="w-6 h-6" />}
@@ -136,7 +136,7 @@ const DJAnalytics = () => {
                 key={entry.id}
                 className="bg-black/30 border border-white/10 rounded-lg p-4 flex items-center gap-4"
               >
-                <div className="flex-shrink-0 w-8 h-8 rounded bg-gradient-to-br from-pink-500 to-orange-500 flex items-center justify-center font-bold">
+                <div className="flex-shrink-0 w-8 h-8 rounded bg-gradient-to-br from-[#FF6B35] to-orange-500 flex items-center justify-center font-bold">
                   {index + 1}
                 </div>
                 <div className="flex-1 min-w-0">

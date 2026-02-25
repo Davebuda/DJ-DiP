@@ -5,19 +5,19 @@ const modules = [
     title: 'DJ Profiles',
     description: 'Create new DJs, edit bios, manage media, and remove inactive artists.',
     to: '/admin/djs',
-    accent: 'from-pink-500/60 to-orange-500/40',
+    accent: 'from-orange-600/50 to-[#5D1725]/60',
   },
   {
     title: 'Events',
     description: 'Curate the calendar, assign venues and DJs, and upload hero media.',
     to: '/admin/events',
-    accent: 'from-indigo-500/60 to-cyan-500/40',
+    accent: 'from-[#FF6B35]/40 to-orange-900/60',
   },
   {
     title: 'Venues',
     description: 'Keep venue capacities, addresses, and contacts up to date.',
     to: '/admin/venues',
-    accent: 'from-emerald-500/60 to-lime-500/40',
+    accent: 'from-[#5D1725]/50 to-orange-950/60',
   },
 ];
 
@@ -25,7 +25,7 @@ const AdminDashboardPage = () => (
   <div className="space-y-8">
     <header className="space-y-2">
       <p className="text-xs uppercase tracking-[0.4em] text-gray-400">Control Center</p>
-      <h1 className="text-3xl font-semibold">Admin Dashboard</h1>
+      <h1 className="font-display text-3xl font-bold tracking-tight">Admin Dashboard</h1>
       <p className="text-sm text-gray-400">
         Pick a module below to manage DJs, events, venues, and settings. Each panel routes you into
         its dedicated CRUD workspace.

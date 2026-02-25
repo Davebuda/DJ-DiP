@@ -106,7 +106,8 @@ const ImageUpload = ({
         Authorization: `Bearer ${authToken}`,
       };
 
-      const response = await fetch('http://localhost:5000/api/FileUpload/image', {
+      const uploadBase = import.meta.env.VITE_UPLOAD_API_URL ?? 'http://localhost:5000/api/FileUpload/image';
+      const response = await fetch(uploadBase, {
         method: 'POST',
         headers,
         body: formData,
@@ -161,7 +162,7 @@ const ImageUpload = ({
       <div className="relative">
         {/* Preview Area */}
         <div
-          className={`relative ${aspectRatio} w-full rounded-lg border-2 border-dashed border-gray-600 bg-gray-900 overflow-hidden cursor-pointer hover:border-pink-500 transition-colors group`}
+          className={`relative ${aspectRatio} w-full rounded-lg border-2 border-dashed border-gray-600 bg-gray-900 overflow-hidden cursor-pointer hover:border-orange-500 transition-colors group`}
           onClick={handleClick}
         >
           {preview ? (
@@ -198,7 +199,7 @@ const ImageUpload = ({
           {uploading && (
             <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
               <div className="flex flex-col items-center">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-pink-500"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500"></div>
                 <p className="text-white text-sm mt-3">Uploading...</p>
               </div>
             </div>

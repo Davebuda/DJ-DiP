@@ -10,6 +10,7 @@ export const LOGIN = gql`
         email
         fullName
         role
+        profilePictureUrl
       }
     }
   }
@@ -25,6 +26,7 @@ export const REGISTER = gql`
         email
         fullName
         role
+        profilePictureUrl
       }
     }
   }
@@ -708,5 +710,21 @@ export const REJECT_DJ_APPLICATION = gql`
       reviewedAt
       rejectionReason
     }
+  }
+`;
+
+export const GET_USER_BY_ID = gql`
+  query GetUserById($userId: String!) {
+    userById(userId: $userId) {
+      fullName
+      email
+      profilePictureUrl
+    }
+  }
+`;
+
+export const UPDATE_USER_PROFILE = gql`
+  mutation UpdateUserProfile($input: UpdateUserProfileInput!) {
+    updateUserProfile(input: $input)
   }
 `;

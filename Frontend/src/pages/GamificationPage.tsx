@@ -84,7 +84,7 @@ const GamificationPage = () => {
       name: 'Superfan',
       description: 'Attend 25 events',
       icon: Medal,
-      color: 'from-purple-500 to-pink-500',
+      color: 'from-purple-500 to-[#FF6B35]',
       unlocked: eventsAttended >= 25,
       progress: eventsAttended,
       requirement: 25,
@@ -104,7 +104,7 @@ const GamificationPage = () => {
       name: 'Early Bird',
       description: 'Purchase 10 tickets in advance',
       icon: Zap,
-      color: 'from-pink-500 to-purple-500',
+      color: 'from-[#FF6B35] to-purple-500',
       unlocked: tickets.length >= 10,
       progress: tickets.length,
       requirement: 10,
@@ -148,7 +148,7 @@ const GamificationPage = () => {
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="flex justify-center">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-500 to-[#FF6B35] flex items-center justify-center">
               <Trophy className="w-10 h-10 text-white" />
             </div>
           </div>
@@ -170,7 +170,7 @@ const GamificationPage = () => {
               onClick={() => setActiveTab(tab.id as any)}
               className={`px-6 py-3 rounded-full font-semibold transition-all ${
                 activeTab === tab.id
-                  ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-black'
+                  ? 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black'
                   : 'bg-white/10 text-gray-400 hover:bg-white/20'
               }`}
             >
@@ -195,7 +195,7 @@ const GamificationPage = () => {
               </div>
 
               <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6 text-center space-y-3">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-[#FF6B35] flex items-center justify-center mx-auto">
                   <TrendingUp className="w-8 h-8 text-white" />
                 </div>
                 <div>
@@ -307,7 +307,7 @@ const GamificationPage = () => {
                           </div>
                           <div className="h-2 bg-black/40 rounded-full overflow-hidden">
                             <div
-                              className="h-full bg-gradient-to-r from-orange-500 to-pink-500 transition-all duration-500"
+                              className="h-full bg-gradient-to-r from-orange-500 to-[#FF6B35] transition-all duration-500"
                               style={{ width: `${Math.min(progress, 100)}%` }}
                             />
                           </div>

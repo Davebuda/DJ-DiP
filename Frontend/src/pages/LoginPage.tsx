@@ -59,7 +59,7 @@ const LoginPage = () => {
           <button
             type="submit"
             disabled={submitting || loading}
-            className="w-full rounded-2xl bg-gradient-to-r from-orange-400 to-pink-500 px-4 py-3 text-sm font-semibold tracking-[0.3em] uppercase text-black disabled:opacity-60"
+            className="w-full rounded-2xl bg-gradient-to-r from-orange-400 to-[#FF6B35] px-4 py-3 text-sm font-semibold tracking-[0.3em] uppercase text-black disabled:opacity-60"
           >
             {submitting ? 'Signing in...' : 'Sign In'}
           </button>

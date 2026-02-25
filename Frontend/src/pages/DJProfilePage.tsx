@@ -152,12 +152,13 @@ const DJProfilePage = () => {
   const socialEntries = dj.socialLinks?.filter((link) => Boolean(link.url)) ?? [];
 
   return (
-    <div className="bg-[#050214] text-white min-h-screen">
+    <div className="bg-[#0a0805] text-white min-h-screen">
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroBackground} alt={dj.stageName} className="h-[540px] w-full object-cover opacity-60" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#050010] via-[#080016]/90 to-transparent" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(255,0,128,0.32),transparent_45%)] mix-blend-screen" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0805] via-[#0a0805]/90 to-transparent" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(255,107,53,0.20),transparent_50%)] mix-blend-screen" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_80%,rgba(93,23,37,0.25),transparent_50%)]" />
         </div>
 
         <div className="relative max-w-6xl mx-auto px-6 lg:px-10 py-16">
@@ -166,7 +167,7 @@ const DJProfilePage = () => {
             <div className="space-y-8 border-l border-white/10 pl-6">
               <div className="space-y-3">
                 <p className="text-xs uppercase tracking-[0.6em] text-orange-300">Featured DJ</p>
-                <h1 className="text-5xl font-black leading-tight">{dj.stageName}</h1>
+                <h1 className="font-display text-5xl font-black leading-tight tracking-tight">{dj.stageName}</h1>
                 {dj.tagline && <p className="text-lg text-gray-300">{dj.tagline}</p>}
               </div>
               <p className="text-sm text-gray-300 leading-relaxed">{dj.bio}</p>
@@ -226,8 +227,10 @@ const DJProfilePage = () => {
                 type="button"
                 onClick={handleFollowClick}
                 disabled={followLoading || unfollowLoading || followStatusLoading}
-                className={`w-full px-8 py-3 rounded-full text-xs font-semibold tracking-[0.3em] uppercase ${
-                  isFollowing ? 'bg-white text-black' : 'bg-gradient-to-r from-orange-400 to-pink-500 text-black'
+                className={`w-full px-8 py-3 rounded-full text-xs font-semibold tracking-[0.3em] uppercase transition-all ${
+                  isFollowing
+                    ? 'bg-white text-black hover:bg-gray-200'
+                    : 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-white hover:shadow-[0_0_30px_rgba(255,107,53,0.5)] hover:scale-105'
                 } disabled:opacity-60`}
               >
                 {isFollowing ? 'Following' : 'Follow'}

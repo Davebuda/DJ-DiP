@@ -1,15 +1,61 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useQuery } from '@apollo/client';
-import { GET_USER_TICKETS } from '../graphql/queries';
-import { Ticket, Calendar, TrendingUp, Upload, Award, Music, Users, ShoppingCart } from 'lucide-react';
-import { useMemo } from 'react';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_USER_TICKETS, UPDATE_USER_PROFILE } from '../graphql/queries';
+import { Ticket, Calendar, TrendingUp, Upload, Award, Music, Users, ShoppingCart, Camera } from 'lucide-react';
+import { useMemo, useRef, useState } from 'react';
 import { useCartStore } from '../stores/cartStore';
 
 const DashboardPage = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, updateUserLocal } = useAuth();
   const { getTotalItems } = useCartStore();
   const cartItems = getTotalItems();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+
+  const [updateUserProfile] = useMutation(UPDATE_USER_PROFILE);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setAvatarUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'avatars');
+
+      const token = localStorage.getItem('accessToken');
+      const uploadBase = import.meta.env.VITE_UPLOAD_API_URL ?? 'http://localhost:5000/api/FileUpload/image';
+      const response = await fetch(uploadBase, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Upload failed');
+      const data = await response.json();
+      const profilePictureUrl: string = data.url;
+
+      await updateUserProfile({
+        variables: {
+          input: {
+            id: user.id,
+            fullName: user.fullName,
+            email: user.email,
+            profilePictureUrl,
+          },
+        },
+      });
+
+      updateUserLocal({ profilePictureUrl });
+    } catch (err) {
+      console.error('Avatar upload error:', err);
+      alert('Failed to upload profile picture. Please try again.');
+    } finally {
+      setAvatarUploading(false);
+    }
+  };
 
   const { data, loading } = useQuery(GET_USER_TICKETS, {
     variables: { userId: user?.id ?? '' },
@@ -32,7 +78,7 @@ const DashboardPage = () => {
       label: 'Active Tickets',
       value: upcomingTickets.length,
       icon: Ticket,
-      color: 'from-orange-500 to-pink-500',
+      color: 'from-orange-500 to-[#FF6B35]',
       link: '/tickets',
     },
     {
@@ -64,14 +110,14 @@ const DashboardPage = () => {
       description: 'Discover upcoming shows and performances',
       icon: Calendar,
       link: '/events',
-      color: 'from-orange-500 to-pink-500',
+      color: 'from-orange-500 to-[#FF6B35]',
     },
     {
       title: 'Explore DJs',
       description: 'Follow your favorite artists',
       icon: Users,
       link: '/djs',
-      color: 'from-purple-500 to-pink-500',
+      color: 'from-purple-500 to-[#FF6B35]',
     },
     {
       title: 'Upload Media',
@@ -98,7 +144,7 @@ const DashboardPage = () => {
       title: 'Playlists',
       description: 'Discover curated music sets',
       icon: Music,
-      color: 'from-pink-500 to-red-500',
+      color: 'from-[#FF6B35] to-red-500',
       link: '/playlists',
     },
   ];
@@ -111,7 +157,7 @@ const DashboardPage = () => {
           <p className="text-gray-400">Sign in to access your personalized dashboard</p>
           <Link
             to="/login"
-            className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-black font-semibold hover:from-orange-400 hover:to-pink-400 transition-all"
+            className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold hover:from-orange-400 hover:to-pink-400 transition-all"
           >
             Go to Login
           </Link>
@@ -124,10 +170,49 @@ const DashboardPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-[#0a0505] via-[#050202] to-black text-white">
       <div className="max-w-7xl mx-auto px-6 py-16 space-y-12">
         {/* Header */}
-        <div className="space-y-2">
-          <p className="text-sm uppercase tracking-[0.5em] text-orange-400">Welcome Back</p>
-          <h1 className="text-5xl font-bold">{user?.fullName || 'Music Lover'}</h1>
-          <p className="text-gray-400 text-lg">Your personalized music event hub</p>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+          {/* Avatar */}
+          <div className="relative flex-shrink-0">
+            <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-white/10 bg-gradient-to-br from-orange-500 to-[#5D1725] flex items-center justify-center">
+              {user?.profilePictureUrl ? (
+                <img
+                  src={user.profilePictureUrl}
+                  alt={user.fullName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-3xl font-bold text-white">
+                  {(user?.fullName || 'M')[0].toUpperCase()}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={avatarUploading}
+              className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-orange-500 hover:bg-orange-400 border-2 border-black flex items-center justify-center transition-colors disabled:opacity-60"
+              title="Change profile picture"
+            >
+              {avatarUploading ? (
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <Camera className="w-4 h-4 text-white" />
+              )}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarUpload}
+            />
+          </div>
+
+          {/* Text */}
+          <div className="space-y-1">
+            <p className="text-sm uppercase tracking-[0.5em] text-orange-400">Welcome Back</p>
+            <h1 className="text-5xl font-bold">{user?.fullName || 'Music Lover'}</h1>
+            <p className="text-gray-400 text-lg">Your personalized music event hub</p>
+          </div>
         </div>
 
         {/* Stats Grid */}
@@ -176,7 +261,7 @@ const DashboardPage = () => {
                 >
                   <div className="p-6 space-y-4">
                     <div className="flex items-start justify-between">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-[#FF6B35] flex items-center justify-center flex-shrink-0">
                         <Ticket className="w-6 h-6 text-white" />
                       </div>
                       <span className="text-xs px-3 py-1 rounded-full bg-green-500/20 text-green-400 border border-green-500/30">

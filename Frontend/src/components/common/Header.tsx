@@ -41,7 +41,7 @@ const Header = () => {
                 className={({ isActive }) =>
                   [
                     'px-3 py-1.5 rounded-full transition-colors',
-                    isActive ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-black font-semibold' : 'text-gray-300 hover:text-white',
+                    isActive ? 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold' : 'text-gray-300 hover:text-white',
                   ].join(' ')
                 }
               >
@@ -81,7 +81,7 @@ const Header = () => {
           {isDJ && !isAdmin && (
             <Link
               to="/dj-dashboard"
-              className="hidden md:inline-flex rounded-full border border-pink-500/40 bg-gradient-to-r from-pink-500/10 to-orange-500/10 px-3 py-1.5 text-xs uppercase tracking-[0.4em] text-pink-400 hover:text-white hover:border-pink-400"
+              className="hidden md:inline-flex rounded-full border border-orange-500/40 bg-gradient-to-r from-[#FF6B35]/10 to-orange-500/10 px-3 py-1.5 text-xs uppercase tracking-[0.4em] text-orange-400 hover:text-white hover:border-orange-400"
             >
               DJ Dashboard
             </Link>
@@ -95,7 +95,7 @@ const Header = () => {
           >
             <ShoppingCart className="w-5 h-5 text-gray-300 hover:text-white" />
             {cartItemCount > 0 && (
-              <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-black text-xs font-bold flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black text-xs font-bold flex items-center justify-center">
                 {cartItemCount > 9 ? '9+' : cartItemCount}
               </span>
             )}
@@ -104,7 +104,7 @@ const Header = () => {
           {isAuthenticated ? (
             <button
               onClick={logout}
-              className="rounded-full bg-white text-black px-5 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.35em] hover:bg-gradient-to-r hover:from-orange-500 hover:to-pink-500 hover:text-black transition"
+              className="rounded-full bg-white text-black px-5 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.35em] hover:bg-gradient-to-r hover:from-orange-500 hover:to-[#FF6B35] hover:text-black transition"
             >
               Logout
             </button>

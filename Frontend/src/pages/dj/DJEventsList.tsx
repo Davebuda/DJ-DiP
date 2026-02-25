@@ -73,7 +73,7 @@ const DJEventsList = () => {
             onClick={() => setFilter('upcoming')}
             className={`px-4 py-2 font-medium transition ${
               filter === 'upcoming'
-                ? 'text-white border-b-2 border-pink-500'
+                ? 'text-white border-b-2 border-orange-500'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
@@ -83,7 +83,7 @@ const DJEventsList = () => {
             onClick={() => setFilter('past')}
             className={`px-4 py-2 font-medium transition ${
               filter === 'past'
-                ? 'text-white border-b-2 border-pink-500'
+                ? 'text-white border-b-2 border-orange-500'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
@@ -93,7 +93,7 @@ const DJEventsList = () => {
             onClick={() => setFilter('all')}
             className={`px-4 py-2 font-medium transition ${
               filter === 'all'
-                ? 'text-white border-b-2 border-pink-500'
+                ? 'text-white border-b-2 border-orange-500'
                 : 'text-gray-400 hover:text-white'
             }`}
           >
@@ -123,7 +123,7 @@ const DJEventsList = () => {
         )}
 
         {/* Info Box */}
-        <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg p-6">
+        <div className="bg-gradient-to-r from-purple-500/20 to-[#FF6B35]/20 border border-purple-500/30 rounded-lg p-6">
           <h3 className="font-semibold text-white mb-2 flex items-center gap-2">
             <Users className="w-5 h-5" />
             Need More Gigs?
@@ -148,7 +148,7 @@ const EventCard = ({ event }: { event: any }) => {
   const isPast = eventDate < new Date();
 
   return (
-    <div className={`bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:border-pink-500/30 transition ${
+    <div className={`bg-white/5 border border-white/10 rounded-lg overflow-hidden hover:border-orange-500/30 transition ${
       isPast ? 'opacity-60' : ''
     }`}>
       {event.imageUrl && (
@@ -196,7 +196,7 @@ const EventCard = ({ event }: { event: any }) => {
           )}
           <Link
             to={`/events/${event.eventId}`}
-            className="flex items-center gap-1 text-sm text-pink-400 hover:text-pink-300 transition"
+            className="flex items-center gap-1 text-sm text-orange-400 hover:text-orange-300 transition"
           >
             View Details
             <ExternalLink className="w-3 h-3" />

@@ -12,6 +12,7 @@ using DJDiP.Application.DTO.PaymentDTO;
 using DJDiP.Application.DTO.SongDTO;
 using DJDiP.Application.DTO.SiteSettingsDTO;
 using DJDiP.Application.DTO.GalleryDTO;
+using DJDiP.Application.DTO.UserDTO;
 using DJDiP.Application.DTO.Auth;
 using DJDiP.Application.Interfaces;
 using DJDiP.Application.Services;
@@ -50,6 +51,8 @@ builder.Host.UseSerilog();
 
 builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("Jwt"));
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+builder.Services.Configure<DJDiP.Application.Options.EmailSettings>(builder.Configuration.GetSection("Email"));
+builder.Services.AddScoped<DJDiP.Application.Interfaces.IEmailService, DJDiP.Application.Services.EmailService>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -464,6 +467,14 @@ public class Query
         [Service] IGalleryMediaService galleryMediaService)
     {
         return await galleryMediaService.GetByUserAsync(userId);
+    }
+
+    // User profile query
+    public async Task<UserDetailsDto?> UserById(
+        string userId,
+        [Service] IUserService userService)
+    {
+        return await userService.GetUserByIdAsync(userId);
     }
 }
 
@@ -1119,6 +1130,30 @@ public class Mutation
         await ticketService.DeleteAsync(ticketId);
         return true;
     }
+
+    // USER PROFILE MUTATIONS
+    public async Task<bool> UpdateUserProfile(
+        UpdateUserProfileInput input,
+        [Service] IUserService userService)
+    {
+        var dto = new UpdateUserDto
+        {
+            Id = input.Id,
+            FullName = input.FullName,
+            Email = input.Email,
+            ProfilePictureUrl = input.ProfilePictureUrl
+        };
+        await userService.UpdateUserAsync(dto);
+        return true;
+    }
+}
+
+public class UpdateUserProfileInput
+{
+    public string Id { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string? ProfilePictureUrl { get; set; }
 }
 
 public class RegisterInput

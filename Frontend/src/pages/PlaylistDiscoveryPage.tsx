@@ -22,7 +22,7 @@ const PlaylistDiscoveryPage = () => {
         <div className="max-w-4xl space-y-4">
           <p className="text-xs uppercase tracking-[0.4em] text-purple-300/70">Playlist Explorer</p>
           <h1 className="text-4xl font-semibold leading-tight">
-            Dive into genre stories, <span className="text-[#FF0080]">powered by Spotify</span>
+            Dive into genre stories, <span className="text-orange-400">powered by Spotify</span>
           </h1>
           <p className="text-sm text-gray-300">
             We curate living, breathing playlists with the DJs shaping the KlubN universe. Expect

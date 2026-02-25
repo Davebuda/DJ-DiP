@@ -1,17 +1,25 @@
 using DJDiP.Application.DTO.TicketDTO;
 using DJDiP.Application.Interfaces;
 using DJDiP.Domain.Models;
+using Microsoft.Extensions.Logging;
 
 namespace DJDiP.Application.Services
 {
     public class TicketService : ITicketService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailService _emailService;
+        private readonly ILogger<TicketService> _logger;
         private const decimal NORWEGIAN_EVENT_VAT_RATE = 0.12m; // 12% VAT for event tickets in Norway
 
-        public TicketService(IUnitOfWork unitOfWork)
+        public TicketService(
+            IUnitOfWork unitOfWork,
+            IEmailService emailService,
+            ILogger<TicketService> logger)
         {
             _unitOfWork = unitOfWork;
+            _emailService = emailService;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<TicketDto>> GetTicketsByUserIdAsync(string userId)
@@ -71,7 +79,30 @@ namespace DJDiP.Application.Services
             await _unitOfWork.Tickets.AddAsync(ticket);
             await _unitOfWork.SaveChangesAsync();
 
-            // TODO: Send confirmation email here
+            // Send purchase confirmation email (non-blocking — failure never aborts the transaction)
+            var emailAddress = ticketDto.Email ?? user.Email;
+            if (!string.IsNullOrWhiteSpace(emailAddress))
+            {
+                try
+                {
+                    await _emailService.SendTicketConfirmationAsync(
+                        toEmail: emailAddress,
+                        toName: user.FullName ?? user.Email,
+                        ticketNumber: ticket.TicketNumber,
+                        eventTitle: ev.Title,
+                        eventDate: ev.Date,
+                        venueName: ev.Venue?.Name ?? "TBA",
+                        venueCity: ev.Venue?.City ?? string.Empty,
+                        totalPrice: ticket.TotalPrice,
+                        qrCode: ticket.QRCode);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex,
+                        "Failed to send ticket confirmation email for ticket {TicketNumber}",
+                        ticket.TicketNumber);
+                }
+            }
 
             return MapToDto(ticket, ev);
         }
@@ -84,7 +115,6 @@ namespace DJDiP.Application.Services
                 return false;
             }
 
-            // Validate ticket can be checked in
             if (!ticket.IsValid || ticket.IsUsed || ticket.Status != TicketStatus.Active)
             {
                 return false;
@@ -121,8 +151,7 @@ namespace DJDiP.Application.Services
                 return null;
             }
 
-            // Norwegian consumer rights: Check if ticket can be cancelled
-            // Typically 14 days for distance sales, but event tickets may have different rules
+            // Norwegian consumer rights: typically 14 days for distance sales
             ticket.Status = TicketStatus.Cancelled;
             ticket.CancelledDate = DateTime.UtcNow;
             ticket.CancellationReason = cancelDto.Reason;
@@ -142,14 +171,40 @@ namespace DJDiP.Application.Services
                 return null;
             }
 
+            var transactionId = Guid.NewGuid().ToString("N");
+
             ticket.Status = TicketStatus.Refunded;
             ticket.RefundedDate = DateTime.UtcNow;
-            ticket.RefundTransactionId = Guid.NewGuid().ToString("N");
+            ticket.RefundTransactionId = transactionId;
 
             await _unitOfWork.Tickets.UpdateAsync(ticket);
             await _unitOfWork.SaveChangesAsync();
 
-            // TODO: Process actual refund through payment gateway
+            // NOTE: When StripePaymentService.RefundAsync is wired up, call it here:
+            // await _stripePaymentService.RefundAsync(ticket.StripePaymentIntentId, ticket.TotalPrice);
+
+            // Send refund confirmation email
+            var emailAddress = ticket.ConfirmationEmailSentTo;
+            var user = ticket.User;
+            if (!string.IsNullOrWhiteSpace(emailAddress) && ticket.Event != null)
+            {
+                try
+                {
+                    await _emailService.SendRefundConfirmationAsync(
+                        toEmail: emailAddress,
+                        toName: user?.FullName ?? user?.Email ?? "Valued Customer",
+                        ticketNumber: ticket.TicketNumber,
+                        eventTitle: ticket.Event.Title,
+                        refundAmount: ticket.TotalPrice,
+                        transactionId: transactionId);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex,
+                        "Failed to send refund email for ticket {TicketNumber}",
+                        ticket.TicketNumber);
+                }
+            }
 
             return MapToDto(ticket);
         }
@@ -168,6 +223,10 @@ namespace DJDiP.Application.Services
                 throw new ArgumentException("Target user not found");
             }
 
+            var eventTitle = ticket.Event?.Title ?? "your event";
+            var eventDate = ticket.Event?.Date ?? DateTime.UtcNow;
+            var venueName = ticket.Event?.Venue?.Name ?? "TBA";
+
             ticket.TransferredFromUserId = ticket.UserId;
             ticket.UserId = transferDto.ToUserId;
             ticket.TransferredDate = DateTime.UtcNow;
@@ -175,13 +234,33 @@ namespace DJDiP.Application.Services
             ticket.ConfirmationEmailSentTo = transferDto.ToEmail;
             ticket.ConfirmationEmailSentDate = DateTime.UtcNow;
 
-            // Generate new QR code for security
+            // New QR code for security — previous owner's QR is now invalid
             ticket.QRCode = GenerateQRCode();
 
             await _unitOfWork.Tickets.UpdateAsync(ticket);
             await _unitOfWork.SaveChangesAsync();
 
-            // TODO: Send transfer confirmation emails
+            // Send transfer confirmation to the new owner
+            if (!string.IsNullOrWhiteSpace(transferDto.ToEmail))
+            {
+                try
+                {
+                    await _emailService.SendTicketTransferConfirmationAsync(
+                        toEmail: transferDto.ToEmail,
+                        toName: newUser.FullName ?? newUser.Email,
+                        ticketNumber: ticket.TicketNumber,
+                        eventTitle: eventTitle,
+                        eventDate: eventDate,
+                        venueName: venueName,
+                        qrCode: ticket.QRCode);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex,
+                        "Failed to send transfer email for ticket {TicketNumber}",
+                        ticket.TicketNumber);
+                }
+            }
 
             return MapToDto(ticket);
         }
@@ -198,21 +277,19 @@ namespace DJDiP.Application.Services
             await _unitOfWork.SaveChangesAsync();
         }
 
-        private string GenerateTicketNumber()
+        private static string GenerateTicketNumber()
         {
-            // Format: TKT-YYYYMMDD-XXXXX
             var datePart = DateTime.UtcNow.ToString("yyyyMMdd");
-            var randomPart = Guid.NewGuid().ToString("N").Substring(0, 5).ToUpperInvariant();
+            var randomPart = Guid.NewGuid().ToString("N")[..5].ToUpperInvariant();
             return $"TKT-{datePart}-{randomPart}";
         }
 
-        private string GenerateQRCode()
+        private static string GenerateQRCode()
         {
-            // Generate a secure QR code identifier
             return Guid.NewGuid().ToString("N").ToUpperInvariant();
         }
 
-        private TicketDto MapToDto(Ticket ticket, Event? ev = null)
+        private static TicketDto MapToDto(Ticket ticket, Event? ev = null)
         {
             ev ??= ticket.Event ?? throw new InvalidOperationException("Ticket is missing event navigation");
 

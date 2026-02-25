@@ -24,7 +24,7 @@ const CartPage = () => {
         <div className="max-w-4xl mx-auto px-6 py-20">
           <div className="text-center space-y-6">
             <div className="flex justify-center">
-              <div className="rounded-full bg-gradient-to-br from-orange-500/20 to-pink-500/20 p-8">
+              <div className="rounded-full bg-gradient-to-br from-orange-500/20 to-[#FF6B35]/20 p-8">
                 <ShoppingCart className="w-16 h-16 text-orange-400" />
               </div>
             </div>
@@ -34,7 +34,7 @@ const CartPage = () => {
             </div>
             <Link
               to="/events"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-black font-semibold hover:from-orange-400 hover:to-pink-400 transition-all"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold hover:from-orange-400 hover:to-pink-400 transition-all"
             >
               <span>Browse Events</span>
               <ArrowRight className="w-5 h-5" />
@@ -173,7 +173,7 @@ const CartPage = () => {
 
               <button
                 onClick={handleCheckout}
-                className="w-full px-6 py-4 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-black font-bold uppercase tracking-wider hover:from-orange-400 hover:to-pink-400 transition-all shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 flex items-center justify-center gap-2"
+                className="w-full px-6 py-4 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-bold uppercase tracking-wider hover:from-orange-400 hover:to-pink-400 transition-all shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 flex items-center justify-center gap-2"
               >
                 <span>Proceed to Checkout</span>
                 <ArrowRight className="w-5 h-5" />

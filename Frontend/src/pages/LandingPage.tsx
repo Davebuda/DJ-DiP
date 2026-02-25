@@ -89,10 +89,10 @@ const HeroSection = ({
             {siteSettings.tagline && (
               <p className="text-xs font-medium tracking-wider text-orange-400 uppercase">{siteSettings.tagline}</p>
             )}
-            <h1 className="text-4xl md:text-6xl font-bold leading-[1.1] tracking-tight">
+            <h1 className="font-display text-5xl md:text-7xl font-bold leading-[1.0] tracking-tight">
               {siteSettings.heroTitle ?? (
                 <>
-                  Your Night.<br />Your Music.<br /><span className="bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 bg-clip-text text-transparent">Your KlubN.</span>
+                  Your Night.<br />Your Music.<br /><span className="bg-gradient-to-r from-orange-400 via-[#FF6B35] to-orange-500 bg-clip-text text-transparent">Your KlubN.</span>
                 </>
               )}
             </h1>
@@ -105,7 +105,7 @@ const HeroSection = ({
           <div className="flex flex-wrap gap-3">
             <Link
               to={siteSettings.heroCtaLink || '/events'}
-              className="px-6 py-3 text-sm rounded-full bg-gradient-to-r from-orange-600 via-red-600 to-orange-700 text-white font-semibold hover:from-orange-500 hover:via-red-500 hover:to-orange-600 transition-all shadow-lg shadow-orange-600/30 hover:shadow-orange-500/50"
+              className="px-6 py-3 text-sm rounded-full bg-gradient-to-r from-orange-500 via-[#FF6B35] to-orange-600 text-white font-semibold hover:from-orange-400 hover:via-[#FF6B35] hover:to-orange-500 transition-all shadow-lg shadow-orange-600/30 hover:shadow-orange-500/50"
             >
               {siteSettings.heroCtaText || 'Explore Events'}
             </Link>
@@ -117,7 +117,7 @@ const HeroSection = ({
             </Link>
           </div>
           {highlight && (
-            <div className="space-y-2 border-l-4 border-orange-500 pl-4 py-2 bg-gradient-to-r from-orange-950/40 via-red-950/30 to-transparent rounded-r">
+            <div className="space-y-2 border-l-4 border-orange-500 pl-4 py-2 bg-gradient-to-r from-orange-950/40 via-[#5D1725]/20 to-transparent rounded-r">
               <p className="text-[0.65rem] font-semibold tracking-wide text-orange-400 uppercase">Next Event</p>
               <p className="text-base font-semibold text-white">{highlight.title}</p>
               <p className="text-xs text-gray-400 line-clamp-2">{highlight.description}</p>
@@ -166,7 +166,7 @@ const HeroSection = ({
                       aria-label={`Show ${item.label}`}
                       onClick={() => setIndex(idx)}
                       className={`h-1 rounded-full transition-all ${
-                        idx === safeIndex ? 'w-8 bg-gradient-to-r from-orange-500 to-red-600' : 'w-6 bg-white/20 hover:bg-orange-600/40'
+                        idx === safeIndex ? 'w-8 bg-gradient-to-r from-orange-500 to-[#FF6B35]' : 'w-6 bg-white/20 hover:bg-orange-600/40'
                       }`}
                     />
                   ))}
@@ -197,7 +197,7 @@ const HeroSection = ({
           <div className="grid grid-cols-3 gap-4 border border-orange-600/30 rounded-xl px-4 py-4 bg-gradient-to-br from-orange-950/20 to-black/60 backdrop-blur-sm shadow-lg shadow-orange-900/20">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
-                <p className="text-2xl font-bold bg-gradient-to-br from-orange-400 to-red-500 bg-clip-text text-transparent">{stat.value}</p>
+                <p className="text-2xl font-bold bg-gradient-to-br from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">{stat.value}</p>
                 <p className="text-[0.6rem] uppercase tracking-wide text-orange-400/70 mt-0.5">{stat.label}</p>
               </div>
             ))}
@@ -314,7 +314,7 @@ const LandingPage = () => {
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wider text-orange-500">Upcoming Events</p>
             <h2 className="text-3xl lg:text-4xl font-bold leading-tight">
-              What's On<br /><span className="bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">This Month</span>
+              What's On<br /><span className="bg-gradient-to-r from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">This Month</span>
             </h2>
           </div>
           <p className="text-sm text-gray-400 lg:max-w-md leading-relaxed">
@@ -362,7 +362,7 @@ const LandingPage = () => {
                         </div>
                         <div className="text-right">
                           <p className="text-[0.6rem] font-medium text-orange-400/60">Price</p>
-                          <p className="text-lg font-bold bg-gradient-to-br from-orange-400 to-red-500 bg-clip-text text-transparent mt-0.5">
+                          <p className="text-lg font-bold bg-gradient-to-br from-orange-400 to-[#FF6B35] bg-clip-text text-transparent mt-0.5">
                             ${event.price}
                           </p>
                         </div>
@@ -381,19 +381,19 @@ const LandingPage = () => {
         <div className="rounded-xl border border-orange-600/30 bg-gradient-to-br from-orange-950/20 via-zinc-900/40 to-black/50 p-6 shadow-lg shadow-orange-900/20">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div className="text-center space-y-1">
-              <p className="text-3xl font-bold bg-gradient-to-br from-orange-400 to-red-500 bg-clip-text text-transparent">{events.length || 24}</p>
+              <p className="text-3xl font-bold bg-gradient-to-br from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">{events.length || 24}</p>
               <p className="text-xs text-orange-400/70">Active Events</p>
             </div>
             <div className="text-center space-y-1">
-              <p className="text-3xl font-bold bg-gradient-to-br from-orange-400 to-red-500 bg-clip-text text-transparent">{djs.length || 42}</p>
+              <p className="text-3xl font-bold bg-gradient-to-br from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">{djs.length || 42}</p>
               <p className="text-xs text-orange-400/70">Featured DJs</p>
             </div>
             <div className="text-center space-y-1">
-              <p className="text-3xl font-bold bg-gradient-to-br from-orange-400 to-red-500 bg-clip-text text-transparent">12</p>
+              <p className="text-3xl font-bold bg-gradient-to-br from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">12</p>
               <p className="text-xs text-orange-400/70">Cities</p>
             </div>
             <div className="text-center space-y-1">
-              <p className="text-3xl font-bold bg-gradient-to-br from-orange-400 to-red-500 bg-clip-text text-transparent">24/7</p>
+              <p className="text-3xl font-bold bg-gradient-to-br from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">24/7</p>
               <p className="text-xs text-orange-400/70">Support</p>
             </div>
           </div>
@@ -406,7 +406,7 @@ const LandingPage = () => {
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wider text-orange-500">Featured Artists</p>
             <h2 className="text-3xl lg:text-4xl font-bold leading-tight">
-              <span className="bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">The Lineup</span>
+              <span className="bg-gradient-to-r from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">The Lineup</span>
             </h2>
           </div>
           <Link
@@ -453,7 +453,7 @@ const LandingPage = () => {
                           .map((genre: string) => (
                             <span
                               key={`${dj.id}-${genre.trim()}`}
-                              className="px-2 py-0.5 rounded-full text-[0.6rem] font-medium bg-gradient-to-r from-orange-950/50 to-red-950/50 text-orange-300 border border-orange-600/30"
+                              className="px-2 py-0.5 rounded-full text-[0.6rem] font-medium bg-gradient-to-r from-orange-950/50 to-[#5D1725]/50 text-orange-300 border border-orange-600/30"
                             >
                               {genre.trim()}
                             </span>
@@ -486,7 +486,7 @@ const LandingPage = () => {
         <div className="text-center space-y-3">
           <p className="text-xs font-semibold uppercase tracking-wider text-orange-500">Gallery</p>
           <h2 className="text-3xl md:text-4xl font-bold leading-tight">
-            <span className="bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">Captured Moments</span>
+            <span className="bg-gradient-to-r from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">Captured Moments</span>
           </h2>
           <p className="text-sm text-gray-400 max-w-2xl mx-auto leading-relaxed">
             Real nights, real energy. See what goes down when the lights drop.
@@ -501,7 +501,7 @@ const LandingPage = () => {
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wider text-orange-500">Listen Now</p>
             <h2 className="text-3xl lg:text-4xl font-bold leading-tight">
-              <span className="bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">Mixes & Sets</span>
+              <span className="bg-gradient-to-r from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">Mixes & Sets</span>
             </h2>
           </div>
           <p className="text-sm text-gray-400 lg:max-w-md leading-relaxed">

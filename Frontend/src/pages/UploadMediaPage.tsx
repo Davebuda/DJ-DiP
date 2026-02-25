@@ -12,7 +12,7 @@ type FilePreview = {
 };
 
 const UploadMediaPage = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [files, setFiles] = useState<FilePreview[]>([]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -66,7 +66,8 @@ const UploadMediaPage = () => {
 
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await fetch('http://localhost:5000/api/FileUpload/image', {
+      const uploadBase = import.meta.env.VITE_UPLOAD_API_URL ?? 'http://localhost:5000/api/FileUpload/image';
+      const response = await fetch(uploadBase, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -155,7 +156,7 @@ const UploadMediaPage = () => {
           <p className="text-gray-400">Sign in to share your event moments with the community</p>
           <Link
             to="/login"
-            className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-black font-semibold hover:from-orange-400 hover:to-pink-400 transition-all"
+            className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold hover:from-orange-400 hover:to-pink-400 transition-all"
           >
             Go to Login
           </Link>
@@ -193,7 +194,7 @@ const UploadMediaPage = () => {
           >
             <div className="p-12 text-center space-y-4">
               <div className="flex justify-center">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-500 to-[#FF6B35] flex items-center justify-center">
                   <Upload className="w-10 h-10 text-white" />
                 </div>
               </div>
@@ -342,7 +343,7 @@ const UploadMediaPage = () => {
             <button
               type="submit"
               disabled={uploading || files.length === 0}
-              className="flex-1 px-8 py-4 rounded-full bg-gradient-to-r from-orange-500 to-pink-500 text-black font-bold uppercase tracking-wider hover:from-orange-400 hover:to-pink-400 transition-all shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 px-8 py-4 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-bold uppercase tracking-wider hover:from-orange-400 hover:to-pink-400 transition-all shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <Upload className="w-5 h-5" />
               <span>{uploading ? 'Uploading...' : `Upload ${files.length} ${files.length === 1 ? 'File' : 'Files'}`}</span>

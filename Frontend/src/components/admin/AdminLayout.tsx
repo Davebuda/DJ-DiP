@@ -6,6 +6,7 @@ import ErrorBoundary from '../common/ErrorBoundary';
 const adminNav = [
   { label: 'Overview', path: '/admin' },
   { label: 'DJs', path: '/admin/djs' },
+  { label: 'DJ Applications', path: '/admin/dj-applications' },
   { label: 'Events', path: '/admin/events' },
   { label: 'Venues', path: '/admin/venues' },
   { label: 'Tickets', path: '/admin/tickets' },

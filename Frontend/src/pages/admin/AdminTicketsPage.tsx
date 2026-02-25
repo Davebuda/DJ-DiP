@@ -25,7 +25,7 @@ interface TicketsQueryData {
 
 const AdminTicketsPage = () => {
   const inputClass =
-    'w-full rounded border border-white/10 bg-black/40 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#FF0080]';
+    'w-full rounded border border-white/10 bg-black/40 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500';
   const selectClass = `${inputClass} appearance-none`;
 
   const { data: eventsData } = useQuery(GET_EVENTS);
@@ -213,7 +213,7 @@ const AdminTicketsPage = () => {
           {selectedEventId && (
             <button
               type="button"
-              className="text-xs uppercase tracking-[0.3em] text-[#FF0080]"
+              className="text-xs uppercase tracking-[0.3em] text-orange-400"
               onClick={refreshTickets}
             >
               Refresh
@@ -251,7 +251,7 @@ const AdminTicketsPage = () => {
                     <td className="py-3 text-right space-x-2">
                       <button
                         type="button"
-                        className="text-xs uppercase tracking-wide text-[#FF0080]"
+                        className="text-xs uppercase tracking-wide text-orange-400"
                         disabled={checkingIn}
                         onClick={() =>
                           handleTicketAction(checkInTicket, ticket.id, 'Ticket marked as checked in.')

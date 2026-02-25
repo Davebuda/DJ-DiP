@@ -55,7 +55,7 @@ const DashboardTile = ({
 }) => (
   <Link
     to={to}
-    className="group rounded-2xl border border-white/10 bg-white/5 p-6 flex items-start gap-3 hover:border-pink-500/40 hover:bg-pink-500/5 transition"
+    className="group rounded-2xl border border-white/10 bg-white/5 p-6 flex items-start gap-3 hover:border-orange-500/40 hover:bg-pink-500/5 transition"
   >
     <div className="rounded-lg bg-white/5 p-2 text-pink-300">{icon}</div>
     <div className="space-y-2">

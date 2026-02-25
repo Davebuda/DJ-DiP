@@ -58,7 +58,7 @@ const NewsletterSignup = () => {
         <button
           type="submit"
           disabled={loading || status === 'success'}
-          className="px-8 py-4 rounded-full bg-gradient-to-r from-orange-400 to-pink-500 text-black font-semibold tracking-[0.2em] uppercase disabled:opacity-60"
+          className="px-8 py-4 rounded-full bg-gradient-to-r from-orange-400 to-[#FF6B35] text-black font-semibold tracking-[0.2em] uppercase disabled:opacity-60"
         >
           {buttonLabel}
         </button>

@@ -21,7 +21,8 @@ namespace DJDiP.Application.Services
             return new UserDetailsDto
             {
                 FullName = user.FullName,
-                Email = user.Email
+                Email = user.Email,
+                ProfilePictureUrl = user.ProfilePictureUrl
             };
         }
 
@@ -51,6 +52,9 @@ namespace DJDiP.Application.Services
 
             user.FullName = userDto.FullName;
             user.Email = userDto.Email;
+
+            if (userDto.ProfilePictureUrl != null)
+                user.ProfilePictureUrl = userDto.ProfilePictureUrl;
 
             await _unitOfWork.Users.UpdateAsync(user);
             await _unitOfWork.SaveChangesAsync();

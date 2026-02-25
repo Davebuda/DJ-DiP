@@ -59,7 +59,7 @@ const DJDashboard = () => {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-pink-500 to-orange-500 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#FF6B35] to-orange-500 bg-clip-text text-transparent">
               DJ Dashboard
             </h1>
             <p className="text-gray-400 mt-2">Welcome back, {djProfile.stageName || djProfile.name}!</p>
@@ -74,7 +74,7 @@ const DJDashboard = () => {
 
         {/* Profile Completion Banner */}
         {profileCompletionScore < 100 && (
-          <div className="bg-gradient-to-r from-orange-500/20 to-pink-500/20 border border-orange-500/30 rounded-lg p-6">
+          <div className="bg-gradient-to-r from-orange-500/20 to-[#FF6B35]/20 border border-orange-500/30 rounded-lg p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="font-semibold text-lg mb-1">Complete Your Profile</h3>
@@ -86,7 +86,7 @@ const DJDashboard = () => {
             </div>
             <div className="w-full bg-black/30 rounded-full h-2">
               <div
-                className="bg-gradient-to-r from-orange-500 to-pink-500 h-2 rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-orange-500 to-[#FF6B35] h-2 rounded-full transition-all duration-500"
                 style={{ width: `${profileCompletionScore}%` }}
               />
             </div>
@@ -113,13 +113,13 @@ const DJDashboard = () => {
             icon={<Calendar className="w-6 h-6" />}
             label="Upcoming Events"
             value={upcomingEvents.length}
-            color="from-pink-500 to-orange-500"
+            color="from-[#FF6B35] to-orange-500"
           />
           <StatCard
             icon={<Music className="w-6 h-6" />}
             label="Top Tracks"
             value={topTracksCount}
-            color="from-purple-500 to-pink-500"
+            color="from-purple-500 to-[#FF6B35]"
           />
           <StatCard
             icon={<Star className="w-6 h-6" />}
@@ -136,15 +136,15 @@ const DJDashboard = () => {
             title="Edit Profile"
             description="Update your bio, photos, and details"
             to="/dj-dashboard/edit-profile"
-            gradient="from-pink-500/20 to-orange-500/20"
-            borderColor="border-pink-500/30"
+            gradient="from-[#FF6B35]/20 to-orange-500/20"
+            borderColor="border-orange-500/30"
           />
           <ActionCard
             icon={<Music className="w-5 h-5" />}
             title="Manage Top 10"
             description="Curate your signature sound"
             to="/dj-dashboard/top10"
-            gradient="from-purple-500/20 to-pink-500/20"
+            gradient="from-purple-500/20 to-[#FF6B35]/20"
             borderColor="border-purple-500/30"
           />
           <ActionCard
@@ -166,7 +166,7 @@ const DJDashboard = () => {
               <h2 className="text-2xl font-bold">Upcoming Events</h2>
               <Link
                 to="/dj-dashboard/events"
-                className="text-sm text-pink-400 hover:text-pink-300"
+                className="text-sm text-orange-400 hover:text-orange-300"
               >
                 View All
               </Link>
@@ -207,10 +207,10 @@ const DJDashboard = () => {
                     <img
                       src={djProfile.profilePictureUrl}
                       alt={djProfile.stageName}
-                      className="w-16 h-16 rounded-full object-cover border-2 border-pink-500"
+                      className="w-16 h-16 rounded-full object-cover border-2 border-orange-500"
                     />
                   ) : (
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-pink-500 to-orange-500 flex items-center justify-center text-2xl font-bold">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#FF6B35] to-orange-500 flex items-center justify-center text-2xl font-bold">
                       {djProfile.stageName?.[0] || djProfile.name?.[0]}
                     </div>
                   )}
@@ -231,7 +231,7 @@ const DJDashboard = () => {
                 <div className="pt-4 border-t border-white/10">
                   <Link
                     to="/dj-dashboard/edit-profile"
-                    className="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 transition text-sm font-semibold"
+                    className="flex items-center justify-center gap-2 w-full py-2 rounded-lg bg-gradient-to-r from-[#FF6B35] to-orange-500 hover:from-orange-600 hover:to-orange-600 transition text-sm font-semibold"
                   >
                     <Edit className="w-4 h-4" />
                     Edit Profile

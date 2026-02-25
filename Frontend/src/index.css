@@ -4,35 +4,111 @@
 
 @layer base {
   :root {
-    font-family: 'Inter', system-ui, sans-serif;
     color-scheme: dark;
+  }
+
+  html {
+    /* Satoshi as the default body font */
+    font-family: 'Satoshi', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   body {
     @apply bg-black text-white antialiased;
+    font-family: 'Satoshi', system-ui, sans-serif;
+    font-feature-settings: 'ss01', 'ss02';
+  }
+
+  /* Clash Display on all heading levels */
+  h1, h2, h3 {
+    font-family: 'Clash Display', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  /* Cabinet Grotesk for h4–h6 — personality sub-headings */
+  h4, h5, h6 {
+    font-family: 'Cabinet Grotesk', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.01em;
   }
 }
 
 @layer components {
+  /* Cards */
   .card {
     @apply bg-[#0c0c0c] border border-white/10 rounded-3xl p-6;
   }
 
+  /* Primary CTA — white pill */
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-full bg-white text-black font-semibold uppercase tracking-[0.3em] px-6 py-3 transition hover:bg-red-600 hover:text-white;
+    @apply inline-flex items-center justify-center rounded-full bg-white text-black font-bold uppercase tracking-wider px-6 py-3 transition-all hover:bg-orange-50 hover:shadow-[0_0_30px_rgba(255,107,53,0.3)];
+    font-family: 'Cabinet Grotesk', system-ui, sans-serif;
+    letter-spacing: 0.12em;
   }
 
+  /* Orange gradient CTA */
+  .btn-brand {
+    @apply inline-flex items-center justify-center rounded-full font-bold uppercase tracking-wider px-6 py-3 transition-all;
+    font-family: 'Cabinet Grotesk', system-ui, sans-serif;
+    letter-spacing: 0.12em;
+    background: linear-gradient(135deg, #FF6B35, #ff8c35);
+    color: #fff;
+    &:hover {
+      box-shadow: 0 0 35px rgba(255, 107, 53, 0.55);
+      transform: scale(1.03);
+    }
+  }
+
+  /* Ghost outline button */
   .btn-outline {
-    @apply inline-flex items-center justify-center rounded-full border border-white/30 text-white font-semibold uppercase tracking-[0.3em] px-6 py-3 transition hover:border-white hover:bg-white/10;
+    @apply inline-flex items-center justify-center rounded-full border border-white/30 text-white font-bold uppercase tracking-wider px-6 py-3 transition-all hover:border-orange-400 hover:text-orange-300;
+    font-family: 'Cabinet Grotesk', system-ui, sans-serif;
+    letter-spacing: 0.12em;
+  }
+
+  /* Display text — Clash Display, very large */
+  .text-display {
+    font-family: 'Clash Display', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  /* Eyebrow label — Cabinet Grotesk, spaced caps */
+  .text-eyebrow {
+    font-family: 'Cabinet Grotesk', system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+  }
+
+  /* Mono label — DM Mono for counters, ticket numbers */
+  .text-mono {
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-weight: 400;
+  }
+
+  /* Tile pattern (used in TicketsPage etc) */
+  .tile {
+    @apply rounded-3xl border border-white/10 bg-[#0c0c0c];
   }
 }
 
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
-
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #ff7c30, #ff0050);
+  background: linear-gradient(180deg, #FF6B35, #5D1725);
   border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ff8c35, #7a1e30);
 }

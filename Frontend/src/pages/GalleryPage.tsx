@@ -45,7 +45,7 @@ const GalleryPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0b0505] via-[#1a0903] to-[#0b0505]">
+    <div className="min-h-screen bg-gradient-to-br from-[#0a0805] via-[#0d0606] to-[#0a0a0a]">
       {/* Hero Section with Video */}
       <section className="relative h-[60vh] overflow-hidden">
         <video
@@ -60,7 +60,7 @@ const GalleryPage = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/90" />
 
         <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
-          <h1 className="text-6xl md:text-8xl font-bold uppercase tracking-[0.4em] text-white mb-6">
+          <h1 className="font-display text-6xl md:text-8xl font-bold uppercase tracking-[0.3em] text-white mb-6">
             Gallery
           </h1>
           <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl">
@@ -70,7 +70,7 @@ const GalleryPage = () => {
           {user && (
             <button
               onClick={() => setShowUploadModal(true)}
-              className="group relative px-8 py-4 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full font-bold uppercase tracking-wider hover:scale-105 transition-transform"
+              className="group relative px-8 py-4 bg-gradient-to-r from-orange-500 to-[#FF6B35] rounded-full font-bold uppercase tracking-wider hover:shadow-[0_0_30px_rgba(255,107,53,0.5)] hover:scale-105 transition-all"
             >
               <div className="flex items-center gap-3">
                 <Upload className="w-5 h-5" />
@@ -90,7 +90,7 @@ const GalleryPage = () => {
             {data.galleryMedia.map((media: GalleryMedia) => (
               <div
                 key={media.id}
-                className="group relative bg-gradient-to-br from-[#1a0903]/50 to-[#0b0505]/50 rounded-[24px] overflow-hidden border border-white/5 hover:border-orange-500/30 transition-all cursor-pointer"
+                className="group relative bg-gradient-to-br from-zinc-900/60 to-black/60 rounded-[24px] overflow-hidden border border-white/5 hover:border-orange-500/40 transition-all cursor-pointer"
                 onClick={() => setSelectedMedia(media)}
               >
                 {/* Thumbnail */}
@@ -130,7 +130,7 @@ const GalleryPage = () => {
                         e.stopPropagation();
                         handleLike(media.id);
                       }}
-                      className="flex items-center gap-1 hover:text-pink-400 transition-colors"
+                      className="flex items-center gap-1 hover:text-orange-400 transition-colors"
                     >
                       <Heart className="w-4 h-4" />
                       <span>{media.likeCount}</span>
@@ -150,7 +150,7 @@ const GalleryPage = () => {
             {user && (
               <button
                 onClick={() => setShowUploadModal(true)}
-                className="mt-6 px-8 py-3 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full font-bold uppercase tracking-wider hover:scale-105 transition-transform"
+                className="mt-6 px-8 py-3 bg-gradient-to-r from-orange-500 to-[#FF6B35] rounded-full font-bold uppercase tracking-wider hover:shadow-[0_0_25px_rgba(255,107,53,0.5)] hover:scale-105 transition-all"
               >
                 Be the First to Share
               </button>
@@ -192,7 +192,7 @@ const GalleryPage = () => {
               <div className="flex items-center gap-6">
                 <button
                   onClick={() => handleLike(selectedMedia.id)}
-                  className="flex items-center gap-2 text-pink-400 hover:text-pink-300"
+                  className="flex items-center gap-2 text-orange-400 hover:text-orange-300"
                 >
                   <Heart className="w-5 h-5" />
                   <span>{selectedMedia.likeCount} likes</span>
@@ -260,7 +260,8 @@ const UploadMomentModal = ({ onClose, onSuccess }: UploadMomentModalProps) => {
 
     try {
       const token = localStorage.getItem('accessToken');
-      const response = await fetch('http://localhost:5000/api/FileUpload/image', {
+      const uploadBase = import.meta.env.VITE_UPLOAD_API_URL ?? 'http://localhost:5000/api/FileUpload/image';
+      const response = await fetch(uploadBase, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -315,7 +316,7 @@ const UploadMomentModal = ({ onClose, onSuccess }: UploadMomentModalProps) => {
       onClick={onClose}
     >
       <div
-        className="relative max-w-2xl w-full bg-gradient-to-br from-[#1a0903] to-[#0b0505] rounded-[32px] border border-white/10 p-8"
+        className="relative max-w-2xl w-full bg-gradient-to-br from-zinc-900 to-black rounded-[32px] border border-white/10 p-8"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-3xl font-bold uppercase tracking-wider mb-6 text-white">
@@ -403,7 +404,7 @@ const UploadMomentModal = ({ onClose, onSuccess }: UploadMomentModalProps) => {
             <button
               type="submit"
               disabled={uploading || !mediaUrl}
-              className="flex-1 py-3 bg-gradient-to-r from-orange-500 to-pink-500 rounded-full font-bold uppercase tracking-wider hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 py-3 bg-gradient-to-r from-orange-500 to-[#FF6B35] rounded-full font-bold uppercase tracking-wider hover:shadow-[0_0_25px_rgba(255,107,53,0.5)] hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {uploading ? 'Uploading...' : 'Upload'}
             </button>
