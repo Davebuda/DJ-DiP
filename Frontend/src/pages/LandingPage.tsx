@@ -40,6 +40,9 @@ const HeroSection = ({
     heroBackgroundVideoUrl?: string;
     heroOverlayOpacity?: number;
     tagline?: string;
+    heroGenres?: string;
+    heroLocation?: string;
+    heroVibes?: string;
   };
 }) => {
   const [activeShowcaseIndex, setActiveShowcaseIndex] = useState(0);
@@ -94,7 +97,11 @@ const HeroSection = ({
       <div className="absolute inset-x-0 bottom-0 z-10 pb-7 pointer-events-none">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col gap-4">
           <div className="flex items-center gap-3 flex-wrap pointer-events-auto">
-            {['Techno', 'House', 'Afro House', 'Minimal', 'Deep House', 'Amapiano', 'Drum & Bass'].map((genre) => (
+            {(siteSettings.heroGenres ?? 'Techno, House, Afro House, Minimal, Deep House, Amapiano, Drum & Bass')
+              .split(',')
+              .map((g: string) => g.trim())
+              .filter(Boolean)
+              .map((genre: string) => (
               <span
                 key={genre}
                 className="px-4 py-1.5 rounded-full border border-white/[0.10] bg-white/[0.05] text-xs uppercase tracking-[0.25em] text-gray-300 backdrop-blur-sm hover:border-orange-400/30 hover:text-white transition-colors cursor-default"
@@ -103,16 +110,19 @@ const HeroSection = ({
               </span>
             ))}
             <span className="mx-2 h-4 w-px bg-white/10" />
-            <span className="text-xs uppercase tracking-[0.25em] text-orange-400/60 font-medium">Oslo · Every Weekend</span>
+            <span className="text-xs uppercase tracking-[0.25em] text-orange-400/60 font-medium">{siteSettings.heroLocation || 'Oslo · Every Weekend'}</span>
           </div>
           <div className="flex items-center gap-5 text-[0.7rem] uppercase tracking-[0.3em] text-white/25">
-            <span>Underground culture</span>
-            <span className="h-1 w-1 rounded-full bg-white/20" />
-            <span>Live sets</span>
-            <span className="h-1 w-1 rounded-full bg-white/20" />
-            <span>Late night energy</span>
-            <span className="h-1 w-1 rounded-full bg-white/20" />
-            <span>Sound first</span>
+            {(siteSettings.heroVibes || 'Underground culture, Live sets, Late night energy, Sound first')
+              .split(',')
+              .map((v: string) => v.trim())
+              .filter(Boolean)
+              .map((vibe: string, i: number) => (
+              <span key={vibe} className="contents">
+                {i > 0 && <span className="h-1 w-1 rounded-full bg-white/20" />}
+                <span>{vibe}</span>
+              </span>
+            ))}
           </div>
         </div>
       </div>
@@ -352,20 +362,26 @@ const LandingPage = () => {
       <section className="max-w-7xl mx-auto px-6 lg:px-8 py-20 lg:py-24">
         <div className="flex flex-col lg:flex-row lg:items-start gap-8 lg:gap-16">
           <ScrollReveal className="lg:w-1/2 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-orange-500">The Culture</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-orange-500">{siteSettings.cultureHeading || 'The Culture'}</p>
             <LineReveal>
               <h2 className="text-3xl lg:text-5xl font-bold leading-[1.1]">
-                Where Oslo Comes<br />
-                <span className="shimmer-text bg-gradient-to-r from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">Alive At Night.</span>
+                {(() => {
+                  const headline = siteSettings.brandHeadline || 'Where Oslo Comes Alive At Night';
+                  const words = headline.split(' ');
+                  const half = Math.ceil(words.length / 2);
+                  return (
+                    <>
+                      {words.slice(0, half).join(' ')}<br />
+                      <span className="shimmer-text bg-gradient-to-r from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">{words.slice(half).join(' ')}.</span>
+                    </>
+                  );
+                })()}
               </h2>
             </LineReveal>
           </ScrollReveal>
           <ScrollReveal className="lg:w-1/2 lg:pt-14" delay={0.15}>
             <p className="text-base lg:text-lg text-gray-300/80 leading-relaxed max-w-lg">
-              KlubN is Oslo's home for high-energy club culture — Afrobeat, Hip Hop,
-              Shatta, Amapiano, and more. Featuring the best local and international
-              DJs, we create nights that set the standard and introduce the next wave
-              in Oslo nightlife.
+              {siteSettings.brandNarrative || "KlubN is Oslo's home for high-energy club culture — Afrobeat, Hip Hop, Shatta, Amapiano, and more. Featuring the best local and international DJs, we create nights that set the standard and introduce the next wave in Oslo nightlife."}
             </p>
           </ScrollReveal>
         </div>
@@ -379,7 +395,7 @@ const LandingPage = () => {
         <ScrollReveal>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-wider text-orange-500">What's Coming</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-orange-500">{siteSettings.eventsHeading || "What's Coming"}</p>
               <h2 className="text-3xl lg:text-4xl font-bold">Upcoming Events</h2>
             </div>
             <Link
@@ -528,7 +544,7 @@ const LandingPage = () => {
       <section className="max-w-7xl mx-auto px-6 lg:px-8 py-20 lg:py-24">
         <div className="flex flex-col lg:flex-row lg:items-start gap-8 lg:gap-16">
           <ScrollReveal className="lg:w-1/2 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-orange-500">The Concept</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-orange-500">{siteSettings.conceptHeading || 'The Concept'}</p>
             <LineReveal>
               <h2 className="text-3xl lg:text-5xl font-bold leading-[1.1]">
                 Unmatched Club<br />
@@ -582,7 +598,7 @@ const LandingPage = () => {
       <section className="max-w-7xl mx-auto px-6 lg:px-8 pt-20 pb-10">
         <div className="flex flex-col lg:flex-row lg:items-start gap-8 lg:gap-16">
           <ScrollReveal className="lg:w-1/2 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-orange-500">The Lineup</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-orange-500">{siteSettings.lineupHeading || 'The Lineup'}</p>
             <LineReveal>
               <h2 className="text-3xl lg:text-5xl font-bold leading-[1.1]">
                 Oslo's Best.<br />

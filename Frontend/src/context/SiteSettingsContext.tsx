@@ -39,6 +39,18 @@ export interface SiteSettings {
   metaKeywords: string;
   footerText: string;
   copyrightText: string;
+  // Landing page content fields
+  heroGenres: string;
+  heroLocation: string;
+  heroVibes: string;
+  brandHeadline: string;
+  brandNarrative: string;
+  eventsHeading: string;
+  cultureHeading: string;
+  conceptHeading: string;
+  lineupHeading: string;
+  galleryVideoUrl: string;
+  eventsTagline: string;
 }
 
 export const defaultSiteSettings: SiteSettings = {
@@ -79,6 +91,18 @@ export const defaultSiteSettings: SiteSettings = {
   metaKeywords: '',
   footerText: 'Nightlife technology for the selectors, venues, and fans pushing culture forward.',
   copyrightText: `© ${new Date().getFullYear()} Lets Go KlubN. Crafted for the culture.`,
+  // Landing page content
+  heroGenres: 'Techno, House, Afro House, Minimal, Deep House, Amapiano, Drum & Bass',
+  heroLocation: 'Oslo · Every Weekend',
+  heroVibes: 'Underground culture, Live sets, Late night energy, Sound first',
+  brandHeadline: 'Where Oslo Comes Alive At Night',
+  brandNarrative: '',
+  eventsHeading: "What's Coming",
+  cultureHeading: 'The Culture',
+  conceptHeading: 'The Concept',
+  lineupHeading: 'The Lineup',
+  galleryVideoUrl: '/media/sections/gallery/last 04.10.klubn.mp4',
+  eventsTagline: 'Curated nights. Handpicked lineups.',
 };
 
 type SiteSettingsContextValue = {

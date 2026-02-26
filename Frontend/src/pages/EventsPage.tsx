@@ -96,7 +96,7 @@ const EventsPage = () => {
       {/* Tagline + Search */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10 pb-8 space-y-6">
         <p className="text-base md:text-lg text-gray-300/80 leading-relaxed max-w-2xl">
-          Curated nights. Handpicked lineups.
+          {siteSettings.eventsTagline || 'Curated nights. Handpicked lineups.'}
           <span className="text-orange-400 font-medium"> Every set tells a story</span> — find yours.
         </p>
 

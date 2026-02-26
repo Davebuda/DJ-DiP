@@ -26,6 +26,11 @@ import AdminDJsPage from './pages/admin/AdminDJsPage';
 import AdminPlaylistsPage from './pages/admin/AdminPlaylistsPage';
 import AdminTicketsPage from './pages/admin/AdminTicketsPage';
 import AdminSiteSettingsPage from './pages/admin/AdminSiteSettingsPage';
+import AdminGalleryPage from './pages/admin/AdminGalleryPage';
+import AdminGenresPage from './pages/admin/AdminGenresPage';
+import AdminUsersPage from './pages/admin/AdminUsersPage';
+import AdminNewsletterPage from './pages/admin/AdminNewsletterPage';
+import AdminContentPage from './pages/admin/AdminContentPage';
 import AdminDJApplicationsPage from './pages/AdminDJApplicationsPage';
 import AdminLayout from './components/admin/AdminLayout';
 import DJRoute from './components/auth/DJRoute';
@@ -123,6 +128,11 @@ const App = () => (
       <Route path="dj-applications" element={<AdminDJApplicationsPage />} />
       <Route path="tickets" element={<AdminTicketsPage />} />
       <Route path="playlists" element={<AdminPlaylistsPage />} />
+      <Route path="gallery" element={<AdminGalleryPage />} />
+      <Route path="genres" element={<AdminGenresPage />} />
+      <Route path="users" element={<AdminUsersPage />} />
+      <Route path="newsletter" element={<AdminNewsletterPage />} />
+      <Route path="content" element={<AdminContentPage />} />
       <Route path="site-settings" element={<AdminSiteSettingsPage />} />
     </Route>
   </Routes>

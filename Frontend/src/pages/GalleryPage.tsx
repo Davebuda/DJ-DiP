@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_GALLERY_MEDIA, CREATE_GALLERY_MEDIA, LIKE_GALLERY_MEDIA } from '../graphql/queries';
 import { useAuth } from '../context/AuthContext';
+import { useSiteSettings } from '../context/SiteSettingsContext';
 import { Heart, Eye, Upload, Play } from 'lucide-react';
 
 interface GalleryMedia {
@@ -21,6 +22,7 @@ interface GalleryMedia {
 
 const GalleryPage = () => {
   const { user } = useAuth();
+  const { siteSettings } = useSiteSettings();
   const [selectedMedia, setSelectedMedia] = useState<GalleryMedia | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
 
@@ -55,7 +57,7 @@ const GalleryPage = () => {
           playsInline
           className="absolute inset-0 w-full h-full object-cover"
         >
-          <source src="/media/sections/gallery/last 04.10.klubn.mp4" type="video/mp4" />
+          <source src={siteSettings.galleryVideoUrl || '/media/sections/gallery/last 04.10.klubn.mp4'} type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/90" />
 

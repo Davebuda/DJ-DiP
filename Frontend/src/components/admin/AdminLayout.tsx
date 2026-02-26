@@ -9,8 +9,13 @@ const adminNav = [
   { label: 'DJ Applications', path: '/admin/dj-applications' },
   { label: 'Events', path: '/admin/events' },
   { label: 'Venues', path: '/admin/venues' },
+  { label: 'Genres', path: '/admin/genres' },
   { label: 'Tickets', path: '/admin/tickets' },
   { label: 'Playlists', path: '/admin/playlists' },
+  { label: 'Gallery', path: '/admin/gallery' },
+  { label: 'Users', path: '/admin/users' },
+  { label: 'Newsletter', path: '/admin/newsletter' },
+  { label: 'Content', path: '/admin/content' },
   { label: 'Site Settings', path: '/admin/site-settings' },
 ];
 
