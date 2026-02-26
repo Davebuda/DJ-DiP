@@ -200,63 +200,19 @@ export const GET_GENRES = gql`
 
 export const CREATE_GENRE = gql`
   mutation CreateGenre($input: CreateGenreInput!) {
-    createGenre(input: $input) {
-      id
-      name
-    }
+    createGenre(input: $input)
   }
 `;
 
 export const UPDATE_GENRE = gql`
   mutation UpdateGenre($id: UUID!, $input: UpdateGenreInput!) {
-    updateGenre(id: $id, input: $input) {
-      id
-      name
-    }
-  }
-`;
-
-export const DELETE_GENRE = gql`
-  mutation DeleteGenre($id: UUID!) {
-    deleteGenre(id: $id)
-  }
-`;
-
-export const GET_USERS = gql`
-  query GetUsers {
-    users {
-      id
-      email
-      fullName
-      role
-      profilePictureUrl
-      createdAt
-      isActive
-    }
-  }
-`;
-
-export const UPDATE_USER_ROLE = gql`
-  mutation UpdateUserRole($userId: String!, $role: String!) {
-    updateUserRole(userId: $userId, role: $role)
-  }
-`;
-
-export const DEACTIVATE_USER = gql`
-  mutation DeactivateUser($userId: String!) {
-    deactivateUser(userId: $userId)
-  }
-`;
-
-export const ACTIVATE_USER = gql`
-  mutation ActivateUser($userId: String!) {
-    activateUser(userId: $userId)
+    updateGenre(id: $id, input: $input)
   }
 `;
 
 export const GET_NEWSLETTER_SUBSCRIBERS = gql`
   query GetNewsletterSubscribers {
-    newsletterSubscribers {
+    newsletters {
       id
       email
       subscribedAt
@@ -265,25 +221,9 @@ export const GET_NEWSLETTER_SUBSCRIBERS = gql`
   }
 `;
 
-export const DELETE_NEWSLETTER_SUBSCRIBER = gql`
-  mutation DeleteNewsletterSubscriber($id: UUID!) {
-    deleteNewsletterSubscriber(id: $id)
-  }
-`;
-
-export const GET_ADMIN_STATS = gql`
-  query GetAdminStats {
-    adminStats {
-      totalUsers
-      totalEvents
-      totalDjs
-      totalVenues
-      totalTicketsSold
-      totalRevenue
-      pendingApplications
-      pendingGalleryMedia
-      newsletterSubscribers
-    }
+export const UNSUBSCRIBE_NEWSLETTER = gql`
+  mutation UnsubscribeNewsletter($id: UUID!) {
+    unsubscribeNewsletter(id: $id)
   }
 `;
 

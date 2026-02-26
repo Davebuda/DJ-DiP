@@ -4,7 +4,6 @@ import {
   GET_GENRES,
   CREATE_GENRE,
   UPDATE_GENRE,
-  DELETE_GENRE,
 } from '../../graphql/queries';
 
 interface Genre {
@@ -19,7 +18,6 @@ const AdminGenresPage = () => {
   const { data, loading, error, refetch } = useQuery(GET_GENRES);
   const [createGenre, { loading: creating }] = useMutation(CREATE_GENRE);
   const [updateGenre, { loading: saving }] = useMutation(UPDATE_GENRE);
-  const [deleteGenre, { loading: deleting }] = useMutation(DELETE_GENRE);
 
   const [name, setName] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -53,21 +51,6 @@ const AdminGenresPage = () => {
     setEditingId(genre.id);
     setName(genre.name);
     setFeedback(null);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Delete this genre? Events using it may lose their genre tag.')) return;
-    try {
-      await deleteGenre({ variables: { id } });
-      await refetch();
-      if (editingId === id) {
-        setEditingId(null);
-        setName('');
-      }
-      setFeedback({ type: 'success', text: 'Genre deleted.' });
-    } catch (err) {
-      setFeedback({ type: 'error', text: err instanceof Error ? err.message : 'Failed to delete genre.' });
-    }
   };
 
   const cancelEdit = () => {
@@ -159,21 +142,12 @@ const AdminGenresPage = () => {
                 }`}
               >
                 <span className="text-sm font-medium">{genre.name}</span>
-                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={() => handleEdit(genre)}
-                    className="text-[0.65rem] uppercase tracking-wide text-orange-400"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(genre.id)}
-                    className="text-[0.65rem] uppercase tracking-wide text-red-400"
-                    disabled={deleting}
-                  >
-                    Delete
-                  </button>
-                </div>
+                <button
+                  onClick={() => handleEdit(genre)}
+                  className="text-[0.65rem] uppercase tracking-wide text-orange-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  Edit
+                </button>
               </div>
             ))}
           </div>

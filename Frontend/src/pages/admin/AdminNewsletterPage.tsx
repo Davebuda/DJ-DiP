@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import {
   GET_NEWSLETTER_SUBSCRIBERS,
-  DELETE_NEWSLETTER_SUBSCRIBER,
+  UNSUBSCRIBE_NEWSLETTER,
 } from '../../graphql/queries';
 
 interface Subscriber {
@@ -17,12 +17,12 @@ const AdminNewsletterPage = () => {
     'w-full rounded border border-white/10 bg-black/40 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500';
 
   const { data, loading, error, refetch } = useQuery(GET_NEWSLETTER_SUBSCRIBERS);
-  const [deleteSubscriber] = useMutation(DELETE_NEWSLETTER_SUBSCRIBER);
+  const [deleteSubscriber] = useMutation(UNSUBSCRIBE_NEWSLETTER);
 
   const [search, setSearch] = useState('');
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const subscribers: Subscriber[] = useMemo(() => data?.newsletterSubscribers ?? [], [data]);
+  const subscribers: Subscriber[] = useMemo(() => data?.newsletters ?? [], [data]);
 
   const filtered = useMemo(() => {
     if (!search) return subscribers;
