@@ -491,17 +491,6 @@ export const GET_SITE_SETTINGS = gql`
       metaKeywords
       footerText
       copyrightText
-      heroGenres
-      heroLocation
-      heroVibes
-      brandHeadline
-      brandNarrative
-      eventsHeading
-      cultureHeading
-      conceptHeading
-      lineupHeading
-      galleryVideoUrl
-      eventsTagline
     }
   }
 `;
@@ -545,17 +534,6 @@ export const UPDATE_SITE_SETTINGS = gql`
       metaKeywords
       footerText
       copyrightText
-      heroGenres
-      heroLocation
-      heroVibes
-      brandHeadline
-      brandNarrative
-      eventsHeading
-      cultureHeading
-      conceptHeading
-      lineupHeading
-      galleryVideoUrl
-      eventsTagline
     }
   }
 `;
