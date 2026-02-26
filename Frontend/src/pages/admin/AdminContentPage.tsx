@@ -37,20 +37,19 @@ const AdminContentPage = () => {
   const [termsContent, setTermsContent] = useState('');
 
   useEffect(() => {
-    // Load landing content from site settings extended fields
-    const ss = siteSettings as Record<string, unknown>;
+    // Load landing content from site settings
     setLandingForm({
-      heroGenres: (ss.heroGenres as string) || 'Techno, House, Afro House, Minimal, Deep House, Amapiano, Drum & Bass',
-      heroLocation: (ss.heroLocation as string) || 'Oslo · Every Weekend',
-      heroVibes: (ss.heroVibes as string) || 'Underground culture, Live sets, Late night energy, Sound first',
-      brandHeadline: (ss.brandHeadline as string) || 'Where Oslo Comes Alive At Night',
-      brandNarrative: (ss.brandNarrative as string) || '',
-      eventsHeading: (ss.eventsHeading as string) || "What's Coming",
-      cultureHeading: (ss.cultureHeading as string) || 'The Culture',
-      conceptHeading: (ss.conceptHeading as string) || 'The Concept',
-      lineupHeading: (ss.lineupHeading as string) || 'The Lineup',
-      galleryVideoUrl: (ss.galleryVideoUrl as string) || '/media/sections/gallery/last 04.10.klubn.mp4',
-      eventsTagline: (ss.eventsTagline as string) || 'Curated nights. Handpicked lineups.',
+      heroGenres: siteSettings.heroGenres || 'Techno, House, Afro House, Minimal, Deep House, Amapiano, Drum & Bass',
+      heroLocation: siteSettings.heroLocation || 'Oslo · Every Weekend',
+      heroVibes: siteSettings.heroVibes || 'Underground culture, Live sets, Late night energy, Sound first',
+      brandHeadline: siteSettings.brandHeadline || 'Where Oslo Comes Alive At Night',
+      brandNarrative: siteSettings.brandNarrative || '',
+      eventsHeading: siteSettings.eventsHeading || "What's Coming",
+      cultureHeading: siteSettings.cultureHeading || 'The Culture',
+      conceptHeading: siteSettings.conceptHeading || 'The Concept',
+      lineupHeading: siteSettings.lineupHeading || 'The Lineup',
+      galleryVideoUrl: siteSettings.galleryVideoUrl || '/media/sections/gallery/last 04.10.klubn.mp4',
+      eventsTagline: siteSettings.eventsTagline || 'Curated nights. Handpicked lineups.',
     });
 
     // Load CMS content from localStorage
