@@ -24,6 +24,7 @@ namespace DJDiP.Application.Services
                 Date = e.Date,
                 Price = e.Price,
                 ImageUrl = e.ImageUrl,
+                TicketingUrl = e.TicketingUrl,
                 Genres = e.Genres.Select(g => g.Name).ToList(),
                 Venue = new EventVenueDto
                 {
@@ -51,6 +52,7 @@ namespace DJDiP.Application.Services
                 DJIds = ev.EventDJs.Select(d => d.DJId).ToList(),
                 ImageUrl = ev.ImageUrl,
                 VideoUrl = ev.VideoUrl,
+                TicketingUrl = ev.TicketingUrl,
                 Venue = new EventVenueDto
                 {
                     Id = ev.Venue.Id,
@@ -74,7 +76,8 @@ namespace DJDiP.Application.Services
                 Price = dto.Price,
                 Description = dto.Description,
                 ImageUrl = dto.ImageUrl,
-                VideoUrl = dto.VideoUrl
+                VideoUrl = dto.VideoUrl,
+                TicketingUrl = dto.TicketingUrl
             };
 
             // Associate Genres
@@ -111,6 +114,7 @@ namespace DJDiP.Application.Services
             ev.Description = dto.Description;
             ev.ImageUrl = dto.ImageUrl;
             ev.VideoUrl = dto.VideoUrl;
+            ev.TicketingUrl = dto.TicketingUrl;
 
             // Update Genres
             if (dto.GenreIds != null)

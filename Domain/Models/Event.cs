@@ -16,5 +16,6 @@ namespace DJDiP.Domain.Models
         public List<OrderItem> OrderItems  { get; set;} = new();
         public string? ImageUrl { get; set; }
         public string? VideoUrl { get; set; }
+        public string? TicketingUrl { get; set; }
     }
 }

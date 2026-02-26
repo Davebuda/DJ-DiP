@@ -14,4 +14,16 @@ export default defineConfig({
     port: 3000,
     strictPort: true,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-apollo': ['@apollo/client', 'graphql'],
+'vendor-icons': ['lucide-react', '@heroicons/react'],
+          'vendor-motion': ['framer-motion'],
+        },
+      },
+    },
+  },
 })

@@ -180,9 +180,6 @@ namespace DJDiP.Application.Services
             await _unitOfWork.Tickets.UpdateAsync(ticket);
             await _unitOfWork.SaveChangesAsync();
 
-            // NOTE: When StripePaymentService.RefundAsync is wired up, call it here:
-            // await _stripePaymentService.RefundAsync(ticket.StripePaymentIntentId, ticket.TotalPrice);
-
             // Send refund confirmation email
             var emailAddress = ticket.ConfirmationEmailSentTo;
             var user = ticket.User;

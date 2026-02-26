@@ -45,7 +45,7 @@ const GalleryPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0805] via-[#0d0606] to-[#0a0a0a]">
+    <div className="min-h-screen text-white">
       {/* Hero Section with Video */}
       <section className="relative h-[60vh] overflow-hidden">
         <video
@@ -90,7 +90,7 @@ const GalleryPage = () => {
             {data.galleryMedia.map((media: GalleryMedia) => (
               <div
                 key={media.id}
-                className="group relative bg-gradient-to-br from-zinc-900/60 to-black/60 rounded-[24px] overflow-hidden border border-white/5 hover:border-orange-500/40 transition-all cursor-pointer"
+                className="liquid-glass group relative rounded-3xl overflow-hidden border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl hover:border-orange-500/40 transition-all cursor-pointer"
                 onClick={() => setSelectedMedia(media)}
               >
                 {/* Thumbnail */}
@@ -316,7 +316,7 @@ const UploadMomentModal = ({ onClose, onSuccess }: UploadMomentModalProps) => {
       onClick={onClose}
     >
       <div
-        className="relative max-w-2xl w-full bg-gradient-to-br from-zinc-900 to-black rounded-[32px] border border-white/10 p-8"
+        className="liquid-glass relative max-w-2xl w-full rounded-[32px] border border-white/[0.10] bg-gradient-to-b from-white/[0.10] to-white/[0.03] backdrop-blur-xl p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)]"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-3xl font-bold uppercase tracking-wider mb-6 text-white">

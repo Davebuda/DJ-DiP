@@ -113,7 +113,7 @@ const OrdersPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0505] via-[#050202] to-black text-white">
+    <div className="min-h-screen text-white">
       <div className="max-w-7xl mx-auto px-6 py-16 space-y-8">
         {/* Header */}
         <div className="space-y-2">
@@ -124,7 +124,7 @@ const OrdersPage = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6">
+          <div className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl p-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
                 <Package className="w-6 h-6 text-white" />
@@ -136,7 +136,7 @@ const OrdersPage = () => {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6">
+          <div className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl p-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
                 <Calendar className="w-6 h-6 text-white" />
@@ -150,7 +150,7 @@ const OrdersPage = () => {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6">
+          <div className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl p-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-[#FF6B35] flex items-center justify-center">
                 <CreditCard className="w-6 h-6 text-white" />
@@ -164,7 +164,7 @@ const OrdersPage = () => {
         </div>
 
         {/* Filters */}
-        <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6 space-y-6">
+        <div className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl p-6 space-y-6">
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -252,7 +252,7 @@ const OrdersPage = () => {
               return (
                 <div
                   key={order.id}
-                  className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 overflow-hidden hover:border-orange-500/30 transition-all"
+                  className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl overflow-hidden hover:border-orange-500/30 transition-all"
                 >
                   <div className="flex flex-col md:flex-row gap-6 p-6">
                     {/* Event Image */}

@@ -32,8 +32,8 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-16 bg-gradient-to-b from-[#120601] via-[#050202] to-black">
-      <div className="w-full max-w-md space-y-8 rounded-[32px] border border-white/10 bg-black/60 backdrop-blur px-8 py-10">
+    <div className="min-h-screen flex items-center justify-center px-6 py-16">
+      <div className="liquid-glass w-full max-w-md space-y-8 rounded-[32px] border border-white/[0.10] bg-gradient-to-b from-white/[0.10] to-white/[0.03] backdrop-blur-xl px-8 py-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)]">
         <div className="space-y-2">
           <p className="text-sm uppercase tracking-[0.5em] text-orange-400">Join</p>
           <h1 className="text-3xl font-bold text-white">Create Account</h1>

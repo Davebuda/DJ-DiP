@@ -20,7 +20,7 @@ const CartPage = () => {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#0a0505] via-[#050202] to-black text-white">
+      <div className="min-h-screen text-white">
         <div className="max-w-4xl mx-auto px-6 py-20">
           <div className="text-center space-y-6">
             <div className="flex justify-center">
@@ -46,7 +46,7 @@ const CartPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0505] via-[#050202] to-black text-white">
+    <div className="min-h-screen text-white">
       <div className="max-w-6xl mx-auto px-6 py-16">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -70,7 +70,7 @@ const CartPage = () => {
             {items.map((item) => (
               <div
                 key={item.eventId}
-                className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 overflow-hidden hover:border-orange-500/30 transition-all"
+                className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.10] to-white/[0.02] backdrop-blur-xl overflow-hidden hover:border-orange-500/30 transition-all"
               >
                 <div className="flex flex-col md:flex-row gap-4 p-4">
                   {/* Event Image */}
@@ -153,7 +153,7 @@ const CartPage = () => {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6 space-y-6 sticky top-24">
+            <div className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.10] to-white/[0.02] backdrop-blur-xl p-6 space-y-6 sticky top-24 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)]">
               <h2 className="text-2xl font-bold">Order Summary</h2>
 
               <div className="space-y-3 text-sm">

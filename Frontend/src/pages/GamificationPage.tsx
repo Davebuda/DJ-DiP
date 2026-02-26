@@ -143,7 +143,7 @@ const GamificationPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0505] via-[#050202] to-black text-white">
+    <div className="min-h-screen text-white">
       <div className="max-w-7xl mx-auto px-6 py-16 space-y-12">
         {/* Header */}
         <div className="text-center space-y-4">
@@ -184,7 +184,7 @@ const GamificationPage = () => {
           <div className="space-y-8">
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6 text-center space-y-3">
+              <div className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl p-6 text-center space-y-3">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center mx-auto">
                   <Star className="w-8 h-8 text-white" />
                 </div>
@@ -194,7 +194,7 @@ const GamificationPage = () => {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6 text-center space-y-3">
+              <div className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl p-6 text-center space-y-3">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-[#FF6B35] flex items-center justify-center mx-auto">
                   <TrendingUp className="w-8 h-8 text-white" />
                 </div>
@@ -204,7 +204,7 @@ const GamificationPage = () => {
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6 text-center space-y-3">
+              <div className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl p-6 text-center space-y-3">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mx-auto">
                   <Award className="w-8 h-8 text-white" />
                 </div>
@@ -225,7 +225,7 @@ const GamificationPage = () => {
                     return (
                       <div
                         key={badge.id}
-                        className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6 space-y-3"
+                        className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl p-6 space-y-3"
                       >
                         <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${badge.color} flex items-center justify-center`}>
                           <Icon className="w-8 h-8 text-white" />
@@ -256,7 +256,7 @@ const GamificationPage = () => {
                     return (
                       <div
                         key={badge.id}
-                        className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6 space-y-4"
+                        className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl p-6 space-y-4"
                       >
                         <div className="flex items-center gap-4">
                           <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${badge.color} flex items-center justify-center flex-shrink-0`}>
@@ -289,7 +289,7 @@ const GamificationPage = () => {
                     return (
                       <div
                         key={badge.id}
-                        className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6 space-y-4 opacity-60"
+                        className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl p-6 space-y-4 opacity-60"
                       >
                         <div className="flex items-center gap-4">
                           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center flex-shrink-0">
@@ -324,7 +324,7 @@ const GamificationPage = () => {
         {/* Leaderboard Tab */}
         {activeTab === 'leaderboard' && (
           <div className="space-y-6">
-            <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 overflow-hidden">
+            <div className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl overflow-hidden">
               <div className="p-6 border-b border-white/10">
                 <h2 className="text-2xl font-bold">Top Players</h2>
               </div>
@@ -383,7 +383,7 @@ const GamificationPage = () => {
             </div>
 
             {/* How to Earn Points */}
-            <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-zinc-900/70 to-black/80 p-6 space-y-4">
+            <div className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl p-6 space-y-4">
               <h3 className="text-xl font-bold">How to Earn Points</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div className="flex items-center gap-3">

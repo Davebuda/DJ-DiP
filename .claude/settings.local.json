@@ -32,7 +32,13 @@
       "Bash(ls:*)",
       "Bash(npm ls:*)",
       "Bash(xargs:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "WebFetch(domain:www.instagram.com)",
+      "WebSearch",
+      "WebFetch(domain:soundcloud.com)",
+      "WebFetch(domain:open.spotify.com)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(head:*)"
     ],
     "deny": [],
     "ask": []

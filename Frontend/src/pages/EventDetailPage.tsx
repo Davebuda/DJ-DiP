@@ -1,17 +1,10 @@
-import { useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ShoppingCart, ArrowRight } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import { ExternalLink } from 'lucide-react';
 import { GET_EVENT_BY_ID } from '../graphql/queries';
-import { useAuth } from '../context/AuthContext';
-import { useCartStore } from '../stores/cartStore';
 
 const EventDetailPage = () => {
   const { id } = useParams();
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  const { addItem } = useCartStore();
-  const [addedToCart, setAddedToCart] = useState(false);
   const { data, loading, error } = useQuery(GET_EVENT_BY_ID, {
     variables: { id },
     skip: !id,
@@ -81,58 +74,20 @@ const EventDetailPage = () => {
             <p className="text-xs uppercase tracking-[0.5em] text-gray-500">Tickets</p>
             <p className="text-3xl font-bold text-white">${event.price.toFixed(2)}</p>
 
-            {isAuthenticated ? (
-              <div className="space-y-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    addItem({
-                      eventId: event.id,
-                      eventTitle: event.title,
-                      eventDate: event.date,
-                      venueName: event.venue.name,
-                      price: event.price,
-                      imageUrl: event.imageUrl,
-                    });
-                    setAddedToCart(true);
-                    setTimeout(() => setAddedToCart(false), 2000);
-                  }}
-                  className={`w-full rounded-full px-6 py-3 font-semibold tracking-[0.2em] uppercase transition-all flex items-center justify-center gap-2 ${
-                    addedToCart
-                      ? 'bg-green-500 text-white'
-                      : 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-white hover:shadow-[0_0_25px_rgba(255,107,53,0.5)] hover:scale-[1.02]'
-                  }`}
-                >
-                  <ShoppingCart className="w-5 h-5" />
-                  <span>{addedToCart ? 'Added to Cart!' : 'Add to Cart'}</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    addItem({
-                      eventId: event.id,
-                      eventTitle: event.title,
-                      eventDate: event.date,
-                      venueName: event.venue.name,
-                      price: event.price,
-                      imageUrl: event.imageUrl,
-                    });
-                    navigate('/checkout?eventIds=' + event.id);
-                  }}
-                  className="w-full rounded-full border border-white/20 px-6 py-3 text-white font-semibold tracking-[0.2em] uppercase hover:border-orange-400 transition-colors flex items-center justify-center gap-2"
-                >
-                  <span>Buy Now</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <Link
-                to="/login"
-                className="inline-flex w-full items-center justify-center rounded-full border border-white/20 px-6 py-3 text-sm uppercase tracking-[0.3em] hover:border-orange-400 transition"
+            {event.ticketingUrl ? (
+              <a
+                href={event.ticketingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full rounded-full px-6 py-3 font-semibold tracking-[0.2em] uppercase transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-[#FF6B35] text-white hover:shadow-[0_0_25px_rgba(255,107,53,0.5)] hover:scale-[1.02]"
               >
-                Login to Purchase
-              </Link>
+                <ExternalLink className="w-5 h-5" />
+                <span>Get Tickets</span>
+              </a>
+            ) : (
+              <p className="text-gray-400 text-sm text-center py-3">
+                Tickets coming soon
+              </p>
             )}
           </div>
         </div>

@@ -2,14 +2,11 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_USER_TICKETS, UPDATE_USER_PROFILE } from '../graphql/queries';
-import { Ticket, Calendar, TrendingUp, Upload, Award, Music, Users, ShoppingCart, Camera } from 'lucide-react';
+import { Ticket, Calendar, TrendingUp, Upload, Award, Music, Users, Camera } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
-import { useCartStore } from '../stores/cartStore';
 
 const DashboardPage = () => {
   const { user, isAuthenticated, updateUserLocal } = useAuth();
-  const { getTotalItems } = useCartStore();
-  const cartItems = getTotalItems();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
 
@@ -87,13 +84,6 @@ const DashboardPage = () => {
       icon: Calendar,
       color: 'from-purple-500 to-blue-500',
       link: '/tickets',
-    },
-    {
-      label: 'Cart Items',
-      value: cartItems,
-      icon: ShoppingCart,
-      color: 'from-green-500 to-emerald-500',
-      link: '/cart',
     },
     {
       label: 'Total Spent',

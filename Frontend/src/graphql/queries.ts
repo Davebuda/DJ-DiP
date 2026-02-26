@@ -405,41 +405,6 @@ export const PURCHASE_TICKET = gql`
   }
 `;
 
-export const CREATE_EVENT_PAYMENT_INTENT = gql`
-  mutation CreateEventPaymentIntent($eventId: UUID!, $userId: String!, $email: String!) {
-    createEventPaymentIntent(eventId: $eventId, userId: $userId, email: $email) {
-      paymentIntentId
-      clientSecret
-      amount
-      currency
-    }
-  }
-`;
-
-export const CONFIRM_STRIPE_PAYMENT = gql`
-  mutation ConfirmStripePayment(
-    $paymentIntentId: String!
-    $eventId: UUID!
-    $userId: String!
-    $email: String!
-  ) {
-    confirmStripePaymentAndIssueTicket(
-      paymentIntentId: $paymentIntentId
-      eventId: $eventId
-      userId: $userId
-      email: $email
-    ) {
-      id
-      ticketNumber
-      event {
-        id
-        title
-        date
-      }
-    }
-  }
-`;
-
 export const CHECK_IN_TICKET = gql`
   mutation CheckInTicket($ticketId: UUID!) {
     checkInTicket(ticketId: $ticketId)
@@ -726,5 +691,24 @@ export const GET_USER_BY_ID = gql`
 export const UPDATE_USER_PROFILE = gql`
   mutation UpdateUserProfile($input: UpdateUserProfileInput!) {
     updateUserProfile(input: $input)
+  }
+`;
+
+export const CREATE_EVENT_PAYMENT_INTENT = gql`
+  mutation CreateEventPaymentIntent($eventId: String!, $userId: String!, $email: String!) {
+    createEventPaymentIntent(eventId: $eventId, userId: $userId, email: $email) {
+      clientSecret
+      paymentIntentId
+    }
+  }
+`;
+
+export const CONFIRM_STRIPE_PAYMENT = gql`
+  mutation ConfirmStripePaymentAndIssueTicket($paymentIntentId: String!, $eventId: String!, $userId: String!, $email: String!) {
+    confirmStripePaymentAndIssueTicket(paymentIntentId: $paymentIntentId, eventId: $eventId, userId: $userId, email: $email) {
+      id
+      ticketCode
+      status
+    }
   }
 `;

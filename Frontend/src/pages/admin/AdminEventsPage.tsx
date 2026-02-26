@@ -20,6 +20,7 @@ interface EventFormState {
   venueId: string;
   imageUrl: string;
   videoUrl: string;
+  ticketingUrl: string;
   genreIds: string[];
   djIds: string[];
 }
@@ -32,6 +33,7 @@ const emptyForm: EventFormState = {
   venueId: '',
   imageUrl: '',
   videoUrl: '',
+  ticketingUrl: '',
   genreIds: [],
   djIds: [],
 };
@@ -72,6 +74,7 @@ const AdminEventsPage = () => {
       venueId: detail.venueId ?? '',
       imageUrl: detail.imageUrl ?? '',
       videoUrl: detail.videoUrl ?? '',
+      ticketingUrl: detail.ticketingUrl ?? '',
       genreIds: detail.genreIds ?? [],
       djIds: detail.djIds ?? [],
     });
@@ -92,6 +95,7 @@ const AdminEventsPage = () => {
       venueId: form.venueId,
       imageUrl: form.imageUrl || null,
       videoUrl: form.videoUrl || null,
+      ticketingUrl: form.ticketingUrl || null,
       genreIds: form.genreIds,
       djIds: form.djIds,
     };
@@ -245,16 +249,28 @@ const AdminEventsPage = () => {
           aspectRatio="aspect-video"
         />
 
-        <label className="space-y-1 text-sm font-semibold text-gray-300">
-          Video URL (Optional)
-          <input
-            type="url"
-            className={inputClass}
-            value={form.videoUrl}
-            onChange={(e) => setForm((prev) => ({ ...prev, videoUrl: e.target.value }))}
-            placeholder="https://youtube.com/..."
-          />
-        </label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label className="space-y-1 text-sm font-semibold text-gray-300">
+            Video URL (Optional)
+            <input
+              type="url"
+              className={inputClass}
+              value={form.videoUrl}
+              onChange={(e) => setForm((prev) => ({ ...prev, videoUrl: e.target.value }))}
+              placeholder="https://youtube.com/..."
+            />
+          </label>
+          <label className="space-y-1 text-sm font-semibold text-gray-300">
+            Ticketing URL (Optional)
+            <input
+              type="url"
+              className={inputClass}
+              value={form.ticketingUrl}
+              onChange={(e) => setForm((prev) => ({ ...prev, ticketingUrl: e.target.value }))}
+              placeholder="https://eventbrite.com/..."
+            />
+          </label>
+        </div>
 
         <div className="flex items-center gap-3">
           <button

@@ -95,6 +95,162 @@
   .tile {
     @apply rounded-3xl border border-white/10 bg-[#0c0c0c];
   }
+
+  /* Liquid glass sheen — add to any card for a top-light reflection overlay */
+  .liquid-glass {
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      168deg,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.05) 25%,
+      transparent 50%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Warm variant for headliner / accent cards */
+  .liquid-glass-warm {
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-glass-warm::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      168deg,
+      rgba(255, 160, 80, 0.16) 0%,
+      rgba(255, 255, 255, 0.05) 30%,
+      transparent 55%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+/* ─── Animated Background Orbs ─── */
+@keyframes orb-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.09; }
+  25% { transform: translate(80px, -60px) scale(1.15); opacity: 0.13; }
+  50% { transform: translate(-40px, 80px) scale(0.95); opacity: 0.08; }
+  75% { transform: translate(60px, 40px) scale(1.08); opacity: 0.12; }
+}
+@keyframes orb-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.07; }
+  33% { transform: translate(-70px, 50px) scale(1.1); opacity: 0.10; }
+  66% { transform: translate(50px, -70px) scale(0.92); opacity: 0.06; }
+}
+@keyframes orb-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.025; }
+  50% { transform: translate(0, -60px) scale(1.05); opacity: 0.045; }
+}
+
+/* ─── Club Light Ray ─── */
+@keyframes light-hue-cycle {
+  0%, 100% { filter: blur(25px) hue-rotate(0deg); }
+  25% { filter: blur(30px) hue-rotate(-18deg); }
+  50% { filter: blur(25px) hue-rotate(10deg); }
+  75% { filter: blur(30px) hue-rotate(22deg); }
+}
+@keyframes light-hue-cycle-alt {
+  0%, 100% { filter: blur(30px) hue-rotate(12deg); }
+  33% { filter: blur(25px) hue-rotate(-10deg); }
+  66% { filter: blur(30px) hue-rotate(20deg); }
+}
+
+/* ─── Floating Particles ─── */
+@keyframes float-up {
+  0% {
+    transform: translateY(100vh) translateX(0);
+    opacity: 0;
+  }
+  10% { opacity: var(--particle-opacity, 0.15); }
+  90% { opacity: var(--particle-opacity, 0.15); }
+  100% {
+    transform: translateY(-10vh) translateX(var(--particle-drift, 20px));
+    opacity: 0;
+  }
+}
+
+/* ─── Text Shimmer ─── */
+.shimmer-text {
+  background-size: 200% auto;
+  animation: shimmer 4s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+}
+
+/* ─── Music Visual Effects ─── */
+@keyframes eq-pulse {
+  0% { transform: scaleY(0.3); }
+  100% { transform: scaleY(1); }
+}
+
+@keyframes wave-flow {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -200; }
+}
+
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes beat-glow {
+  0%, 100% { opacity: 0.7; filter: drop-shadow(0 0 0px transparent); }
+  50% { opacity: 1; filter: drop-shadow(0 0 6px rgba(255,107,53,0.4)); }
+}
+
+@keyframes vinyl-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ─── Noise Overlay ─── */
+.noise-overlay {
+  position: relative;
+}
+.noise-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.030;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  mix-blend-mode: overlay;
+}
+
+/* ─── Button Ripple ─── */
+.btn-brand,
+.btn-primary {
+  overflow: hidden;
+  position: relative;
+}
+.btn-brand:active::after,
+.btn-primary:active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.3) 0%, transparent 60%);
+  animation: ripple-out 0.5s ease-out forwards;
+}
+@keyframes ripple-out {
+  from { transform: scale(0); opacity: 1; }
+  to { transform: scale(2.5); opacity: 0; }
 }
 
 /* Scrollbar */

@@ -17,8 +17,8 @@ const PlaylistDiscoveryPage = () => {
   }, [selectedGenre]);
 
   return (
-    <div className="space-y-12">
-      <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#0e0318] via-[#200b32] to-[#07070a] px-6 py-12 md:px-10">
+    <div className="min-h-screen text-white space-y-12 py-8 px-6 lg:px-10">
+      <section className="liquid-glass relative overflow-hidden rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl px-6 py-12 md:px-10">
         <div className="max-w-4xl space-y-4">
           <p className="text-xs uppercase tracking-[0.4em] text-purple-300/70">Playlist Explorer</p>
           <h1 className="text-4xl font-semibold leading-tight">
@@ -64,7 +64,7 @@ const PlaylistDiscoveryPage = () => {
           {filteredPlaylists.map((playlist) => (
             <article
               key={playlist.id}
-              className="rounded-3xl border border-white/10 bg-[#080808] shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
+              className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.10),_0_8px_32px_rgba(0,0,0,0.4)]"
             >
               <div className="grid gap-6 p-6 lg:grid-cols-5">
                 <div className="space-y-3 lg:col-span-2">

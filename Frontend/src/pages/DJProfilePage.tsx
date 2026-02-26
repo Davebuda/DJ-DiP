@@ -152,11 +152,11 @@ const DJProfilePage = () => {
   const socialEntries = dj.socialLinks?.filter((link) => Boolean(link.url)) ?? [];
 
   return (
-    <div className="bg-[#0a0805] text-white min-h-screen">
+    <div className="text-white min-h-screen">
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroBackground} alt={dj.stageName} className="h-[540px] w-full object-cover opacity-60" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0805] via-[#0a0805]/90 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#09090b] via-[#09090b]/90 to-transparent" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_20%,rgba(255,107,53,0.20),transparent_50%)] mix-blend-screen" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_80%,rgba(93,23,37,0.25),transparent_50%)]" />
         </div>

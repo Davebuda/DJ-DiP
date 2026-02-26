@@ -63,7 +63,7 @@ const TicketsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0f0805] via-[#0a0505] to-black px-6 py-16">
+    <div className="min-h-screen text-white px-6 py-16">
       <div className="max-w-5xl mx-auto space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>

@@ -8,7 +8,6 @@ using DJDiP.Application.DTO.VenueDTO;
 using DJDiP.Application.DTO.ContactMessageDTO;
 using DJDiP.Application.DTO.DJTop10DTO;
 using DJDiP.Application.DTO.TicketDTO;
-using DJDiP.Application.DTO.PaymentDTO;
 using DJDiP.Application.DTO.SongDTO;
 using DJDiP.Application.DTO.SiteSettingsDTO;
 using DJDiP.Application.DTO.GalleryDTO;
@@ -26,7 +25,6 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using AspNetCoreRateLimit;
 using Microsoft.Extensions.Options;
-using Stripe;
 using EventServiceImpl = DJDiP.Application.Services.EventService;
 using VenueDetailsDto = DJDiP.Application.DTO.VenueDTO.VenueDto;
 
@@ -50,7 +48,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
 
 builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("Jwt"));
-builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
 builder.Services.Configure<DJDiP.Application.Options.EmailSettings>(builder.Configuration.GetSection("Email"));
 builder.Services.AddScoped<DJDiP.Application.Interfaces.IEmailService, DJDiP.Application.Services.EmailService>();
 
@@ -143,7 +140,6 @@ builder.Services.AddScoped<IDJTop10Service, DJTop10Service>();
 builder.Services.AddScoped<IFollowService, FollowService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
-builder.Services.AddScoped<IStripePaymentService, StripePaymentService>();
 builder.Services.AddScoped<ISongService, SongService>();
 builder.Services.AddScoped<IDJApplicationService, DJApplicationService>();
 builder.Services.AddScoped<ISiteSettingsService, SiteSettingsService>();
@@ -156,8 +152,6 @@ builder.Services.AddScoped<IFileUploadService>(sp =>
     var baseUrl = config["AppSettings:BaseUrl"] ?? "http://localhost:5000";
     return new FileUploadService(uploadPath, baseUrl);
 });
-
-StripeConfiguration.ApiKey = builder.Configuration.GetValue<string>("Stripe:SecretKey");
 
 // ========== CONTROLLERS (for file upload endpoint) ==========
 builder.Services.AddControllers();
@@ -994,68 +988,6 @@ public class Mutation
         return true;
     }
 
-    // STRIPE PAYMENTS - Norwegian-compliant with 12% VAT
-    public async Task<PaymentIntentPayload> CreateEventPaymentIntent(
-        Guid eventId,
-        string userId,
-        string email,
-        [Service] IStripePaymentService stripeService)
-    {
-        try
-        {
-            var dto = new CreatePaymentIntentDto
-            {
-                EventId = eventId,
-                UserId = userId,
-                Email = email
-            };
-
-            var result = await stripeService.CreateEventPaymentIntentAsync(dto);
-
-            return new PaymentIntentPayload
-            {
-                PaymentIntentId = result.PaymentIntentId,
-                ClientSecret = result.ClientSecret,
-                Amount = result.Amount,
-                Currency = result.Currency
-            };
-        }
-        catch (Exception ex)
-        {
-            throw new GraphQLException($"Payment creation failed: {ex.Message}");
-        }
-    }
-
-    public async Task<TicketDto?> ConfirmStripePaymentAndIssueTicket(
-        string paymentIntentId,
-        Guid eventId,
-        string userId,
-        string email,
-        [Service] IStripePaymentService stripeService)
-    {
-        try
-        {
-            var dto = new ConfirmPaymentDto
-            {
-                PaymentIntentId = paymentIntentId,
-                EventId = eventId,
-                UserId = userId,
-                Email = email
-            };
-
-            var ticket = await stripeService.ConfirmStripePaymentAndIssueTicketAsync(dto);
-            return ticket;
-        }
-        catch (SecurityException ex)
-        {
-            throw new GraphQLException($"Security error: {ex.Message}");
-        }
-        catch (Exception ex)
-        {
-            throw new GraphQLException($"Payment confirmation failed: {ex.Message}");
-        }
-    }
-
     // TICKET MUTATIONS
     public async Task<TicketDto> PurchaseTicket(
         PurchaseTicketInput input,
@@ -1309,14 +1241,6 @@ public class PurchaseTicketInput
     public string UserId { get; set; } = string.Empty;
     public bool TermsAccepted { get; set; }
     public string Email { get; set; } = string.Empty;
-}
-
-public class PaymentIntentPayload
-{
-    public string PaymentIntentId { get; set; } = string.Empty;
-    public string ClientSecret { get; set; } = string.Empty;
-    public long Amount { get; set; }
-    public string Currency { get; set; } = string.Empty;
 }
 
 public class CancelTicketInput

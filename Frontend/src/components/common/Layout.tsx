@@ -2,11 +2,15 @@ import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import ErrorBoundary from './ErrorBoundary';
+import { BackgroundEffects } from '../effects/BackgroundEffects';
+import { FloatingParticles } from '../effects/FloatingParticles';
 
 const Layout = () => (
-  <div className="min-h-screen flex flex-col bg-black text-white font-body">
+  <div className="noise-overlay min-h-screen flex flex-col bg-[#09090b] text-white font-body">
+    <BackgroundEffects />
+    <FloatingParticles />
     <Header />
-    <main className="flex-1">
+    <main className="relative z-10 flex-1">
       <ErrorBoundary>
         <Outlet />
       </ErrorBoundary>

@@ -6,8 +6,6 @@ import EventDetailPage from './pages/EventDetailPage';
 import DJsPage from './pages/DJsPage';
 import DJProfilePage from './pages/DJProfilePage';
 import ContactPage from './pages/ContactPage';
-import CartPage from './pages/CartPage';
-import CheckoutPage from './pages/CheckoutPage';
 import DashboardPage from './pages/DashboardPage';
 import TicketsPage from './pages/TicketsPage';
 import OrdersPage from './pages/OrdersPage';
@@ -55,8 +53,6 @@ const App = () => (
         }
       />
       <Route path="contact" element={<ContactPage />} />
-      <Route path="cart" element={<CartPage />} />
-      <Route path="checkout" element={<CheckoutPage />} />
       <Route
         path="dashboard"
         element={
