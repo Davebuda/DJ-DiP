@@ -407,20 +407,20 @@ const LandingPage = () => {
           </div>
         </ScrollReveal>
 
-        <div className="flex flex-col lg:flex-row gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-[37.5%_1fr] gap-5">
           {/* Featured Headliner — Full Poster */}
-          <ScrollReveal direction="left" className="lg:w-[37.5%]">
+          <ScrollReveal direction="left">
             {highlightEvent ? (
-              <TiltCard intensity={6}>
+              <TiltCard intensity={6} className="h-full">
               <Link
                 to={`/events/${highlightEvent.id}`}
-                className="group relative block rounded-3xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.6),_0_0_80px_rgba(255,107,53,0.08)] hover:shadow-[0_12px_50px_rgba(0,0,0,0.7),_0_0_100px_rgba(255,107,53,0.15)] ring-1 ring-orange-400/25 hover:ring-orange-400/40 transition-all duration-500"
+                className="group relative block h-full rounded-3xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.6),_0_0_80px_rgba(255,107,53,0.08)] hover:shadow-[0_12px_50px_rgba(0,0,0,0.7),_0_0_100px_rgba(255,107,53,0.15)] ring-1 ring-orange-400/25 hover:ring-orange-400/40 transition-all duration-500"
               >
                 {/* Full poster image */}
                 <img
                   src={highlightEvent.imageUrl ?? defaultEventImage}
                   alt={highlightEvent.title}
-                  className="w-full aspect-[3/4] object-cover group-hover:scale-[1.03] transition-transform duration-700"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
                 />
 
                 {/* Headliner badge */}
@@ -455,8 +455,8 @@ const LandingPage = () => {
               </Link>
               </TiltCard>
             ) : (
-              <div className="relative rounded-3xl overflow-hidden ring-1 ring-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.5)]">
-                <div className="w-full aspect-[3/4] bg-gradient-to-b from-orange-500/[0.04] to-[#09090b] flex items-center justify-center">
+              <div className="relative h-full min-h-[400px] rounded-3xl overflow-hidden ring-1 ring-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.5)]">
+                <div className="absolute inset-0 bg-gradient-to-b from-orange-500/[0.04] to-[#09090b] flex items-center justify-center">
                   <p className="text-orange-400/30 text-sm font-medium uppercase tracking-widest">Coming Soon</p>
                 </div>
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/85 to-transparent pt-16 pb-5 px-5">
@@ -478,7 +478,7 @@ const LandingPage = () => {
           </ScrollReveal>
 
           {/* Events Grid — 5/8 */}
-          <StaggerContainer className="lg:w-[62.5%] grid grid-cols-1 md:grid-cols-2 gap-4 content-start">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4 content-start">
             {gridEvents.length > 0 ? (
               gridEvents.map((event: any) => (
                 <StaggerItem key={event.id}>
@@ -636,8 +636,8 @@ const LandingPage = () => {
                 to={`/djs/${dj.id}`}
                 className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] backdrop-blur-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
               >
-                <div className="flex flex-col h-[320px]">
-                  <div className="relative overflow-hidden h-40">
+                <div className="flex flex-col">
+                  <div className="relative overflow-hidden h-60">
                     <img
                       src={dj.profilePictureUrl ?? dj.coverImageUrl ?? defaultDjImage}
                       alt={dj.stageName ?? dj.name}
@@ -646,30 +646,29 @@ const LandingPage = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   </div>
 
-                  <div className="p-4 flex flex-col justify-between flex-1">
-                    <div className="space-y-2">
-                      <div>
-                        <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-orange-400/80">Artist</p>
-                        <h3 className="text-sm font-bold text-white group-hover:text-orange-400 transition-colors mt-1 line-clamp-1">
-                          {dj.stageName ?? dj.name}
-                        </h3>
-                        {dj.tagline && <p className="text-xs text-gray-400 mt-1 line-clamp-1">{dj.tagline}</p>}
+                  <div className="px-4 py-3 space-y-2">
+                    <h3 className="text-sm font-bold text-white group-hover:text-orange-400 transition-colors line-clamp-1">
+                      {dj.stageName ?? dj.name}
+                    </h3>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[0.65rem] text-gray-400">Oslo, NO</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-orange-400 text-[0.6rem]">&#9733;</span>
+                        <span className="text-[0.6rem] text-gray-300 font-medium">{dj.followerCount ?? 0}</span>
                       </div>
-                      <p className="text-gray-400 text-xs leading-relaxed line-clamp-2">{dj.bio}</p>
-
-                      <div className="flex flex-wrap gap-1.5">
-                        {(dj.genre ?? '')
-                          .split(',')
-                          .slice(0, 2)
-                          .map((genre: string) => (
-                            <span
-                              key={`${dj.id}-${genre.trim()}`}
-                              className="px-2 py-0.5 rounded-full text-[0.6rem] font-medium bg-gradient-to-b from-white/[0.08] to-white/[0.03] text-gray-300 border border-white/[0.05] backdrop-blur-xl"
-                            >
-                              {genre.trim()}
-                            </span>
-                          ))}
-                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {(dj.genre ?? '')
+                        .split(',')
+                        .slice(0, 2)
+                        .map((genre: string) => (
+                          <span
+                            key={`${dj.id}-${genre.trim()}`}
+                            className="px-2 py-0.5 rounded-full text-[0.6rem] font-medium bg-gradient-to-b from-white/[0.08] to-white/[0.03] text-gray-300 border border-white/[0.05] backdrop-blur-xl"
+                          >
+                            {genre.trim()}
+                          </span>
+                        ))}
                     </div>
                   </div>
                 </div>

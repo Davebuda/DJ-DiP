@@ -42,6 +42,7 @@ const AdminEventsPage = () => {
   const textareaClass = `${inputClass} min-h-[120px]`;
   const [form, setForm] = useState<EventFormState>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const { data, loading, error, refetch } = useQuery(GET_EVENTS);
   const { data: venuesData } = useQuery(GET_VENUES);
   const { data: genresData } = useQuery(GET_GENRES);
@@ -84,6 +85,7 @@ const AdminEventsPage = () => {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    setFeedback(null);
     const payload = {
       title: form.title,
       description: form.description,
@@ -96,14 +98,19 @@ const AdminEventsPage = () => {
       djIds: form.djIds,
     };
 
-    if (editingId) {
-      await updateEvent({ variables: { id: editingId, input: payload } });
-    } else {
-      await createEvent({ variables: { input: payload } });
+    try {
+      if (editingId) {
+        await updateEvent({ variables: { id: editingId, input: payload } });
+        setFeedback({ type: 'success', text: 'Event updated successfully.' });
+      } else {
+        await createEvent({ variables: { input: payload } });
+        setFeedback({ type: 'success', text: 'Event created successfully.' });
+      }
+      await refetch();
+      resetForm();
+    } catch (err: any) {
+      setFeedback({ type: 'error', text: err.message || 'Failed to save event.' });
     }
-
-    await refetch();
-    resetForm();
   };
 
   const handleDelete = async (id: string) => {
@@ -132,6 +139,18 @@ const AdminEventsPage = () => {
           Create, update, or remove events. Use the form to add a new one or select an existing row to edit.
         </p>
       </header>
+
+      {feedback && (
+        <div
+          className={`rounded px-4 py-3 text-sm ${
+            feedback.type === 'success'
+              ? 'bg-green-500/10 border border-green-500/30 text-green-200'
+              : 'bg-red-500/10 border border-red-500/30 text-red-200'
+          }`}
+        >
+          {feedback.text}
+        </div>
+      )}
 
       <form className="card space-y-4" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

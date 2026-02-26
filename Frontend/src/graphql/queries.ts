@@ -51,7 +51,10 @@ export const GET_LANDING_DATA = gql`
         name
         stageName
         bio
+        genre
         profilePictureUrl
+        coverImageUrl
+        followerCount
       }
     }
   }
