@@ -84,12 +84,26 @@ const Header = () => {
           )}
 
           {isAuthenticated ? (
-            <button
-              onClick={logout}
-              className="rounded-full bg-white text-black px-5 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.35em] hover:bg-gradient-to-r hover:from-orange-500 hover:to-[#FF6B35] hover:text-black transition"
-            >
-              Logout
-            </button>
+            <>
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) =>
+                  `hidden md:inline-flex rounded-full px-3 py-1.5 text-xs uppercase tracking-[0.4em] transition-colors ${
+                    isActive
+                      ? 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold'
+                      : 'border border-white/20 text-gray-300 hover:text-white hover:border-orange-400'
+                  }`
+                }
+              >
+                Dashboard
+              </NavLink>
+              <button
+                onClick={logout}
+                className="rounded-full bg-white text-black px-5 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.35em] hover:bg-gradient-to-r hover:from-orange-500 hover:to-[#FF6B35] hover:text-black transition"
+              >
+                Logout
+              </button>
+            </>
           ) : (
             <Link
               to="/login"
