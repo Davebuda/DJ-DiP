@@ -70,7 +70,7 @@ const HeroSection = ({
   };
 
   return (
-    <section className="relative isolate flex min-h-[80vh] w-full flex-col justify-center overflow-hidden bg-black text-white">
+    <section className="relative isolate flex min-h-[65vh] lg:min-h-[80vh] w-full flex-col justify-center overflow-hidden bg-black text-white">
       <video
         className="absolute inset-0 h-full w-full object-cover"
         autoPlay
@@ -93,8 +93,8 @@ const HeroSection = ({
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_right,_rgba(255,87,34,0.25),_transparent_55%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent via-black/40 to-black" />
 
-      {/* Genre & vibe strip — sits in the bottom fade zone */}
-      <div className="absolute inset-x-0 bottom-0 z-10 pb-7 pointer-events-none">
+      {/* Genre & vibe strip — sits in the bottom fade zone (hidden on mobile to prevent overlap with Next Event) */}
+      <div className="hidden sm:block absolute inset-x-0 bottom-0 z-10 pb-7 pointer-events-none">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col gap-4">
           <div className="flex items-center gap-3 flex-wrap pointer-events-auto">
             {(siteSettings.heroGenres ?? 'Techno, House, Afro House, Minimal, Deep House, Amapiano, Drum & Bass')
@@ -127,7 +127,7 @@ const HeroSection = ({
         </div>
       </div>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col-reverse gap-8 px-6 pt-12 pb-24 lg:flex-row lg:items-center lg:gap-12 lg:px-8 lg:pt-16 lg:pb-28">
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col-reverse gap-8 px-6 pt-12 pb-12 sm:pb-24 lg:flex-row lg:items-center lg:gap-12 lg:px-8 lg:pt-16 lg:pb-28">
         <div className="flex-1 space-y-6">
           <div className="space-y-4">
             {siteSettings.tagline && (
@@ -176,7 +176,7 @@ const HeroSection = ({
           {activeShowcase ? (
             <>
               <div className="group rounded-xl border border-orange-600/30 bg-gradient-to-br from-zinc-900/80 to-black/90 overflow-hidden backdrop-blur-sm hover:border-orange-500/60 transition-all shadow-lg shadow-orange-900/20">
-                <Link to={activeShowcase.href} className="relative block h-[360px]">
+                <Link to={activeShowcase.href} className="relative block h-[280px] sm:h-[360px]">
                   <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
                     style={{
@@ -227,7 +227,7 @@ const HeroSection = ({
             </>
           ) : (
             <div className="rounded-xl border border-orange-600/30 bg-gradient-to-br from-zinc-900/80 to-black/90 overflow-hidden backdrop-blur-sm shadow-lg shadow-orange-900/20">
-              <div className="relative block h-[360px]">
+              <div className="relative block h-[280px] sm:h-[360px]">
                 <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${featuredImage})` }} />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-orange-950/30 to-black/95" />
                 <div className="relative z-10 flex h-full flex-col justify-end space-y-2 p-5">
@@ -281,6 +281,20 @@ const LandingPage = () => {
   const defaultDjImage = siteSettings.defaultDjImageUrl ?? '/media/defaults/dj.jpg';
   const featuredDjs = djs.slice(0, 4);
   const galleryPreview = events.slice(0, 5);
+
+  // Read marquee text from localStorage (admin-editable under Content Pages > Visual Effects)
+  const marqueeWords = useMemo(() => {
+    const stored = localStorage.getItem('cms_marqueeWords');
+    return stored ? stored.split(',').map(w => w.trim()).filter(Boolean) : undefined;
+  }, []);
+  const marqueeGenreWords = useMemo(() => {
+    const stored = localStorage.getItem('cms_marqueeGenreWords');
+    if (stored) return stored.split(',').map(w => w.trim()).filter(Boolean);
+    // Fall back to heroGenres from settings
+    const genres = siteSettings.heroGenres;
+    if (genres) return genres.split(',').map((g: string) => g.trim().toUpperCase()).filter(Boolean);
+    return undefined;
+  }, [siteSettings.heroGenres]);
 
   const trendingDj = djs[0];
   const heroShowcaseItems = useMemo(() => {
@@ -388,7 +402,7 @@ const LandingPage = () => {
       </section>
 
       {/* ─── Marquee ─── */}
-      <MarqueeStrip variant="mixed" speed={28} />
+      <MarqueeStrip words={marqueeWords} variant="mixed" speed={28} />
 
       {/* ─── Events Section — 30/70 Split ─── */}
       <section className="max-w-7xl mx-auto px-6 lg:px-8 pb-20 space-y-8">
@@ -414,7 +428,7 @@ const LandingPage = () => {
               <TiltCard intensity={6} className="h-full">
               <Link
                 to={`/events/${highlightEvent.id}`}
-                className="group relative block h-full rounded-3xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.6),_0_0_80px_rgba(255,107,53,0.08)] hover:shadow-[0_12px_50px_rgba(0,0,0,0.7),_0_0_100px_rgba(255,107,53,0.15)] ring-1 ring-orange-400/25 hover:ring-orange-400/40 transition-all duration-500"
+                className="group relative block h-full min-h-[400px] sm:min-h-[500px] rounded-3xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.6),_0_0_80px_rgba(255,107,53,0.08)] hover:shadow-[0_12px_50px_rgba(0,0,0,0.7),_0_0_100px_rgba(255,107,53,0.15)] ring-1 ring-orange-400/25 hover:ring-orange-400/40 transition-all duration-500"
               >
                 {/* Full poster image */}
                 <img
@@ -455,7 +469,7 @@ const LandingPage = () => {
               </Link>
               </TiltCard>
             ) : (
-              <div className="relative h-full min-h-[400px] rounded-3xl overflow-hidden ring-1 ring-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.5)]">
+              <div className="relative h-full min-h-[400px] sm:min-h-[500px] rounded-3xl overflow-hidden ring-1 ring-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.5)]">
                 <div className="absolute inset-0 bg-gradient-to-b from-orange-500/[0.04] to-[#09090b] flex items-center justify-center">
                   <p className="text-orange-400/30 text-sm font-medium uppercase tracking-widest">Coming Soon</p>
                 </div>
@@ -908,7 +922,7 @@ const LandingPage = () => {
 
       {/* ─── Marquee 2 ─── */}
       <MarqueeStrip
-        words={['AFROBEAT', 'AMAPIANO', 'HIP HOP', 'SHATTA', 'DANCEHALL', 'HOUSE', 'TECHNO', 'R&B']}
+        words={marqueeGenreWords || ['AFROBEAT', 'AMAPIANO', 'HIP HOP', 'SHATTA', 'DANCEHALL', 'HOUSE', 'TECHNO', 'R&B']}
         speed={35}
         variant="outlined"
       />

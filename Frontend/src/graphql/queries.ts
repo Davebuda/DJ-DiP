@@ -72,6 +72,8 @@ export const GET_DJS = gql`
       coverImageUrl
       tagline
       followerCount
+      averageRating
+      reviewCount
     }
   }
 `;
@@ -178,6 +180,7 @@ export const GET_EVENT_BY_ID = gql`
       venueId
       imageUrl
       videoUrl
+      ticketingUrl
       genreIds
       djIds
       venue {
@@ -742,5 +745,26 @@ export const CONFIRM_STRIPE_PAYMENT = gql`
       ticketCode
       status
     }
+  }
+`;
+
+// DJ REVIEW QUERIES & MUTATIONS
+export const GET_DJ_REVIEWS = gql`
+  query GetDJReviews($djId: UUID!) {
+    djReviews(djId: $djId) {
+      id
+      djId
+      userId
+      userName
+      rating
+      comment
+      createdAt
+    }
+  }
+`;
+
+export const CREATE_DJ_REVIEW = gql`
+  mutation CreateDJReview($input: CreateDJReviewInput!) {
+    createDjReview(input: $input)
   }
 `;

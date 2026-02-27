@@ -63,12 +63,15 @@ const TicketsPage = () => {
   }
 
   return (
-    <div className="min-h-screen text-white px-6 py-16">
-      <div className="max-w-5xl mx-auto space-y-6">
+    <div className="min-h-screen text-white px-6 lg:px-10 py-16">
+      <div className="max-w-5xl mx-auto space-y-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-sm uppercase tracking-[0.5em] text-orange-400">Wallet</p>
-            <h1 className="font-display text-4xl font-bold text-white tracking-tight">Your Tickets</h1>
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="h-1 w-10 bg-gradient-to-r from-orange-400 to-transparent rounded-full" />
+              <p className="text-xs uppercase tracking-[0.5em] text-orange-400 font-bold">Wallet</p>
+            </div>
+            <h1 className="font-display text-4xl lg:text-5xl font-black text-white tracking-tight">Your Tickets</h1>
           </div>
           <button
             type="button"

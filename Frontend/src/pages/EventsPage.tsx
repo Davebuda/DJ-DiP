@@ -170,7 +170,7 @@ const EventsPage = () => {
             {(() => {
               const featured = sortedEvents[0];
               return (
-                <div className="lg:w-[30%] lg:min-w-[300px] flex-shrink-0 lg:sticky lg:top-24 lg:self-start">
+                <div className="w-full sm:w-[80%] sm:mx-auto lg:w-[30%] lg:min-w-[300px] flex-shrink-0 lg:sticky lg:top-24 lg:self-start">
                   <div
                     className="liquid-glass-warm rounded-[32px] overflow-hidden transition-all duration-300 group hover:scale-[1.01] relative border border-orange-400/20 bg-gradient-to-b from-orange-400/[0.10] via-white/[0.04] to-white/[0.02] backdrop-blur-xl"
                   >
@@ -181,8 +181,8 @@ const EventsPage = () => {
                       </span>
                     </div>
 
-                    {/* Featured Image — taller */}
-                    <div className="relative overflow-hidden aspect-[3/4] min-h-[320px]">
+                    {/* Featured Image — landscape on mobile, portrait on desktop */}
+                    <div className="relative overflow-hidden aspect-[4/3] sm:aspect-[3/4] min-h-[200px] sm:min-h-[320px]">
                       <img
                         src={featured.imageUrl || defaultEventImage}
                         alt={featured.title}
@@ -275,7 +275,7 @@ const EventsPage = () => {
                       }`}
                     >
                       {/* Event Image */}
-                      <div className="relative overflow-hidden aspect-[3/2] min-h-[180px]">
+                      <div className="relative overflow-hidden aspect-[16/9] sm:aspect-[3/2] min-h-[160px] sm:min-h-[180px]">
                         <img
                           src={event.imageUrl || defaultEventImage}
                           alt={event.title}

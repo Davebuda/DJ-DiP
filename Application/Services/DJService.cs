@@ -18,18 +18,28 @@ namespace DJDiP.Application.Services
         {
             var djs = await _unitOfWork.DJProfiles.GetAllAsync();
             var followerCounts = await _unitOfWork.UserFollowDJs.GetFollowerCountsAsync(djs.Select(dj => dj.Id));
+            var allReviews = await _unitOfWork.DJReviews.GetAllAsync();
+            var reviewsByDj = allReviews
+                .GroupBy(r => r.DJId)
+                .ToDictionary(g => g.Key, g => g.ToList());
 
-            return djs.Select(dj => new DJProfileListItemDto
+            return djs.Select(dj =>
             {
-                Id = dj.Id,
-                Name = dj.Name,
-                StageName = dj.StageName ?? dj.Name,
-                Bio = dj.Bio,
-                Genre = dj.Genres.Any() ? string.Join(", ", dj.Genres.Select(g => g.Name)) : dj.Genre ?? string.Empty,
-                ProfilePictureUrl = dj.ProfilePictureUrl ?? string.Empty,
-                Tagline = dj.Tagline,
-                CoverImageUrl = dj.CoverImageUrl,
-                FollowerCount = followerCounts.TryGetValue(dj.Id, out var count) ? count : 0
+                var hasReviews = reviewsByDj.TryGetValue(dj.Id, out var reviews) && reviews.Count > 0;
+                return new DJProfileListItemDto
+                {
+                    Id = dj.Id,
+                    Name = dj.Name,
+                    StageName = dj.StageName ?? dj.Name,
+                    Bio = dj.Bio,
+                    Genre = dj.Genres.Any() ? string.Join(", ", dj.Genres.Select(g => g.Name)) : dj.Genre ?? string.Empty,
+                    ProfilePictureUrl = dj.ProfilePictureUrl ?? string.Empty,
+                    Tagline = dj.Tagline,
+                    CoverImageUrl = dj.CoverImageUrl,
+                    FollowerCount = followerCounts.TryGetValue(dj.Id, out var count) ? count : 0,
+                    AverageRating = hasReviews ? Math.Round(reviews!.Average(r => r.Rating), 1) : 0,
+                    ReviewCount = hasReviews ? reviews!.Count : 0
+                };
             });
         }
 

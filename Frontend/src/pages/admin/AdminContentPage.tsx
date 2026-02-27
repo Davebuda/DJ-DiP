@@ -31,6 +31,10 @@ const AdminContentPage = () => {
     eventsTagline: '',
   });
 
+  // Visual effects text (stored in localStorage)
+  const [marqueeWords, setMarqueeWords] = useState('');
+  const [marqueeGenreWords, setMarqueeGenreWords] = useState('');
+
   // Content pages stored in localStorage until backend CMS is ready
   const [aboutContent, setAboutContent] = useState('');
   const [faqContent, setFaqContent] = useState('');
@@ -51,6 +55,10 @@ const AdminContentPage = () => {
       galleryVideoUrl: siteSettings.galleryVideoUrl || '/media/sections/gallery/last 04.10.klubn.mp4',
       eventsTagline: siteSettings.eventsTagline || 'Curated nights. Handpicked lineups.',
     });
+
+    // Load visual effects text from localStorage
+    setMarqueeWords(localStorage.getItem('cms_marqueeWords') || '');
+    setMarqueeGenreWords(localStorage.getItem('cms_marqueeGenreWords') || '');
 
     // Load CMS content from localStorage
     setAboutContent(localStorage.getItem('cms_about') || '');
@@ -234,6 +242,54 @@ const AdminContentPage = () => {
             {saving ? 'Saving...' : 'Save Landing Content'}
           </button>
         </form>
+      )}
+
+      {/* Visual Effects section — always visible under landing tab */}
+      {activeTab === 'landing' && (
+        <section className="card space-y-4 mt-8">
+          <h2 className="text-lg font-semibold">Visual Effects — Marquee Text</h2>
+          <p className="text-xs text-gray-500">
+            Customise the scrolling text banners on the landing page. Separate words with commas.
+            Leave empty to use defaults.
+          </p>
+          <label className="space-y-1 text-sm font-semibold text-gray-300">
+            Marquee Ticker Words
+            <input
+              type="text"
+              className={inputClass}
+              value={marqueeWords}
+              onChange={(e) => setMarqueeWords(e.target.value)}
+              placeholder="BASS, GROOVE, RHYTHM, DROP, BEAT, PULSE, FLOW, VIBE, ENERGY, SOUND"
+            />
+            <span className="text-[0.65rem] text-gray-500 font-normal block mt-1">
+              These appear in the first scrolling banner between sections (e.g. BASS · GROOVE · RHYTHM)
+            </span>
+          </label>
+          <label className="space-y-1 text-sm font-semibold text-gray-300">
+            Genre Marquee Words
+            <input
+              type="text"
+              className={inputClass}
+              value={marqueeGenreWords}
+              onChange={(e) => setMarqueeGenreWords(e.target.value)}
+              placeholder="AFROBEAT, AMAPIANO, HIP HOP, SHATTA, DANCEHALL, HOUSE, TECHNO, R&B"
+            />
+            <span className="text-[0.65rem] text-gray-500 font-normal block mt-1">
+              These appear in the second scrolling banner near the bottom of the page. Defaults to hero genre tags if empty.
+            </span>
+          </label>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => {
+              localStorage.setItem('cms_marqueeWords', marqueeWords);
+              localStorage.setItem('cms_marqueeGenreWords', marqueeGenreWords);
+              setFeedback({ type: 'success', text: 'Marquee text saved. Refresh the landing page to see changes.' });
+            }}
+          >
+            Save Marquee Text
+          </button>
+        </section>
       )}
 
       {/* About page */}

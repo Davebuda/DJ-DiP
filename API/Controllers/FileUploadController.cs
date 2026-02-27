@@ -47,6 +47,39 @@ public class FileUploadController : ControllerBase
         }
     }
 
+    [HttpPost("media")]
+    [Authorize]
+    [RequestSizeLimit(50 * 1024 * 1024)] // 50MB
+    public async Task<IActionResult> UploadMedia([FromForm] IFormFile file, [FromForm] string? folder = null)
+    {
+        try
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new { error = "No file uploaded" });
+            }
+
+            if (file.Length > 50 * 1024 * 1024)
+            {
+                return BadRequest(new { error = "File size exceeds 50MB limit" });
+            }
+
+            if (!_fileUploadService.IsValidMediaFile(file.FileName))
+            {
+                return BadRequest(new { error = "Invalid file type. Allowed: jpg, jpeg, png, gif, webp, mp4, webm, mov, avi, mkv" });
+            }
+
+            using var stream = file.OpenReadStream();
+            var mediaUrl = await _fileUploadService.UploadMediaAsync(stream, file.FileName, folder);
+
+            return Ok(new { url = mediaUrl });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
     [HttpDelete("image")]
     [Authorize] // Allow any authenticated user
     public async Task<IActionResult> DeleteImage([FromQuery] string imageUrl)

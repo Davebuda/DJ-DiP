@@ -1,9 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client';
-import { FOLLOW_DJ, GET_DJ_BY_ID, GET_DJ_TOP10_LISTS, IS_FOLLOWING_DJ, UNFOLLOW_DJ } from '../graphql/queries';
+import { FOLLOW_DJ, GET_DJ_BY_ID, GET_DJ_TOP10_LISTS, IS_FOLLOWING_DJ, UNFOLLOW_DJ, GET_DJ_REVIEWS, CREATE_DJ_REVIEW } from '../graphql/queries';
 import { useAuth } from '../context/AuthContext';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { Star, Send } from 'lucide-react';
 
 type EventSummary = {
   eventId: string;
@@ -97,6 +98,47 @@ const DJProfilePage = () => {
 
   const [followDj, { loading: followLoading }] = useMutation(FOLLOW_DJ);
   const [unfollowDj, { loading: unfollowLoading }] = useMutation(UNFOLLOW_DJ);
+
+  // Reviews
+  const { data: reviewsData, refetch: refetchReviews } = useQuery(GET_DJ_REVIEWS, {
+    variables: { djId: id },
+    skip: !id,
+  });
+  const [createReview, { loading: submittingReview }] = useMutation(CREATE_DJ_REVIEW);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewStatus, setReviewStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  const reviews = reviewsData?.djReviews ?? [];
+  const averageRating = reviews.length > 0
+    ? Math.round(reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length * 10) / 10
+    : 0;
+
+  const handleSubmitReview = async () => {
+    if (reviewRating === 0) {
+      setReviewStatus({ type: 'error', message: 'Please select a rating' });
+      return;
+    }
+    try {
+      await createReview({
+        variables: {
+          input: {
+            djId: id,
+            rating: reviewRating,
+            comment: reviewComment.trim() || null,
+          },
+        },
+      });
+      setReviewRating(0);
+      setReviewComment('');
+      setReviewStatus({ type: 'success', message: 'Review submitted!' });
+      refetchReviews();
+      setTimeout(() => setReviewStatus(null), 3000);
+    } catch (err: any) {
+      setReviewStatus({ type: 'error', message: err.message || 'Failed to submit review' });
+    }
+  };
 
   const dj: DJProfile | undefined = data?.dj;
   const isFollowing = Boolean(followStatus?.isFollowingDj);
@@ -328,6 +370,117 @@ const DJProfilePage = () => {
                     </div>
                   ))}
                 </div>
+              )}
+            </div>
+
+            {/* Reviews & Ratings Section */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <p className="text-xs uppercase tracking-[0.5em] text-orange-400">Reviews</p>
+                {reviews.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`w-4 h-4 ${star <= Math.round(averageRating) ? 'fill-orange-400 text-orange-400' : 'text-gray-600'}`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm font-semibold text-orange-300">{averageRating}</span>
+                    <span className="text-xs text-gray-500">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Submit Review */}
+              {isAuthenticated ? (
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-4">
+                  <p className="text-sm font-semibold text-gray-300">Rate this DJ</p>
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setReviewRating(star)}
+                        onMouseEnter={() => setHoverRating(star)}
+                        onMouseLeave={() => setHoverRating(0)}
+                        className="transition-transform hover:scale-110"
+                      >
+                        <Star
+                          className={`w-7 h-7 transition-colors ${
+                            star <= (hoverRating || reviewRating)
+                              ? 'fill-orange-400 text-orange-400'
+                              : 'text-gray-600 hover:text-gray-400'
+                          }`}
+                        />
+                      </button>
+                    ))}
+                    {reviewRating > 0 && (
+                      <span className="ml-2 text-sm text-orange-300 font-semibold">{reviewRating}/5</span>
+                    )}
+                  </div>
+                  <textarea
+                    value={reviewComment}
+                    onChange={(e) => setReviewComment(e.target.value)}
+                    placeholder="Share your experience (optional)..."
+                    rows={3}
+                    className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white placeholder-gray-600 focus:border-orange-500 focus:outline-none resize-none text-sm transition"
+                  />
+                  {reviewStatus && (
+                    <p className={`text-sm ${reviewStatus.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>
+                      {reviewStatus.message}
+                    </p>
+                  )}
+                  <button
+                    onClick={handleSubmitReview}
+                    disabled={submittingReview || reviewRating === 0}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-white text-sm font-semibold hover:shadow-[0_0_20px_rgba(255,107,53,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Send className="w-4 h-4" />
+                    {submittingReview ? 'Submitting...' : 'Submit Review'}
+                  </button>
+                </div>
+              ) : (
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-5 text-center">
+                  <p className="text-sm text-gray-400">
+                    <Link to="/login" className="text-orange-400 hover:text-orange-300 transition-colors">Sign in</Link>
+                    {' '}to leave a review
+                  </p>
+                </div>
+              )}
+
+              {/* Existing Reviews */}
+              {reviews.length > 0 && (
+                <div className="space-y-3">
+                  {reviews.slice(0, 10).map((review: any) => (
+                    <div key={review.id} className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-white">{review.userName || 'Anonymous'}</span>
+                          <div className="flex items-center gap-0.5">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star
+                                key={star}
+                                className={`w-3 h-3 ${star <= review.rating ? 'fill-orange-400 text-orange-400' : 'text-gray-600'}`}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                        <span className="text-xs text-gray-500">
+                          {new Date(review.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      {review.comment && (
+                        <p className="text-sm text-gray-300">{review.comment}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {reviews.length === 0 && (
+                <p className="text-gray-500 text-sm">No reviews yet. Be the first to rate this DJ!</p>
               )}
             </div>
           </div>

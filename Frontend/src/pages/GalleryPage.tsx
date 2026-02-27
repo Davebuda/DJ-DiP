@@ -49,7 +49,7 @@ const GalleryPage = () => {
   return (
     <div className="min-h-screen text-white">
       {/* Hero Section with Video */}
-      <section className="relative h-[60vh] overflow-hidden">
+      <section className="relative min-h-[50vh] sm:min-h-[60vh] overflow-hidden">
         <video
           autoPlay
           loop
@@ -61,18 +61,23 @@ const GalleryPage = () => {
         </video>
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/90" />
 
-        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
-          <h1 className="font-display text-6xl md:text-8xl font-bold uppercase tracking-[0.3em] text-white mb-6">
+        <div className="relative z-10 h-full min-h-[50vh] sm:min-h-[60vh] flex flex-col items-center justify-center text-center px-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-1 w-10 bg-gradient-to-r from-orange-400 to-transparent rounded-full" />
+            <p className="text-xs uppercase tracking-[0.5em] text-orange-400 font-bold">The Experience</p>
+            <div className="h-1 w-10 bg-gradient-to-l from-orange-400 to-transparent rounded-full" />
+          </div>
+          <h1 className="font-display text-5xl sm:text-6xl md:text-8xl font-black uppercase tracking-[0.15em] sm:tracking-[0.3em] text-white mb-4">
             Gallery
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl">
+          <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl leading-relaxed">
             Relive the energy, the lights, and the unforgettable moments
           </p>
 
           {user && (
             <button
               onClick={() => setShowUploadModal(true)}
-              className="group relative px-8 py-4 bg-gradient-to-r from-orange-500 to-[#FF6B35] rounded-full font-bold uppercase tracking-wider hover:shadow-[0_0_30px_rgba(255,107,53,0.5)] hover:scale-105 transition-all"
+              className="group relative px-8 py-4 bg-gradient-to-r from-orange-500 to-[#FF6B35] rounded-full font-bold uppercase tracking-wider hover:shadow-[0_0_30px_rgba(255,107,53,0.5)] hover:scale-105 transition-all text-sm"
             >
               <div className="flex items-center gap-3">
                 <Upload className="w-5 h-5" />
@@ -84,9 +89,11 @@ const GalleryPage = () => {
       </section>
 
       {/* Gallery Grid */}
-      <section className="max-w-7xl mx-auto px-4 lg:px-8 py-16">
+      <section className="max-w-7xl mx-auto px-6 lg:px-10 py-16">
         {loading ? (
-          <div className="text-center text-gray-400">Loading gallery...</div>
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-400" />
+          </div>
         ) : data?.galleryMedia?.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {data.galleryMedia.map((media: GalleryMedia) => (
@@ -243,6 +250,8 @@ const UploadMomentModal = ({ onClose, onSuccess }: UploadMomentModalProps) => {
   const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
   const [thumbnailUrl, setThumbnailUrl] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [fileUploading, setFileUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const [createMedia] = useMutation(CREATE_GALLERY_MEDIA, {
     onCompleted: () => {
@@ -250,28 +259,61 @@ const UploadMomentModal = ({ onClose, onSuccess }: UploadMomentModalProps) => {
     },
     onError: (error) => {
       console.error('Error creating media:', error);
-      alert('Failed to upload media. Please try again.');
+      setUploadError('Failed to save media. Please try again.');
       setUploading(false);
     },
   });
 
   const handleFileUpload = async (file: File, isMain: boolean) => {
+    setUploadError(null);
+
+    // Validate file size (50MB for video, 5MB for images)
+    const isVideo = file.type.startsWith('video/');
+    const maxSize = isVideo ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setUploadError(`File size exceeds ${isVideo ? '50MB' : '5MB'} limit.`);
+      return;
+    }
+
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      setUploadError('You must be logged in to upload. Please sign in again.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', 'gallery');
 
     try {
-      const token = localStorage.getItem('accessToken');
-      const uploadBase = import.meta.env.VITE_UPLOAD_API_URL ?? 'http://localhost:5000/api/FileUpload/image';
-      const response = await fetch(uploadBase, {
+      if (isMain) setFileUploading(true);
+      const baseUrl = import.meta.env.VITE_UPLOAD_API_URL ?? 'http://localhost:5000/api/FileUpload/image';
+      // Try /media endpoint first (supports images + videos), fall back to /image
+      const mediaUrl = baseUrl.replace(/\/image$/, '/media');
+      const headers = { Authorization: `Bearer ${token}` };
+
+      let response = await fetch(mediaUrl, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
         body: formData,
       });
 
-      if (!response.ok) throw new Error('Upload failed');
+      // If /media endpoint not found (404) or unauthorized, fall back to /image
+      if ((response.status === 404 || response.status === 401) && mediaUrl !== baseUrl) {
+        if (isVideo) {
+          throw new Error('Video uploads require a backend update. Please restart the backend server.');
+        }
+        response = await fetch(baseUrl, {
+          method: 'POST',
+          headers,
+          body: formData,
+        });
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || `Upload failed (${response.status})`);
+      }
 
       const data = await response.json();
       if (isMain) {
@@ -281,14 +323,17 @@ const UploadMomentModal = ({ onClose, onSuccess }: UploadMomentModalProps) => {
       }
     } catch (error) {
       console.error('Error uploading file:', error);
-      alert('Failed to upload file');
+      setUploadError(error instanceof Error ? error.message : 'Failed to upload file');
+    } finally {
+      if (isMain) setFileUploading(false);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setUploadError(null);
     if (!title || !mediaUrl) {
-      alert('Please provide a title and upload a file');
+      setUploadError('Please provide a title and upload a file');
       return;
     }
 
@@ -378,9 +423,16 @@ const UploadMomentModal = ({ onClose, onSuccess }: UploadMomentModalProps) => {
                 const file = e.target.files?.[0];
                 if (file) handleFileUpload(file, true);
               }}
-              className="w-full px-4 py-3 bg-black/30 border border-white/10 rounded-lg text-white focus:border-orange-500 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-orange-500 file:text-white file:cursor-pointer hover:file:bg-orange-600"
+              disabled={fileUploading}
+              className="w-full px-4 py-3 bg-black/30 border border-white/10 rounded-lg text-white focus:border-orange-500 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-orange-500 file:text-white file:cursor-pointer hover:file:bg-orange-600 disabled:opacity-50"
             />
-            {mediaUrl && (
+            {fileUploading && (
+              <div className="mt-2 flex items-center gap-2 text-sm text-orange-300">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-400" />
+                Uploading file...
+              </div>
+            )}
+            {mediaUrl && !fileUploading && (
               <p className="mt-2 text-sm text-green-400">File uploaded successfully!</p>
             )}
           </div>
@@ -402,13 +454,19 @@ const UploadMomentModal = ({ onClose, onSuccess }: UploadMomentModalProps) => {
             </div>
           )}
 
+          {uploadError && (
+            <div className="rounded-lg px-4 py-3 text-sm bg-red-500/10 border border-red-500/40 text-red-200">
+              {uploadError}
+            </div>
+          )}
+
           <div className="flex gap-4 pt-4">
             <button
               type="submit"
-              disabled={uploading || !mediaUrl}
+              disabled={uploading || fileUploading || !mediaUrl}
               className="flex-1 py-3 bg-gradient-to-r from-orange-500 to-[#FF6B35] rounded-full font-bold uppercase tracking-wider hover:shadow-[0_0_25px_rgba(255,107,53,0.5)] hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {uploading ? 'Uploading...' : 'Upload'}
+              {uploading ? 'Saving...' : 'Upload'}
             </button>
             <button
               type="button"

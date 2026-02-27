@@ -11,5 +11,7 @@ namespace DJDiP.Application.DTO.DJProfileDTO
         public string? Tagline { get; set; }
         public string? CoverImageUrl { get; set; }
         public int FollowerCount { get; set; }
+        public double AverageRating { get; set; }
+        public int ReviewCount { get; set; }
     }
 }

@@ -60,22 +60,39 @@ const UploadMediaPage = () => {
   };
 
   const uploadFile = async (file: File): Promise<string> => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) throw new Error('You must be logged in to upload.');
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('folder', 'gallery');
 
     try {
-      const token = localStorage.getItem('accessToken');
-      const uploadBase = import.meta.env.VITE_UPLOAD_API_URL ?? 'http://localhost:5000/api/FileUpload/image';
-      const response = await fetch(uploadBase, {
+      const baseUrl = import.meta.env.VITE_UPLOAD_API_URL ?? 'http://localhost:5000/api/FileUpload/image';
+      const mediaUrl = baseUrl.replace(/\/image$/, '/media');
+      const headers = { Authorization: `Bearer ${token}` };
+      const isVideo = file.type.startsWith('video/');
+
+      let response = await fetch(mediaUrl, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
         body: formData,
       });
 
-      if (!response.ok) throw new Error('Upload failed');
+      // Fall back to /image endpoint if /media not available
+      if ((response.status === 404 || response.status === 401) && mediaUrl !== baseUrl) {
+        if (isVideo) throw new Error('Video uploads require a backend update. Please restart the backend.');
+        response = await fetch(baseUrl, {
+          method: 'POST',
+          headers,
+          body: formData,
+        });
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || `Upload failed (${response.status})`);
+      }
 
       const data = await response.json();
       return data.url;

@@ -7,6 +7,7 @@ public class FileUploadService : IFileUploadService
     private readonly string _uploadPath;
     private readonly string _baseUrl;
     private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+    private readonly string[] _allowedMediaExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".webp", ".mp4", ".webm", ".mov", ".avi", ".mkv" };
     private const long MaxFileSize = 5 * 1024 * 1024; // 5MB
 
     public FileUploadService(string uploadPath, string baseUrl)
@@ -59,6 +60,40 @@ public class FileUploadService : IFileUploadService
         return $"{_baseUrl}{relativePath}";
     }
 
+    public async Task<string> UploadMediaAsync(Stream fileStream, string fileName, string? folder = null)
+    {
+        if (!IsValidMediaFile(fileName))
+        {
+            throw new InvalidOperationException("Invalid file type. Allowed: jpg, jpeg, png, gif, webp, mp4, webm, mov, avi, mkv.");
+        }
+
+        var extension = GetFileExtension(fileName);
+        var uniqueFileName = $"{Guid.NewGuid()}{extension}";
+
+        var targetPath = _uploadPath;
+        if (!string.IsNullOrWhiteSpace(folder))
+        {
+            targetPath = Path.Combine(_uploadPath, folder);
+            if (!Directory.Exists(targetPath))
+            {
+                Directory.CreateDirectory(targetPath);
+            }
+        }
+
+        var filePath = Path.Combine(targetPath, uniqueFileName);
+
+        using (var fileStreamOut = new FileStream(filePath, FileMode.Create))
+        {
+            await fileStream.CopyToAsync(fileStreamOut);
+        }
+
+        var relativePath = folder != null
+            ? $"/uploads/{folder}/{uniqueFileName}"
+            : $"/uploads/{uniqueFileName}";
+
+        return $"{_baseUrl}{relativePath}";
+    }
+
     public Task<bool> DeleteImageAsync(string imageUrl)
     {
         try
@@ -86,6 +121,12 @@ public class FileUploadService : IFileUploadService
     {
         var extension = GetFileExtension(fileName).ToLowerInvariant();
         return _allowedExtensions.Contains(extension);
+    }
+
+    public bool IsValidMediaFile(string fileName)
+    {
+        var extension = GetFileExtension(fileName).ToLowerInvariant();
+        return _allowedMediaExtensions.Contains(extension);
     }
 
     public string GetFileExtension(string fileName)

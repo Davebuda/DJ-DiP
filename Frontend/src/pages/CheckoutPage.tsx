@@ -126,20 +126,24 @@ const CheckoutForm = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-16 space-y-8">
-      <div>
-        <p className="text-xs uppercase tracking-[0.5em] text-orange-400">Checkout</p>
-        <h1 className="text-4xl font-bold text-white">Secure Payment</h1>
+    <div className="min-h-screen text-white">
+      <div className="max-w-4xl mx-auto px-6 lg:px-10 py-16 space-y-8">
+      <div className="space-y-3">
+        <div className="flex items-center gap-3">
+          <div className="h-1 w-10 bg-gradient-to-r from-orange-400 to-transparent rounded-full" />
+          <p className="text-xs uppercase tracking-[0.5em] text-orange-400 font-bold">Checkout</p>
+        </div>
+        <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tight">Secure Payment</h1>
         <p className="text-gray-400 text-sm">Pay with Stripe. No card data touches our servers.</p>
       </div>
 
       {!isAuthenticated && (
-        <div className="rounded-2xl border border-yellow-500/30 bg-yellow-500/5 px-4 py-3 text-sm text-yellow-100">
-          Please <Link to="/login" className="underline">login</Link> to continue.
+        <div className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 px-5 py-4 text-sm text-yellow-100">
+          Please <Link to="/login" className="underline text-orange-300">login</Link> to continue with your purchase.
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6 rounded-2xl border border-white/10 bg-white/5 p-6">
+      <form onSubmit={handleSubmit} className="space-y-6 rounded-[32px] border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.02] backdrop-blur-xl p-6 lg:p-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <label className="space-y-2 text-sm text-gray-300">
             Event
@@ -209,11 +213,12 @@ const CheckoutForm = () => {
         <button
           type="submit"
           disabled={!isAuthenticated || processing || !stripe}
-          className="w-full rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] px-6 py-3 text-black font-semibold uppercase tracking-[0.3em] disabled:opacity-50"
+          className="w-full rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] px-6 py-4 text-black font-bold text-sm uppercase tracking-[0.2em] disabled:opacity-50 hover:shadow-[0_0_25px_rgba(255,107,53,0.4)] hover:scale-[1.01] transition-all"
         >
           {processing ? 'Processing…' : 'Pay with Card'}
         </button>
       </form>
+    </div>
     </div>
   );
 };

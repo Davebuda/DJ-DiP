@@ -470,6 +470,36 @@ public class Query
     {
         return await userService.GetUserByIdAsync(userId);
     }
+
+    // DJ Reviews
+    public async Task<IEnumerable<DJReviewDto>> DjReviews(
+        Guid djId,
+        [Service] IUnitOfWork unitOfWork)
+    {
+        var reviews = (await unitOfWork.DJReviews.GetAllAsync())
+            .Where(r => r.DJId == djId)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToList();
+
+        var userIds = reviews.Select(r => r.UserId).Distinct();
+        var userNames = new Dictionary<string, string>();
+        foreach (var userId in userIds)
+        {
+            var user = await unitOfWork.Users.GetByIdAsync(userId);
+            if (user != null) userNames[userId] = user.FullName;
+        }
+
+        return reviews.Select(r => new DJReviewDto
+        {
+            Id = r.Id,
+            DJId = r.DJId,
+            UserId = r.UserId,
+            UserName = userNames.TryGetValue(r.UserId, out var name) ? name : "Anonymous",
+            Rating = r.Rating,
+            Comment = r.Comment,
+            CreatedAt = r.CreatedAt
+        });
+    }
 }
 
 public class LandingPageData
@@ -1063,6 +1093,34 @@ public class Mutation
         return true;
     }
 
+    // DJ REVIEW MUTATIONS
+    public async Task<Guid> CreateDjReview(
+        CreateDJReviewInput input,
+        [Service] IUnitOfWork unitOfWork,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        var userIdClaim = httpContextAccessor.HttpContext?.User.FindFirst("userId")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim))
+        {
+            throw new GraphQLException("User must be authenticated to submit a review");
+        }
+
+        var review = new DJReview
+        {
+            Id = Guid.NewGuid(),
+            DJId = input.DJId,
+            UserId = userIdClaim,
+            Rating = Math.Clamp(input.Rating, 1, 5),
+            Comment = input.Comment,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        await unitOfWork.DJReviews.AddAsync(review);
+        await unitOfWork.SaveChangesAsync();
+        return review.Id;
+    }
+
     // USER PROFILE MUTATIONS
     public async Task<bool> UpdateUserProfile(
         UpdateUserProfileInput input,
@@ -1329,4 +1387,22 @@ public class UpdateGalleryMediaInput
     public bool? IsApproved { get; set; }
     public bool? IsFeatured { get; set; }
     public string? Tags { get; set; }
+}
+
+public class CreateDJReviewInput
+{
+    public Guid DJId { get; set; }
+    public int Rating { get; set; }
+    public string? Comment { get; set; }
+}
+
+public class DJReviewDto
+{
+    public Guid Id { get; set; }
+    public Guid DJId { get; set; }
+    public string UserId { get; set; } = string.Empty;
+    public string UserName { get; set; } = string.Empty;
+    public int Rating { get; set; }
+    public string? Comment { get; set; }
+    public DateTime CreatedAt { get; set; }
 }

@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
-import { FOLLOW_DJ, GET_DJS, GET_FOLLOWED_DJS, UNFOLLOW_DJ, GET_DJ_APPLICATION_BY_USER } from '../graphql/queries';
+import { FOLLOW_DJ, GET_DJS, GET_FOLLOWED_DJS, UNFOLLOW_DJ, GET_DJ_APPLICATION_BY_USER, GET_DJ_TOP10_LISTS } from '../graphql/queries';
 import { useAuth } from '../context/AuthContext';
 import DJApplicationForm from '../components/DJApplicationForm';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import { Star, Music } from 'lucide-react';
 
 type DJ = {
   id: string;
@@ -16,6 +17,8 @@ type DJ = {
   coverImageUrl?: string;
   tagline?: string;
   followerCount: number;
+  averageRating: number;
+  reviewCount: number;
 };
 
 const sortOptions = [
@@ -66,6 +69,8 @@ const DJsPage = () => {
     skip: !user?.id,
   });
 
+  const { data: top10Data } = useQuery(GET_DJ_TOP10_LISTS);
+
   const userApplication = applicationData?.djApplicationByUser;
   const isAlreadyDJ = isDJ || isAdmin;
   const defaultDjImage = siteSettings.defaultDjImageUrl ?? '/media/defaults/dj.svg';
@@ -74,6 +79,19 @@ const DJsPage = () => {
     if (!followedData?.followedDjs) return new Set<string>();
     return new Set<string>(followedData.followedDjs.map((dj: DJ) => dj.id));
   }, [followedData]);
+
+  const top10ByDj = useMemo(() => {
+    const map = new Map<string, { title: string; artist: string }[]>();
+    if (!top10Data?.djTop10Lists) return map;
+    for (const list of top10Data.djTop10Lists) {
+      const tracks = (list.top10Songs || []).slice(0, 3).map((entry: any) => ({
+        title: entry.song?.title || entry.songTitle || 'Unknown',
+        artist: entry.song?.artist || '',
+      }));
+      if (tracks.length > 0) map.set(list.djId, tracks);
+    }
+    return map;
+  }, [top10Data]);
 
   const genreOptions = useMemo(() => {
     if (!data?.dJs) return [];
@@ -338,14 +356,23 @@ const DJsPage = () => {
                         {isFollowing ? 'Following' : 'Follow'}
                       </button>
 
-                      {/* Bottom overlay — name + followers */}
+                      {/* Bottom overlay — name + followers + rating */}
                       <div className="absolute bottom-0 left-0 right-0 p-4">
                         <h3 className="text-lg font-black text-white leading-tight group-hover:text-orange-300 transition-colors">
                           {dj.stageName}
                         </h3>
-                        <div className="flex items-center gap-1.5 mt-1">
-                          <span className="text-sm font-semibold text-white/80">{dj.followerCount}</span>
-                          <span className="text-[0.6rem] uppercase tracking-[0.2em] text-white/40">followers</span>
+                        <div className="flex items-center justify-between mt-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-sm font-semibold text-white/80">{dj.followerCount}</span>
+                            <span className="text-[0.6rem] uppercase tracking-[0.2em] text-white/40">followers</span>
+                          </div>
+                          {dj.reviewCount > 0 && (
+                            <div className="flex items-center gap-1">
+                              <Star className="w-3.5 h-3.5 fill-orange-400 text-orange-400" />
+                              <span className="text-sm font-semibold text-orange-300">{dj.averageRating}</span>
+                              <span className="text-[0.55rem] text-white/40">({dj.reviewCount})</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -365,12 +392,29 @@ const DJsPage = () => {
                     <span className="text-[0.65rem] text-gray-500">Oslo, NO</span>
                   </div>
 
-                  {/* Next Show button — separate element */}
+                  {/* Top Tracks Preview */}
+                  {top10ByDj.has(dj.id) && (
+                    <div className="px-2 space-y-1">
+                      {top10ByDj.get(dj.id)!.map((track, i) => (
+                        <div key={i} className="flex items-center gap-2 text-[0.65rem]">
+                          <Music className="w-3 h-3 text-orange-400/60 flex-shrink-0" />
+                          <span className="text-gray-300 truncate">{track.title}</span>
+                          {track.artist && (
+                            <span className="text-gray-500 truncate ml-auto">{track.artist}</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* View Profile button */}
                   <Link
                     to={`/djs/${dj.id}`}
                     className="flex items-center justify-between px-4 py-3 rounded-xl border border-white/[0.06] bg-white/[0.03] hover:border-orange-400/30 hover:bg-white/[0.06] transition-all duration-300"
                   >
-                    <span className="text-xs font-semibold text-gray-400 group-hover:text-gray-300 transition-colors">Next Show</span>
+                    <span className="text-xs font-semibold text-gray-400 group-hover:text-gray-300 transition-colors">
+                      {top10ByDj.has(dj.id) ? 'Full Top 10' : 'Next Show'}
+                    </span>
                     <span className="text-xs font-bold text-orange-400 group-hover:translate-x-0.5 transition-transform duration-300">View Profile &rarr;</span>
                   </Link>
                 </div>
