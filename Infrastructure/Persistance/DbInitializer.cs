@@ -42,13 +42,19 @@ namespace DJDiP.Infrastructure.Persistance
 
             await context.SiteSettings.AddAsync(siteSettings);
 
-            // Seed Admin User (password: Admin123!)
+            // Seed Admin User — password must be set via ADMIN_DEFAULT_PASSWORD env var
+            var adminPassword = Environment.GetEnvironmentVariable("ADMIN_DEFAULT_PASSWORD")
+                ?? throw new InvalidOperationException(
+                    "ADMIN_DEFAULT_PASSWORD environment variable must be set for initial database seeding.");
+
+            var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL") ?? "admin@djdip.com";
+
             var adminUser = new ApplicationUser
             {
                 Id = Guid.NewGuid().ToString(),
-                Email = "2djdip@gmail.com",
+                Email = adminEmail,
                 FullName = "DJ DiP Admin",
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin123!"),
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword),
                 Role = 2, // Admin
                 IsEmailVerified = true,
                 CreatedAt = DateTime.UtcNow,
@@ -56,57 +62,6 @@ namespace DJDiP.Infrastructure.Persistance
             };
 
             await context.ApplicationUsers.AddAsync(adminUser);
-
-            // Seed DJ Users for profiles
-            var djUsers = new List<ApplicationUser>
-            {
-                new ApplicationUser
-                {
-                    Id = "seed-user-1",
-                    Email = "djshadow@example.com",
-                    FullName = "DJ Shadow",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("DJPass123!"),
-                    Role = 1, // DJ
-                    IsEmailVerified = true,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                },
-                new ApplicationUser
-                {
-                    Id = "seed-user-2",
-                    Email = "lunabeats@example.com",
-                    FullName = "Luna Beats",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("DJPass123!"),
-                    Role = 1, // DJ
-                    IsEmailVerified = true,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                },
-                new ApplicationUser
-                {
-                    Id = "seed-user-3",
-                    Email = "echopulse@example.com",
-                    FullName = "Echo Pulse",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("DJPass123!"),
-                    Role = 1, // DJ
-                    IsEmailVerified = true,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                },
-                new ApplicationUser
-                {
-                    Id = "seed-user-4",
-                    Email = "neonflux@example.com",
-                    FullName = "Neon Flux",
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword("DJPass123!"),
-                    Role = 1, // DJ
-                    IsEmailVerified = true,
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                }
-            };
-
-            await context.ApplicationUsers.AddRangeAsync(djUsers);
 
             // Seed Sample Genres
             var genres = new List<Genre>
@@ -134,13 +89,13 @@ namespace DJDiP.Infrastructure.Persistance
 
             await context.Venues.AddAsync(venue);
 
-            // Seed Sample DJ Profiles
+            // Seed Sample DJ Profiles (no user accounts — demo display data only)
             var djProfiles = new List<DJProfile>
             {
                 new DJProfile
                 {
                     Id = Guid.NewGuid(),
-                    UserId = "seed-user-1",
+                    UserId = adminUser.Id,
                     Name = "DJ Shadow",
                     StageName = "Shadow",
                     Bio = "Pioneer of underground techno",
@@ -151,7 +106,7 @@ namespace DJDiP.Infrastructure.Persistance
                 new DJProfile
                 {
                     Id = Guid.NewGuid(),
-                    UserId = "seed-user-2",
+                    UserId = adminUser.Id,
                     Name = "Luna Beats",
                     StageName = "Luna",
                     Bio = "House music specialist",
@@ -162,7 +117,7 @@ namespace DJDiP.Infrastructure.Persistance
                 new DJProfile
                 {
                     Id = Guid.NewGuid(),
-                    UserId = "seed-user-3",
+                    UserId = adminUser.Id,
                     Name = "Echo Pulse",
                     StageName = "Echo",
                     Bio = "Trance and progressive",
@@ -173,7 +128,7 @@ namespace DJDiP.Infrastructure.Persistance
                 new DJProfile
                 {
                     Id = Guid.NewGuid(),
-                    UserId = "seed-user-4",
+                    UserId = adminUser.Id,
                     Name = "Neon Flux",
                     StageName = "Neon",
                     Bio = "Electronic music producer",

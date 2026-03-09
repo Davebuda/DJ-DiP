@@ -507,7 +507,11 @@ Mockups/
 .env.production
 .env.development
 .env.*.local
+Frontend/.env
+Frontend/.env.local
+Frontend/.env.production
 !.env.example
+!Frontend/.env.example
 
 # Docker override files (may contain secrets)
 docker-compose.override.yml

@@ -6,9 +6,9 @@ version: '3.8'
 services:
   postgres:
     environment:
-      POSTGRES_DB: djdip_dev
-      POSTGRES_USER: djdip_dev
-      POSTGRES_PASSWORD: dev_password_123
+      POSTGRES_DB: ${POSTGRES_DB:-djdip_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-djdip_dev}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
     ports:
       - "5432:5432"
 
@@ -19,8 +19,8 @@ services:
       target: build
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=djdip_dev;Username=djdip_dev;Password=dev_password_123"
-      Jwt__Key: "dev-secret-key-change-me-please-123456789"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-djdip_dev};Username=${POSTGRES_USER:-djdip_dev};Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}"
+      Jwt__Key: ${JWT_SECRET_KEY:?Set JWT_SECRET_KEY in .env}
       CORS__AllowedOrigins: "http://localhost:3000,http://localhost:5173,http://localhost:5174,http://localhost:5175"
     ports:
       - "5000:5000"

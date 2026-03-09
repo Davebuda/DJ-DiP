@@ -51,6 +51,16 @@ builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("Jwt")
 builder.Services.Configure<DJDiP.Application.Options.EmailSettings>(builder.Configuration.GetSection("Email"));
 builder.Services.AddScoped<DJDiP.Application.Interfaces.IEmailService, DJDiP.Application.Services.EmailService>();
 
+// Validate JWT key at startup
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
+{
+    throw new InvalidOperationException(
+        "JWT signing key must be at least 32 characters. " +
+        "Set Jwt__Key environment variable or Jwt:Key in configuration. " +
+        "Generate one with: openssl rand -base64 64");
+}
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -63,10 +73,11 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
+        ClockSkew = TimeSpan.FromMinutes(1),
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? string.Empty))
+            Encoding.UTF8.GetBytes(jwtKey))
     };
 });
 
@@ -109,14 +120,18 @@ builder.Services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrateg
 builder.Services.AddHttpContextAccessor();
 
 // ========== CORS ==========
+var corsOrigins = builder.Configuration["CORS:AllowedOrigins"]?
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    ?? new[] { "http://localhost:3000", "http://localhost:5173", "http://localhost:5174", "http://localhost:5175" };
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
     {
         policy
-            .WithOrigins("http://localhost:3000", "http://localhost:5173", "http://localhost:5174", "http://localhost:5175")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
+            .WithOrigins(corsOrigins)
+            .WithHeaders("Authorization", "Content-Type", "Accept", "X-Requested-With")
+            .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .AllowCredentials();
     });
 });
@@ -161,6 +176,10 @@ builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
     .AddMutationType<Mutation>()
+    .ModifyRequestOptions(opt =>
+    {
+        opt.IncludeExceptionDetails = builder.Environment.IsDevelopment();
+    })
     .ModifyOptions(o => o.StrictValidation = false);
 
 var app = builder.Build();
@@ -185,12 +204,15 @@ using (var scope = app.Services.CreateScope())
 // Security Headers
 app.Use(async (context, next) =>
 {
-    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-    context.Response.Headers.Add("X-Frame-Options", "DENY");
-    context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
-    context.Response.Headers.Add("Referrer-Policy", "no-referrer-when-downgrade");
-    context.Response.Headers.Add("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
-    // Remove Server header
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-Frame-Options", "DENY");
+    context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
+    context.Response.Headers.Append("Referrer-Policy", "no-referrer-when-downgrade");
+    context.Response.Headers.Append("Permissions-Policy", "geolocation=(), microphone=(), camera=()");
+    if (!app.Environment.IsDevelopment())
+    {
+        context.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+    }
     context.Response.Headers.Remove("Server");
     await next();
 });
@@ -215,7 +237,10 @@ app.MapHealthChecks("/health");
 app.MapGet("/", () => "DJ-DiP API is running! Visit /graphql for GraphQL playground.");
 
 // GraphQL endpoint
-app.MapGraphQL("/graphql");
+app.MapGraphQL("/graphql").WithOptions(new HotChocolate.AspNetCore.GraphQLServerOptions
+{
+    Tool = { Enable = app.Environment.IsDevelopment() }
+});
 
 Log.Information("DJ-DiP application started successfully");
 app.Run();
@@ -510,6 +535,33 @@ public class LandingPageData
 
 public class Mutation
 {
+    // ========== AUTH HELPERS ==========
+    private static string RequireAuthentication(IHttpContextAccessor accessor)
+    {
+        var userId = accessor.HttpContext?.User.FindFirst("userId")?.Value;
+        if (string.IsNullOrEmpty(userId))
+            throw new GraphQLException("Authentication required.");
+        return userId;
+    }
+
+    private static string RequireAdmin(IHttpContextAccessor accessor)
+    {
+        var userId = RequireAuthentication(accessor);
+        var role = accessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+        if (role != "Admin")
+            throw new GraphQLException("Access denied. Admin role required.");
+        return userId;
+    }
+
+    private static string RequireRole(IHttpContextAccessor accessor, params string[] roles)
+    {
+        var userId = RequireAuthentication(accessor);
+        var role = accessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+        if (role == null || !roles.Contains(role))
+            throw new GraphQLException($"Access denied. Required role: {string.Join(" or ", roles)}.");
+        return userId;
+    }
+
     // AUTH MUTATIONS
     public async Task<AuthPayload> Register(
         RegisterInput input,
@@ -542,8 +594,10 @@ public class Mutation
     // EVENT MUTATIONS
     public async Task<Guid> CreateEvent(
         CreateEventInput input,
-        [Service] IEventService events)
+        [Service] IEventService events,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         var dto = new CreateEventDto
         {
             Title = input.Title,
@@ -563,8 +617,10 @@ public class Mutation
     public async Task<bool> UpdateEvent(
         Guid id,
         UpdateEventInput input,
-        [Service] IEventService events)
+        [Service] IEventService events,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         var dto = new UpdateEventDto
         {
             Id = id,
@@ -585,8 +641,10 @@ public class Mutation
 
     public async Task<bool> DeleteEvent(
         Guid id,
-        [Service] IEventService events)
+        [Service] IEventService events,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         await events.DeleteAsync(id);
         return true;
     }
@@ -594,8 +652,10 @@ public class Mutation
     // DJ MUTATIONS
     public async Task<Guid> CreateDj(
         CreateDjInput input,
-        [Service] IDJService djs)
+        [Service] IDJService djs,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         var dto = new CreateDJProfileDto
         {
             StageName = input.StageName,
@@ -623,8 +683,10 @@ public class Mutation
     public async Task<bool> UpdateDj(
         Guid id,
         UpdateDjInput input,
-        [Service] IDJService djs)
+        [Service] IDJService djs,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireRole(httpContextAccessor, "DJ", "Admin");
         var dto = new UpdateDJProfileDto
         {
             Id = id,
@@ -651,8 +713,10 @@ public class Mutation
 
     public async Task<bool> DeleteDj(
         Guid id,
-        [Service] IDJService djs)
+        [Service] IDJService djs,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         await djs.DeleteAsync(id);
         return true;
     }
@@ -660,8 +724,10 @@ public class Mutation
     // DJ APPLICATION MUTATIONS
     public async Task<DJApplicationDto> SubmitDJApplication(
         CreateDJApplicationInput input,
-        [Service] IDJApplicationService djApplicationService)
+        [Service] IDJApplicationService djApplicationService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAuthentication(httpContextAccessor);
         try
         {
             var dto = new CreateDJApplicationDto
@@ -690,8 +756,10 @@ public class Mutation
     public async Task<DJApplicationDto> ApproveDJApplication(
         Guid applicationId,
         string reviewedByAdminId,
-        [Service] IDJApplicationService djApplicationService)
+        [Service] IDJApplicationService djApplicationService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         try
         {
             var dto = new UpdateApplicationStatusDto
@@ -703,9 +771,14 @@ public class Mutation
 
             return await djApplicationService.ApproveApplicationAsync(dto);
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
             throw new GraphQLException(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error approving DJ application {ApplicationId}", applicationId);
+            throw new GraphQLException("An error occurred processing the application.");
         }
     }
 
@@ -713,8 +786,10 @@ public class Mutation
         Guid applicationId,
         string reviewedByAdminId,
         string? rejectionReason,
-        [Service] IDJApplicationService djApplicationService)
+        [Service] IDJApplicationService djApplicationService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         try
         {
             var dto = new UpdateApplicationStatusDto
@@ -727,17 +802,24 @@ public class Mutation
 
             return await djApplicationService.RejectApplicationAsync(dto);
         }
-        catch (Exception ex)
+        catch (InvalidOperationException ex)
         {
             throw new GraphQLException(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Error rejecting DJ application {ApplicationId}", applicationId);
+            throw new GraphQLException("An error occurred processing the application.");
         }
     }
 
     // GENRE MUTATIONS
     public async Task<Guid> CreateGenre(
         CreateGenreInput input,
-        [Service] IGenreService genres)
+        [Service] IGenreService genres,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         var dto = new CreateGenreDto { Name = input.Name };
         return await genres.CreateAsync(dto);
     }
@@ -745,8 +827,10 @@ public class Mutation
     public async Task<bool> UpdateGenre(
         Guid id,
         UpdateGenreInput input,
-        [Service] IGenreService genres)
+        [Service] IGenreService genres,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         await genres.UpdateAsync(id, new UpdateGenreDto { Name = input.Name });
         return true;
     }
@@ -754,8 +838,10 @@ public class Mutation
     // VENUE MUTATIONS
     public async Task<Guid> CreateVenue(
         CreateVenueInput input,
-        [Service] IVenueService venues)
+        [Service] IVenueService venues,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         var dto = new CreateVenueDto
         {
             Name = input.Name,
@@ -777,8 +863,10 @@ public class Mutation
     public async Task<bool> UpdateVenue(
         Guid id,
         UpdateVenueInput input,
-        [Service] IVenueService venues)
+        [Service] IVenueService venues,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         var dto = new UpdateVenueDto
         {
             Id = id,
@@ -801,8 +889,10 @@ public class Mutation
 
     public async Task<bool> DeleteVenue(
         Guid id,
-        [Service] IVenueService venues)
+        [Service] IVenueService venues,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         await venues.DeleteAsync(id);
         return true;
     }
@@ -823,8 +913,10 @@ public class Mutation
 
     public async Task<bool> DeleteContactMessage(
         Guid id,
-        [Service] IContactMessageService contactMessages)
+        [Service] IContactMessageService contactMessages,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         await contactMessages.DeleteAsync(id);
         return true;
     }
@@ -892,8 +984,10 @@ public class Mutation
     // SITE SETTINGS MUTATIONS
     public async Task<SiteSettingsDto> UpdateSiteSettings(
         UpdateSiteSettingsInput input,
-        [Service] ISiteSettingsService siteSettingsService)
+        [Service] ISiteSettingsService siteSettingsService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         var dto = new UpdateSiteSettingsDto
         {
             Id = input.Id,
@@ -966,8 +1060,10 @@ public class Mutation
     public async Task<bool> UpdateGalleryMedia(
         Guid id,
         UpdateGalleryMediaInput input,
-        [Service] IGalleryMediaService galleryMediaService)
+        [Service] IGalleryMediaService galleryMediaService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         var dto = new UpdateGalleryMediaDto
         {
             Title = input.Title,
@@ -982,8 +1078,10 @@ public class Mutation
 
     public async Task<bool> DeleteGalleryMedia(
         Guid id,
-        [Service] IGalleryMediaService galleryMediaService)
+        [Service] IGalleryMediaService galleryMediaService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         return await galleryMediaService.DeleteAsync(id);
     }
 
@@ -1004,16 +1102,20 @@ public class Mutation
     // FOLLOW MUTATIONS
     public async Task<bool> FollowDj(
         FollowDjInput input,
-        [Service] IFollowService followService)
+        [Service] IFollowService followService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAuthentication(httpContextAccessor);
         await followService.FollowDjAsync(input.UserId, input.DjId);
         return true;
     }
 
     public async Task<bool> UnfollowDj(
         FollowDjInput input,
-        [Service] IFollowService followService)
+        [Service] IFollowService followService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAuthentication(httpContextAccessor);
         await followService.UnfollowDjAsync(input.UserId, input.DjId);
         return true;
     }
@@ -1021,8 +1123,10 @@ public class Mutation
     // TICKET MUTATIONS
     public async Task<TicketDto> PurchaseTicket(
         PurchaseTicketInput input,
-        [Service] ITicketService ticketService)
+        [Service] ITicketService ticketService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAuthentication(httpContextAccessor);
         var dto = new CreateTicketDto
         {
             EventId = input.EventId,
@@ -1036,15 +1140,19 @@ public class Mutation
 
     public async Task<bool> CheckInTicket(
         Guid ticketId,
-        [Service] ITicketService ticketService)
+        [Service] ITicketService ticketService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireRole(httpContextAccessor, "Admin", "DJ");
         return await ticketService.CheckInTicketAsync(ticketId);
     }
 
     public async Task<TicketDto?> CancelTicket(
         CancelTicketInput input,
-        [Service] ITicketService ticketService)
+        [Service] ITicketService ticketService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAuthentication(httpContextAccessor);
         var dto = new CancelTicketDto
         {
             TicketId = input.TicketId,
@@ -1055,8 +1163,10 @@ public class Mutation
 
     public async Task<TicketDto?> RefundTicket(
         RefundTicketInput input,
-        [Service] ITicketService ticketService)
+        [Service] ITicketService ticketService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         var dto = new RefundTicketDto
         {
             TicketId = input.TicketId,
@@ -1067,8 +1177,10 @@ public class Mutation
 
     public async Task<TicketDto?> TransferTicket(
         TransferTicketInput input,
-        [Service] ITicketService ticketService)
+        [Service] ITicketService ticketService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAuthentication(httpContextAccessor);
         var dto = new TransferTicketDto
         {
             TicketId = input.TicketId,
@@ -1080,15 +1192,19 @@ public class Mutation
 
     public async Task<bool> InvalidateTicket(
         Guid ticketId,
-        [Service] ITicketService ticketService)
+        [Service] ITicketService ticketService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         return await ticketService.InvalidateTicketAsync(ticketId);
     }
 
     public async Task<bool> DeleteTicket(
         Guid ticketId,
-        [Service] ITicketService ticketService)
+        [Service] ITicketService ticketService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAdmin(httpContextAccessor);
         await ticketService.DeleteAsync(ticketId);
         return true;
     }
@@ -1124,8 +1240,10 @@ public class Mutation
     // USER PROFILE MUTATIONS
     public async Task<bool> UpdateUserProfile(
         UpdateUserProfileInput input,
-        [Service] IUserService userService)
+        [Service] IUserService userService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireAuthentication(httpContextAccessor);
         var dto = new UpdateUserDto
         {
             Id = input.Id,

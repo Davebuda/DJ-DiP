@@ -21,12 +21,28 @@ namespace DJDiP.Application.Services
             _settings = options.Value;
         }
 
+        private static void ValidatePassword(string password)
+        {
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
+                throw new InvalidOperationException("Password must be at least 8 characters long.");
+            if (!password.Any(char.IsUpper))
+                throw new InvalidOperationException("Password must contain at least one uppercase letter.");
+            if (!password.Any(char.IsLower))
+                throw new InvalidOperationException("Password must contain at least one lowercase letter.");
+            if (!password.Any(char.IsDigit))
+                throw new InvalidOperationException("Password must contain at least one digit.");
+            if (!password.Any(c => !char.IsLetterOrDigit(c)))
+                throw new InvalidOperationException("Password must contain at least one special character.");
+        }
+
         public async Task<AuthPayload> RegisterAsync(string fullName, string email, string password)
         {
+            ValidatePassword(password);
+
             var existingUser = await _unitOfWork.Users.GetByEmailAsync(email);
             if (existingUser != null)
             {
-                throw new InvalidOperationException($"User with email {email} already exists.");
+                throw new InvalidOperationException("An account with this email already exists.");
             }
 
             var user = new ApplicationUser
