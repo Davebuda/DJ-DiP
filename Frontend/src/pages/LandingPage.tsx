@@ -70,7 +70,7 @@ const HeroSection = ({
   };
 
   return (
-    <section className="relative isolate flex min-h-[65vh] lg:min-h-[80vh] w-full flex-col justify-center overflow-hidden bg-black text-white">
+    <section className="relative isolate flex min-h-[65vh] lg:min-h-[80vh] w-full max-w-full flex-col justify-center overflow-hidden bg-black text-white">
       <video
         className="absolute inset-0 h-full w-full object-cover"
         autoPlay
@@ -80,7 +80,7 @@ const HeroSection = ({
         preload="auto"
         poster={featuredImage}
       >
-        {[siteSettings.heroBackgroundVideoUrl, '/media/hero/0721-copy.mp4', '/media/sections/hero/0721-copy.mp4']
+        {[siteSettings.heroBackgroundVideoUrl, '/media/sections/hero/0721-copy.mp4']
           .filter(Boolean)
           .map((src) => (
             <source key={src} src={src as string} type="video/mp4" />
@@ -133,7 +133,7 @@ const HeroSection = ({
             {siteSettings.tagline && (
               <p className="text-xs font-medium tracking-wider text-orange-400 uppercase">{siteSettings.tagline}</p>
             )}
-            <h1 className="font-display text-5xl md:text-7xl font-bold leading-[1.0] tracking-tight">
+            <h1 className="font-display text-4xl sm:text-5xl md:text-7xl font-bold leading-[1.0] tracking-tight">
               {siteSettings.heroTitle ?? (
                 <>
                   Your Night.<br />Your Music.<br /><span className="shimmer-text bg-gradient-to-r from-orange-400 via-[#FF6B35] to-orange-500 bg-clip-text text-transparent">Your KlubN.</span>
@@ -278,7 +278,7 @@ const LandingPage = () => {
     { label: 'Cities Live', value: 12 },
   ];
   const defaultEventImage = siteSettings.defaultEventImageUrl ?? featuredImageFallback;
-  const defaultDjImage = siteSettings.defaultDjImageUrl ?? '/media/defaults/dj.jpg';
+  const defaultDjImage = siteSettings.defaultDjImageUrl ?? '/media/defaults/dj.svg';
   const featuredDjs = djs.slice(0, 4);
   const galleryPreview = events.slice(0, 5);
 
@@ -363,7 +363,7 @@ const LandingPage = () => {
   }
 
   return (
-    <div className="relative min-h-screen text-white">
+    <div className="relative min-h-screen w-full max-w-full overflow-x-hidden text-white">
       <div className="relative">
       <HeroSection
         highlight={highlightEvent}

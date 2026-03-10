@@ -13,12 +13,24 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
   }
 
   body {
     @apply bg-black text-white antialiased;
     font-family: 'Satoshi', system-ui, sans-serif;
     font-feature-settings: 'ss01', 'ss02';
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  #root {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 
   /* Clash Display on all heading levels */
@@ -140,18 +152,18 @@
 /* ─── Animated Background Orbs ─── */
 @keyframes orb-drift-1 {
   0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.09; }
-  25% { transform: translate(80px, -60px) scale(1.15); opacity: 0.13; }
-  50% { transform: translate(-40px, 80px) scale(0.95); opacity: 0.08; }
-  75% { transform: translate(60px, 40px) scale(1.08); opacity: 0.12; }
+  25% { transform: translate(40px, -30px) scale(1.08); opacity: 0.13; }
+  50% { transform: translate(-20px, 40px) scale(0.95); opacity: 0.08; }
+  75% { transform: translate(30px, 20px) scale(1.04); opacity: 0.12; }
 }
 @keyframes orb-drift-2 {
   0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.07; }
-  33% { transform: translate(-70px, 50px) scale(1.1); opacity: 0.10; }
-  66% { transform: translate(50px, -70px) scale(0.92); opacity: 0.06; }
+  33% { transform: translate(-35px, 25px) scale(1.05); opacity: 0.10; }
+  66% { transform: translate(25px, -35px) scale(0.95); opacity: 0.06; }
 }
 @keyframes orb-drift-3 {
   0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.025; }
-  50% { transform: translate(0, -60px) scale(1.05); opacity: 0.045; }
+  50% { transform: translate(0, -30px) scale(1.03); opacity: 0.045; }
 }
 
 /* ─── Club Light Ray ─── */

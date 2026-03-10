@@ -38,9 +38,9 @@ export const BackgroundEffects = () => {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-      {/* Animated gradient orbs */}
+      {/* Animated gradient orbs — clamped inside viewport */}
       <div
-        className="absolute -top-[200px] -left-[100px] h-[600px] w-[600px] rounded-full opacity-[0.09]"
+        className="absolute top-0 left-0 h-[300px] w-[300px] sm:h-[400px] sm:w-[400px] md:h-[600px] md:w-[600px] rounded-full opacity-[0.09]"
         style={{
           background: 'radial-gradient(circle, rgba(255,107,53,0.6) 0%, transparent 70%)',
           filter: 'blur(80px)',
@@ -48,7 +48,7 @@ export const BackgroundEffects = () => {
         }}
       />
       <div
-        className="absolute -bottom-[150px] -right-[100px] h-[500px] w-[500px] rounded-full opacity-[0.07]"
+        className="absolute bottom-0 right-0 h-[250px] w-[250px] sm:h-[350px] sm:w-[350px] md:h-[500px] md:w-[500px] rounded-full opacity-[0.07]"
         style={{
           background: 'radial-gradient(circle, rgba(93,23,37,0.7) 0%, transparent 70%)',
           filter: 'blur(80px)',
@@ -56,7 +56,7 @@ export const BackgroundEffects = () => {
         }}
       />
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[400px] rounded-full opacity-[0.025]"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[200px] w-[200px] sm:h-[300px] sm:w-[300px] md:h-[400px] md:w-[400px] rounded-full opacity-[0.025]"
         style={{
           background: 'radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%)',
           filter: 'blur(80px)',
@@ -75,12 +75,12 @@ export const BackgroundEffects = () => {
               translateX: '-50%',
               translateY: '-50%',
             }}
-            className="fixed z-10"
+            className="fixed z-10 max-w-[100vw] max-h-[100vh]"
           >
             <div
               style={{
-                width: 1000,
-                height: 1000,
+                width: 'min(1000px, 90vw)',
+                height: 'min(1000px, 90vw)',
                 borderRadius: '50%',
                 background:
                   'radial-gradient(circle, rgba(255,107,53,0.10) 0%, rgba(255,107,53,0.05) 30%, rgba(255,80,40,0.02) 55%, transparent 75%)',
@@ -99,12 +99,12 @@ export const BackgroundEffects = () => {
               translateX: '-50%',
               translateY: '-50%',
             }}
-            className="fixed z-10"
+            className="fixed z-10 max-w-[100vw] max-h-[100vh]"
           >
             <div
               style={{
-                width: 800,
-                height: 800,
+                width: 'min(800px, 80vw)',
+                height: 'min(800px, 80vw)',
                 borderRadius: '50%',
                 background:
                   'radial-gradient(circle, rgba(180,50,70,0.07) 0%, rgba(140,40,60,0.035) 30%, rgba(93,23,37,0.012) 55%, transparent 75%)',

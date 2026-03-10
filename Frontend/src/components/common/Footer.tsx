@@ -16,8 +16,8 @@ const Footer = () => {
   ].filter((item) => Boolean(item.url));
 
   return (
-    <footer className="relative z-10 mt-24 border-t border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent py-14 text-sm text-gray-400">
-      <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
+    <footer className="relative z-10 mt-24 w-full max-w-full border-t border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent py-14 text-sm text-gray-400">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
         <div className="space-y-3">
           <p className="text-lg font-bold tracking-[0.4em] text-white">{siteSettings.siteName}</p>
           <p className="text-gray-400">{footerText}</p>

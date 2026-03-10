@@ -16,19 +16,19 @@ const Header = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-30 bg-[#09090b]/90 backdrop-blur-md border-b border-white/[0.06]" style={{ willChange: 'transform' }}>
-      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
-        <Link to="/" className="flex items-center gap-3">
+    <header className="sticky top-0 z-30 w-full max-w-full bg-[#09090b]/90 backdrop-blur-md border-b border-white/[0.06]" style={{ willChange: 'transform' }}>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4">
+        <Link to="/" className="flex items-center gap-3 flex-shrink-0">
           <img
             src={siteSettings.logoUrl || '/icons/lets-go-klubn-320.png'}
             alt={siteSettings.siteName}
-            className="h-24 w-auto drop-shadow-[0_12px_30px_rgba(0,0,0,0.45)]"
+            className="h-14 sm:h-20 md:h-24 w-auto drop-shadow-[0_12px_30px_rgba(0,0,0,0.45)]"
             loading="lazy"
           />
           <span className="sr-only">{siteSettings.siteName}</span>
         </Link>
 
-        <div className="flex flex-1 items-center justify-end gap-4">
+        <div className="flex flex-1 items-center justify-end gap-2 sm:gap-4 min-w-0">
           <nav className="hidden md:flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3 py-1 text-[0.7rem] uppercase tracking-[0.35em]">
             {navLinks.map(({ label, to }) => (
               <NavLink

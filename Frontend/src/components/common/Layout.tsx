@@ -6,7 +6,7 @@ import { BackgroundEffects } from '../effects/BackgroundEffects';
 import { FloatingParticles } from '../effects/FloatingParticles';
 
 const Layout = () => (
-  <div className="noise-overlay min-h-screen flex flex-col bg-[#09090b] text-white font-body">
+  <div className="noise-overlay min-h-screen w-full max-w-full overflow-x-hidden flex flex-col bg-[#09090b] text-white font-body">
     <BackgroundEffects />
     <FloatingParticles />
     <Header />
