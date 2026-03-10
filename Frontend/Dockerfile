@@ -40,20 +40,16 @@ COPY --from=build /app/dist .
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Create non-root user
-RUN addgroup -g 101 -S nginx-app && \
-    adduser -S -D -H -u 101 -h /var/cache/nginx -s /sbin/nologin -G nginx-app -g nginx-app nginx-app
-
-# Change ownership
-RUN chown -R nginx-app:nginx-app /usr/share/nginx/html && \
-    chown -R nginx-app:nginx-app /var/cache/nginx && \
-    chown -R nginx-app:nginx-app /var/log/nginx && \
-    chown -R nginx-app:nginx-app /etc/nginx/conf.d && \
+# Use the existing nginx user (already in the nginx:alpine image)
+RUN chown -R nginx:nginx /usr/share/nginx/html && \
+    chown -R nginx:nginx /var/cache/nginx && \
+    chown -R nginx:nginx /var/log/nginx && \
+    chown -R nginx:nginx /etc/nginx/conf.d && \
     touch /var/run/nginx.pid && \
-    chown -R nginx-app:nginx-app /var/run/nginx.pid
+    chown -R nginx:nginx /var/run/nginx.pid
 
 # Switch to non-root user
-USER nginx-app
+USER nginx
 
 # Expose port
 EXPOSE 80
