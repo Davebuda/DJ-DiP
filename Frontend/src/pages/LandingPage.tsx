@@ -28,10 +28,12 @@ const HeroSection = ({
   stats,
   showcaseItems,
   siteSettings,
+  isAuthenticated,
 }: {
   highlight?: any;
   stats: { label: string; value: number }[];
   showcaseItems: ShowcaseItem[];
+  isAuthenticated: boolean;
   siteSettings: {
     heroTitle?: string;
     heroSubtitle?: string;
@@ -396,6 +398,7 @@ const LandingPage = () => {
         stats={heroStats}
         showcaseItems={heroShowcaseItems}
         siteSettings={siteSettings}
+        isAuthenticated={isAuthenticated}
       />
 
       {/* ─── Brand Statement ─── */}
