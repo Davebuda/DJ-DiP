@@ -9,5 +9,7 @@ namespace DJDiP.Application.DTO.SongDTO
         public int Duration { get; set; } // in seconds
         public string? CoverImageUrl { get; set; }
         public string? AudioPreviewUrl { get; set; }
+        public string? SpotifyUrl { get; set; }
+        public string? SoundCloudUrl { get; set; }
     }
 }

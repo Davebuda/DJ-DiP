@@ -10,6 +10,15 @@ namespace DJDiP.Infrastructure.Persistance
             // Ensure database is created
             await context.Database.EnsureCreatedAsync();
 
+            // Add new columns to existing tables (EnsureCreated won't add columns to existing tables)
+            try
+            {
+                await context.Database.ExecuteSqlRawAsync(
+                    @"ALTER TABLE ""Songs"" ADD COLUMN IF NOT EXISTS ""SpotifyUrl"" TEXT;
+                      ALTER TABLE ""Songs"" ADD COLUMN IF NOT EXISTS ""SoundCloudUrl"" TEXT;");
+            }
+            catch { /* columns already exist or table doesn't exist yet (handled by EnsureCreated) */ }
+
             // Check if data already exists
             if (await context.SiteSettings.AnyAsync())
             {

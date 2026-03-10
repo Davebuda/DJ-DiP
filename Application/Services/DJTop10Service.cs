@@ -61,7 +61,9 @@ namespace DJDiP.Application.Services
                     Genre = song.Genre,
                     Duration = song.Duration.HasValue ? (int)song.Duration.Value.TotalSeconds : 0,
                     CoverImageUrl = song.CoverImageUrl,
-                    AudioPreviewUrl = song.AudioPreviewUrl
+                    AudioPreviewUrl = song.AudioPreviewUrl,
+                    SpotifyUrl = song.SpotifyUrl,
+                    SoundCloudUrl = song.SoundCloudUrl
                 } : null
             };
         }
@@ -131,7 +133,9 @@ namespace DJDiP.Application.Services
                     Genre = songEntity.Genre,
                     Duration = songEntity.Duration.HasValue ? (int)songEntity.Duration.Value.TotalSeconds : 0,
                     CoverImageUrl = songEntity.CoverImageUrl,
-                    AudioPreviewUrl = songEntity.AudioPreviewUrl
+                    AudioPreviewUrl = songEntity.AudioPreviewUrl,
+                    SpotifyUrl = songEntity.SpotifyUrl,
+                    SoundCloudUrl = songEntity.SoundCloudUrl
                 } : null
             };
         }

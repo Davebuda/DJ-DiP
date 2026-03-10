@@ -9,7 +9,7 @@ import {
   DELETE_DJ_TOP10_ENTRY,
   CREATE_SONG,
 } from '../../graphql/queries';
-import { Music, Plus, Trash2, Search, Star, Disc3 } from 'lucide-react';
+import { Music, Plus, Trash2, Search, Star, Disc3, ExternalLink } from 'lucide-react';
 
 const DJTop10Manager = () => {
   const { user } = useAuth();
@@ -21,6 +21,8 @@ const DJTop10Manager = () => {
   const [newArtist, setNewArtist] = useState('');
   const [newGenre, setNewGenre] = useState('');
   const [newDuration, setNewDuration] = useState('');
+  const [newSpotifyUrl, setNewSpotifyUrl] = useState('');
+  const [newSoundCloudUrl, setNewSoundCloudUrl] = useState('');
   const [creating, setCreating] = useState(false);
 
   const { data: djsData } = useQuery(GET_DJS);
@@ -91,8 +93,10 @@ const DJTop10Manager = () => {
             title: newTitle.trim(),
             artist: newArtist.trim(),
             album: null,
+            genre: newGenre.trim() || null,
             duration: durationSeconds,
-            spotifyId: null,
+            spotifyUrl: newSpotifyUrl.trim() || null,
+            soundCloudUrl: newSoundCloudUrl.trim() || null,
           },
         },
       });
@@ -113,6 +117,8 @@ const DJTop10Manager = () => {
       setNewArtist('');
       setNewGenre('');
       setNewDuration('');
+      setNewSpotifyUrl('');
+      setNewSoundCloudUrl('');
       setShowCreateForm(false);
       setShowAddModal(false);
       setSearchQuery('');
@@ -229,6 +235,28 @@ const DJTop10Manager = () => {
                   </div>
 
                   <div className="flex items-center gap-2">
+                    {entry.song?.spotifyUrl && (
+                      <a
+                        href={entry.song.spotifyUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 text-green-400 transition"
+                        title="Listen on Spotify"
+                      >
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                      </a>
+                    )}
+                    {entry.song?.soundCloudUrl && (
+                      <a
+                        href={entry.song.soundCloudUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 text-orange-400 transition"
+                        title="Listen on SoundCloud"
+                      >
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M1.175 12.225c-.051 0-.094.046-.101.1l-.233 2.154.233 2.105c.007.058.05.098.101.098.05 0 .09-.04.099-.098l.255-2.105-.27-2.154c-.009-.057-.05-.1-.1-.1m-.899.828c-.06 0-.091.037-.104.094L0 14.479l.172 1.308c.013.06.045.094.104.094.057 0 .09-.037.104-.094l.194-1.308-.194-1.332c-.014-.057-.047-.094-.104-.094m1.81-.78c-.067 0-.12.054-.127.116l-.217 2.09.217 2.063c.007.065.06.116.127.116.066 0 .12-.05.126-.116l.241-2.063-.241-2.09c-.006-.062-.06-.116-.126-.116m.891-.278c-.074 0-.133.062-.14.138l-.202 2.368.202 2.087c.007.074.066.135.14.135.076 0 .135-.061.14-.135l.228-2.087-.228-2.368c-.005-.076-.064-.138-.14-.138m.904-.118c-.08 0-.143.068-.148.15l-.19 2.486.19 2.075c.005.08.068.148.148.148.08 0 .142-.068.15-.148l.213-2.075-.214-2.486c-.008-.082-.07-.15-.15-.15m.89.044c-.09 0-.158.074-.163.163l-.178 2.442.178 2.058c.005.09.074.161.164.161.088 0 .157-.072.163-.161l.2-2.058-.2-2.442c-.006-.09-.075-.163-.163-.163m.908-.18c-.094 0-.17.08-.176.176l-.165 2.622.165 2.04c.006.094.082.174.176.174s.17-.08.177-.174l.186-2.04-.186-2.622c-.007-.096-.083-.176-.177-.176m.926-.2c-.104 0-.184.088-.19.192l-.151 2.822.151 2.018c.006.103.086.19.19.19.103 0 .184-.087.19-.19l.17-2.018-.17-2.822c-.006-.104-.087-.192-.19-.192m.94-.12c-.107 0-.194.094-.2.206l-.14 2.942.14 1.993c.006.11.093.202.2.202.11 0 .197-.09.204-.202l.155-1.993-.156-2.942c-.006-.112-.093-.206-.203-.206m2.852-1.578c-.106 0-.19.088-.196.197l-.14 4.52.14 1.96c.006.107.09.195.197.195.108 0 .192-.088.197-.195l.16-1.96-.16-4.52c-.005-.11-.09-.197-.198-.197m-1.907 1.15c-.116 0-.206.1-.212.218l-.127 3.37.127 1.975c.006.116.096.215.212.215.117 0 .207-.1.212-.215l.144-1.975-.144-3.37c-.005-.12-.095-.218-.212-.218m.945-.304c-.12 0-.22.108-.224.232l-.118 3.674.118 1.964c.005.122.103.228.224.228.12 0 .218-.106.224-.228l.132-1.964-.132-3.674c-.006-.124-.104-.232-.224-.232m3.753-.897c-.065 0-.127.017-.182.05-.093-.608-.513-1.087-1.065-1.27-.145-.048-.3-.073-.459-.073-1.047 0-4.757 0-4.757 0-.12.005-.215.103-.215.225v7.94c0 .126.1.228.224.232h6.454c1.16 0 2.1-.94 2.1-2.1 0-1.16-.94-2.1-2.1-2.1"/></svg>
+                      </a>
+                    )}
                     {entry.song?.duration > 0 && (
                       <span className="text-xs text-gray-500">
                         {Math.floor(entry.song.duration / 60)}:
@@ -375,6 +403,32 @@ const DJTop10Manager = () => {
                           className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white focus:border-orange-500 focus:outline-none"
                         />
                       </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-300">
+                        Spotify URL
+                      </label>
+                      <input
+                        type="url"
+                        value={newSpotifyUrl}
+                        onChange={(e) => setNewSpotifyUrl(e.target.value)}
+                        placeholder="https://open.spotify.com/track/..."
+                        className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white focus:border-green-500 focus:outline-none"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-300">
+                        SoundCloud URL
+                      </label>
+                      <input
+                        type="url"
+                        value={newSoundCloudUrl}
+                        onChange={(e) => setNewSoundCloudUrl(e.target.value)}
+                        placeholder="https://soundcloud.com/..."
+                        className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white focus:border-orange-400 focus:outline-none"
+                      />
                     </div>
 
                     <button

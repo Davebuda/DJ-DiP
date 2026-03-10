@@ -36,7 +36,9 @@ namespace DJDiP.Application.Services
                 Genre = songDto.Genre,
                 Duration = songDto.Duration > 0 ? TimeSpan.FromSeconds(songDto.Duration) : null,
                 CoverImageUrl = null,
-                AudioPreviewUrl = null
+                AudioPreviewUrl = null,
+                SpotifyUrl = songDto.SpotifyUrl,
+                SoundCloudUrl = songDto.SoundCloudUrl
             };
 
             await _unitOfWork.Songs.AddAsync(song);
@@ -55,7 +57,9 @@ namespace DJDiP.Application.Services
                 Genre = song.Genre,
                 Duration = song.Duration.HasValue ? (int)song.Duration.Value.TotalSeconds : 0,
                 CoverImageUrl = song.CoverImageUrl,
-                AudioPreviewUrl = song.AudioPreviewUrl
+                AudioPreviewUrl = song.AudioPreviewUrl,
+                SpotifyUrl = song.SpotifyUrl,
+                SoundCloudUrl = song.SoundCloudUrl
             };
         }
     }

@@ -7,6 +7,7 @@ namespace DJDiP.Application.DTO.SongDTO
         public string? Album { get; set; }
         public string? Genre { get; set; }
         public int Duration { get; set; } // in seconds
-        public string? SpotifyId { get; set; }
+        public string? SpotifyUrl { get; set; }
+        public string? SoundCloudUrl { get; set; }
     }
 }

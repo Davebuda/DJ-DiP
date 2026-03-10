@@ -16,6 +16,10 @@ namespace DJDiP.Domain.Models
 
         public string? AudioPreviewUrl { get; set; } // optional lydklipp
 
+        public string? SpotifyUrl { get; set; }
+
+        public string? SoundCloudUrl { get; set; }
+
         public List<DJTop10> DJTop10s { get; set; } = new();
     }
 }

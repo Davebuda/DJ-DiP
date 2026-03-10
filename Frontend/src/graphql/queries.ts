@@ -317,6 +317,8 @@ export const GET_DJ_TOP10_LISTS = gql`
           duration
           coverImageUrl
           audioPreviewUrl
+          spotifyUrl
+          soundCloudUrl
         }
       }
     }
@@ -345,6 +347,8 @@ export const GET_SONGS = gql`
       duration
       coverImageUrl
       audioPreviewUrl
+      spotifyUrl
+      soundCloudUrl
     }
   }
 `;

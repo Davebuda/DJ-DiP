@@ -1189,7 +1189,8 @@ public class Mutation
             Album = input.Album,
             Genre = input.Genre,
             Duration = input.Duration,
-            SpotifyId = input.SpotifyId
+            SpotifyUrl = input.SpotifyUrl,
+            SoundCloudUrl = input.SoundCloudUrl
         };
 
         try
@@ -1686,7 +1687,8 @@ public class CreateSongInput
     public string? Album { get; set; }
     public string? Genre { get; set; }
     public int Duration { get; set; }
-    public string? SpotifyId { get; set; }
+    public string? SpotifyUrl { get; set; }
+    public string? SoundCloudUrl { get; set; }
 }
 
 public class UpdateSiteSettingsInput

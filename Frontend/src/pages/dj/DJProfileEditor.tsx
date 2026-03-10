@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client';
 import { useAuth } from '../../context/AuthContext';
 import { GET_DJS, GET_DJ_BY_ID, UPDATE_DJ } from '../../graphql/queries';
-import { Camera, Save, X, Plus } from 'lucide-react';
+import { Camera, Save, X, Plus, Music } from 'lucide-react';
 import ImageUpload from '../../components/common/ImageUpload';
 
 interface SocialLink {
@@ -144,26 +144,6 @@ const DJProfileEditor = () => {
     }));
   };
 
-  const addTopTrack = () => {
-    setFormData(prev => ({
-      ...prev,
-      topTracks: [...prev.topTracks, ''],
-    }));
-  };
-
-  const removeTopTrack = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      topTracks: prev.topTracks.filter((_, i) => i !== index),
-    }));
-  };
-
-  const updateTopTrack = (index: number, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      topTracks: prev.topTracks.map((track, i) => (i === index ? value : track)),
-    }));
-  };
 
   if (loadingDJ) {
     return (
@@ -369,47 +349,22 @@ const DJProfileEditor = () => {
             </div>
           </section>
 
-          {/* Top Tracks */}
-          <section className="bg-white/5 border border-white/10 rounded-lg p-6 space-y-4">
-            <div className="flex items-center justify-between">
+          {/* Top Tracks — managed via Top 10 Manager */}
+          <section className="bg-white/5 border border-white/10 rounded-lg p-6">
+            <div className="flex items-center gap-3 mb-3">
+              <Music className="w-5 h-5 text-orange-400" />
               <h2 className="text-xl font-semibold text-white">Top Tracks</h2>
-              <button
-                type="button"
-                onClick={addTopTrack}
-                className="px-3 py-1.5 rounded-lg bg-pink-500/20 hover:bg-pink-500/30 border border-orange-500/30 text-orange-400 text-sm flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                Add Track
-              </button>
             </div>
-
-            {formData.topTracks.map((track, index) => (
-              <div key={index} className="flex gap-2">
-                <span className="flex-shrink-0 w-8 h-10 flex items-center justify-center text-gray-400 font-semibold">
-                  {index + 1}.
-                </span>
-                <input
-                  type="text"
-                  value={track}
-                  onChange={(e) => updateTopTrack(index, e.target.value)}
-                  placeholder="Track name"
-                  className="flex-1 px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeTopTrack(index)}
-                  className="flex-shrink-0 px-3 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-
-            {formData.topTracks.length === 0 && (
-              <p className="text-center text-gray-500 py-4">
-                No tracks added yet. Click "Add Track" to showcase your signature sound.
-              </p>
-            )}
+            <p className="text-gray-400 text-sm mb-4">
+              Manage your Top 10 tracks with Spotify and SoundCloud links from the dedicated manager.
+            </p>
+            <Link
+              to="/dj-dashboard/top10"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 text-orange-400 font-semibold text-sm transition"
+            >
+              <Music className="w-4 h-4" />
+              Go to Top 10 Manager
+            </Link>
           </section>
 
           {/* Social Links */}
