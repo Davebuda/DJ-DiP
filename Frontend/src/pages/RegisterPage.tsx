@@ -68,7 +68,7 @@ const RegisterPage = () => {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
-              minLength={6}
+              minLength={8}
               className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-white focus:border-orange-400 focus:outline-none"
             />
           </div>

@@ -137,8 +137,14 @@ builder.Services.AddCors(options =>
 });
 
 // ========== DATABASE ==========
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    if (connectionString.Contains("Host=", StringComparison.OrdinalIgnoreCase))
+        options.UseNpgsql(connectionString);
+    else
+        options.UseSqlite(connectionString);
+});
 
 // ========== REGISTER UNIT OF WORK ==========
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -567,13 +573,30 @@ public class Mutation
         RegisterInput input,
         [Service] IAuthService authService)
     {
+        if (string.IsNullOrWhiteSpace(input.FullName))
+            throw new GraphQLException("Full name is required.");
+        if (string.IsNullOrWhiteSpace(input.Email) || !input.Email.Contains('@'))
+            throw new GraphQLException("A valid email address is required.");
+        if (string.IsNullOrWhiteSpace(input.Password))
+            throw new GraphQLException("Password is required.");
+
         try
         {
-            return await authService.RegisterAsync(input.FullName, input.Email, input.Password);
+            return await authService.RegisterAsync(input.FullName.Trim(), input.Email.Trim().ToLowerInvariant(), input.Password);
         }
         catch (InvalidOperationException ex)
         {
             throw new GraphQLException(ex.Message);
+        }
+        catch (Microsoft.EntityFrameworkCore.DbUpdateException ex) when (
+            ex.InnerException?.Message.Contains("unique") == true ||
+            ex.InnerException?.Message.Contains("duplicate") == true)
+        {
+            throw new GraphQLException("An account with this email already exists.");
+        }
+        catch (Exception ex) when (ex is not GraphQLException)
+        {
+            throw new GraphQLException($"Registration failed: {ex.Message}");
         }
     }
 
@@ -581,13 +604,22 @@ public class Mutation
         LoginInput input,
         [Service] IAuthService authService)
     {
+        if (string.IsNullOrWhiteSpace(input.Email))
+            throw new GraphQLException("Email is required.");
+        if (string.IsNullOrWhiteSpace(input.Password))
+            throw new GraphQLException("Password is required.");
+
         try
         {
-            return await authService.LoginAsync(input.Email, input.Password);
+            return await authService.LoginAsync(input.Email.Trim().ToLowerInvariant(), input.Password);
         }
         catch (InvalidOperationException ex)
         {
             throw new GraphQLException(ex.Message);
+        }
+        catch (Exception ex) when (ex is not GraphQLException)
+        {
+            throw new GraphQLException($"Login failed: {ex.Message}");
         }
     }
 
@@ -598,6 +630,9 @@ public class Mutation
         [Service] IHttpContextAccessor httpContextAccessor)
     {
         RequireAdmin(httpContextAccessor);
+        if (string.IsNullOrWhiteSpace(input.Title))
+            throw new GraphQLException("Event title is required.");
+
         var dto = new CreateEventDto
         {
             Title = input.Title,
@@ -611,7 +646,14 @@ public class Mutation
             VideoUrl = input.VideoUrl
         };
 
-        return await events.CreateAsync(dto);
+        try
+        {
+            return await events.CreateAsync(dto);
+        }
+        catch (Exception ex) when (ex is not GraphQLException)
+        {
+            throw new GraphQLException($"Failed to create event: {ex.Message}");
+        }
     }
 
     public async Task<bool> UpdateEvent(
@@ -655,7 +697,18 @@ public class Mutation
         [Service] IDJService djs,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        var adminUserId = RequireAdmin(httpContextAccessor);
+
+        // Validate required fields
+        var errors = new List<string>();
+        if (string.IsNullOrWhiteSpace(input.StageName)) errors.Add("Stage Name is required.");
+        if (string.IsNullOrWhiteSpace(input.Bio)) errors.Add("Short Bio is required.");
+        if (string.IsNullOrWhiteSpace(input.Genre)) errors.Add("Genre is required.");
+        if (errors.Count > 0)
+            throw new GraphQLException(string.Join(" ", errors));
+
+        var resolvedUserId = string.IsNullOrWhiteSpace(input.UserId) ? adminUserId : input.UserId;
+
         var dto = new CreateDJProfileDto
         {
             StageName = input.StageName,
@@ -673,11 +726,22 @@ public class Mutation
             YearsExperience = input.YearsExperience,
             InfluencedBy = input.InfluencedBy,
             EquipmentUsed = input.EquipmentUsed,
-            UserId = input.UserId,
+            UserId = resolvedUserId,
             TopTracks = input.TopTracks
         };
 
-        return await djs.CreateAsync(dto);
+        try
+        {
+            return await djs.CreateAsync(dto);
+        }
+        catch (Microsoft.EntityFrameworkCore.DbUpdateException ex) when (ex.InnerException?.Message.Contains("FK_DJProfiles_ApplicationUsers") == true)
+        {
+            throw new GraphQLException($"User ID '{resolvedUserId}' does not exist. Leave User ID blank to use your admin account.");
+        }
+        catch (Microsoft.EntityFrameworkCore.DbUpdateException ex) when (ex.InnerException?.Message.Contains("unique") == true || ex.InnerException?.Message.Contains("duplicate") == true)
+        {
+            throw new GraphQLException("A DJ profile with this data already exists.");
+        }
     }
 
     public async Task<bool> UpdateDj(
@@ -707,8 +771,19 @@ public class Mutation
             TopTracks = input.TopTracks
         };
 
-        await djs.UpdateAsync(id, dto);
-        return true;
+        try
+        {
+            await djs.UpdateAsync(id, dto);
+            return true;
+        }
+        catch (ArgumentException ex)
+        {
+            throw new GraphQLException(ex.Message);
+        }
+        catch (Exception ex) when (ex is not GraphQLException)
+        {
+            throw new GraphQLException($"Failed to update DJ: {ex.Message}");
+        }
     }
 
     public async Task<bool> DeleteDj(
@@ -842,6 +917,9 @@ public class Mutation
         [Service] IHttpContextAccessor httpContextAccessor)
     {
         RequireAdmin(httpContextAccessor);
+        if (string.IsNullOrWhiteSpace(input.Name))
+            throw new GraphQLException("Venue name is required.");
+
         var dto = new CreateVenueDto
         {
             Name = input.Name,
@@ -857,7 +935,14 @@ public class Mutation
             ImageUrl = input.ImageUrl
         };
 
-        return await venues.CreateAsync(dto);
+        try
+        {
+            return await venues.CreateAsync(dto);
+        }
+        catch (Exception ex) when (ex is not GraphQLException)
+        {
+            throw new GraphQLException($"Failed to create venue: {ex.Message}");
+        }
     }
 
     public async Task<bool> UpdateVenue(
@@ -969,16 +1054,29 @@ public class Mutation
         CreateSongInput input,
         [Service] ISongService songService)
     {
+        if (string.IsNullOrWhiteSpace(input.Title))
+            throw new GraphQLException("Song title is required.");
+        if (string.IsNullOrWhiteSpace(input.Artist))
+            throw new GraphQLException("Artist is required.");
+
         var dto = new CreateSongDto
         {
             Title = input.Title,
             Artist = input.Artist,
             Album = input.Album,
+            Genre = input.Genre,
             Duration = input.Duration,
             SpotifyId = input.SpotifyId
         };
 
-        return await songService.AddSongAsync(dto);
+        try
+        {
+            return await songService.AddSongAsync(dto);
+        }
+        catch (Exception ex) when (ex is not GraphQLException)
+        {
+            throw new GraphQLException($"Failed to create song: {ex.Message}");
+        }
     }
 
     // SITE SETTINGS MUTATIONS
@@ -1127,6 +1225,12 @@ public class Mutation
         [Service] IHttpContextAccessor httpContextAccessor)
     {
         RequireAuthentication(httpContextAccessor);
+
+        if (string.IsNullOrWhiteSpace(input.Email))
+            throw new GraphQLException("Email is required to purchase a ticket.");
+        if (!input.TermsAccepted)
+            throw new GraphQLException("You must accept the terms to purchase a ticket.");
+
         var dto = new CreateTicketDto
         {
             EventId = input.EventId,
@@ -1135,7 +1239,14 @@ public class Mutation
             Email = input.Email
         };
 
-        return await ticketService.CreateTicketAsync(dto);
+        try
+        {
+            return await ticketService.CreateTicketAsync(dto);
+        }
+        catch (Exception ex) when (ex is not GraphQLException)
+        {
+            throw new GraphQLException($"Failed to purchase ticket: {ex.Message}");
+        }
     }
 
     public async Task<bool> CheckInTicket(
@@ -1443,6 +1554,7 @@ public class CreateSongInput
     public string Title { get; set; } = string.Empty;
     public string Artist { get; set; } = string.Empty;
     public string? Album { get; set; }
+    public string? Genre { get; set; }
     public int Duration { get; set; }
     public string? SpotifyId { get; set; }
 }
