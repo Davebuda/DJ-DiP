@@ -61,8 +61,13 @@ const HeroSection = ({
 
   // Don't mount the video element at all until page is fully interactive
   useEffect(() => {
-    const id = requestIdleCallback(() => setShowVideo(true), { timeout: 3000 });
-    return () => cancelIdleCallback(id);
+    if (typeof requestIdleCallback === 'function') {
+      const id = requestIdleCallback(() => setShowVideo(true), { timeout: 3000 });
+      return () => cancelIdleCallback(id);
+    }
+    // Safari doesn't support requestIdleCallback — use setTimeout fallback
+    const timer = setTimeout(() => setShowVideo(true), 1500);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
