@@ -59,9 +59,9 @@ const HeroSection = ({
   const featuredImage =
     highlight?.imageUrl ?? siteSettings.heroBackgroundImageUrl ?? '/media/sections/hero/KlubN12.07 screen (1) copy.png';
 
-  // Defer video load so it doesn't block initial render/scroll
+  // Defer video play so it doesn't block initial render/scroll
   useEffect(() => {
-    const timer = setTimeout(() => setVideoReady(true), 2000);
+    const timer = setTimeout(() => setVideoReady(true), 500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -94,15 +94,13 @@ const HeroSection = ({
         muted
         loop
         playsInline
-        preload="none"
-        poster={featuredImage}
+        preload="metadata"
       >
-        {videoReady &&
-          [siteSettings.heroBackgroundVideoUrl, '/media/sections/hero/0721-copy.mp4']
-            .filter(Boolean)
-            .map((src) => (
-              <source key={src} src={src as string} type="video/mp4" />
-            ))}
+        {[siteSettings.heroBackgroundVideoUrl, '/media/sections/hero/0721-copy.mp4']
+          .filter(Boolean)
+          .map((src) => (
+            <source key={src} src={src as string} type="video/mp4" />
+          ))}
       </video>
       <div
         className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-transparent"
