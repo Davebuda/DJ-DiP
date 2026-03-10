@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { GET_LANDING_DATA, HAS_PENDING_DJ_APPLICATION } from '../graphql/queries';
@@ -48,6 +48,8 @@ const HeroSection = ({
     heroVibes?: string;
   };
 }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoReady, setVideoReady] = useState(false);
   const [activeShowcaseIndex, setActiveShowcaseIndex] = useState(0);
   const hasShowcase = showcaseItems.length > 0;
   const safeIndex = hasShowcase
@@ -56,6 +58,18 @@ const HeroSection = ({
   const activeShowcase = hasShowcase ? showcaseItems[safeIndex] : undefined;
   const featuredImage =
     highlight?.imageUrl ?? siteSettings.heroBackgroundImageUrl ?? '/media/sections/hero/KlubN12.07 screen (1) copy.png';
+
+  // Defer video load so it doesn't block initial render/scroll
+  useEffect(() => {
+    const timer = setTimeout(() => setVideoReady(true), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (videoReady && videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  }, [videoReady]);
 
   useEffect(() => {
     if (!hasShowcase) {
@@ -75,19 +89,20 @@ const HeroSection = ({
   return (
     <section className="relative isolate flex min-h-[65vh] lg:min-h-[80vh] w-full max-w-full flex-col justify-center overflow-hidden bg-black text-white">
       <video
+        ref={videoRef}
         className="absolute inset-0 h-full w-full object-cover"
-        autoPlay
         muted
         loop
         playsInline
         preload="none"
         poster={featuredImage}
       >
-        {[siteSettings.heroBackgroundVideoUrl, '/media/sections/hero/0721-copy.mp4']
-          .filter(Boolean)
-          .map((src) => (
-            <source key={src} src={src as string} type="video/mp4" />
-          ))}
+        {videoReady &&
+          [siteSettings.heroBackgroundVideoUrl, '/media/sections/hero/0721-copy.mp4']
+            .filter(Boolean)
+            .map((src) => (
+              <source key={src} src={src as string} type="video/mp4" />
+            ))}
       </video>
       <div
         className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-transparent"

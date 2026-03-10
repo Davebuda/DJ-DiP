@@ -60,12 +60,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(account);
   };
 
+  const extractError = (err: unknown, fallback: string): Error => {
+    if (err && typeof err === 'object' && 'graphQLErrors' in err) {
+      const gqlErrors = (err as { graphQLErrors: { message: string }[] }).graphQLErrors;
+      if (gqlErrors?.length > 0 && gqlErrors[0].message) {
+        return new Error(gqlErrors[0].message);
+      }
+    }
+    if (err instanceof Error) return err;
+    return new Error(fallback);
+  };
+
   const login = useCallback(
     async (email: string, password: string) => {
-      const { data } = await loginMutation({ variables: { email, password } });
-      if (data?.login) {
-        const { accessToken, refreshToken, user: account } = data.login;
-        persistSession(accessToken, refreshToken, account);
+      try {
+        const { data } = await loginMutation({ variables: { email, password } });
+        if (data?.login) {
+          const { accessToken, refreshToken, user: account } = data.login;
+          persistSession(accessToken, refreshToken, account);
+        }
+      } catch (err) {
+        throw extractError(err, 'Unable to login with those credentials.');
       }
     },
     [loginMutation],
@@ -73,12 +88,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const register = useCallback(
     async (email: string, password: string, fullName: string) => {
-      const { data } = await registerMutation({
-        variables: { email, password, fullName },
-      });
-      if (data?.register) {
-        const { accessToken, refreshToken, user: account } = data.register;
-        persistSession(accessToken, refreshToken, account);
+      try {
+        const { data } = await registerMutation({
+          variables: { email, password, fullName },
+        });
+        if (data?.register) {
+          const { accessToken, refreshToken, user: account } = data.register;
+          persistSession(accessToken, refreshToken, account);
+        }
+      } catch (err) {
+        throw extractError(err, 'Registration failed. Please try again.');
       }
     },
     [registerMutation],

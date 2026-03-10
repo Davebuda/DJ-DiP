@@ -182,6 +182,16 @@ builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
     .AddMutationType<Mutation>()
+    .AddErrorFilter(error =>
+    {
+        // Preserve messages from GraphQLException (intentional user-facing errors)
+        if (error.Exception is GraphQLException)
+            return error.WithMessage(error.Exception.Message);
+        // Hide internal details in production
+        if (!builder.Environment.IsDevelopment())
+            return error.WithMessage("An unexpected error occurred.");
+        return error;
+    })
     .ModifyRequestOptions(opt =>
     {
         opt.IncludeExceptionDetails = builder.Environment.IsDevelopment();
