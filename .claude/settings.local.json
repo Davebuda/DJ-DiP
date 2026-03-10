@@ -38,7 +38,9 @@
       "WebFetch(domain:soundcloud.com)",
       "WebFetch(domain:open.spotify.com)",
       "Bash(npx tsc --noEmit)",
-      "Bash(head:*)"
+      "Bash(head:*)",
+      "Bash(ssh:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
