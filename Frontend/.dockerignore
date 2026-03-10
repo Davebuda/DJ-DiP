@@ -55,6 +55,5 @@ Thumbs.db
 .eslintcache
 *.log
 
-# Media (use volumes for uploads)
-public/media/sections/
+# Uploads (use volumes for user uploads)
 public/uploads/
