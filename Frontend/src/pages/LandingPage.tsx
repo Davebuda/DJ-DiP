@@ -49,7 +49,7 @@ const HeroSection = ({
   };
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [videoReady, setVideoReady] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
   const [activeShowcaseIndex, setActiveShowcaseIndex] = useState(0);
   const hasShowcase = showcaseItems.length > 0;
   const safeIndex = hasShowcase
@@ -59,17 +59,11 @@ const HeroSection = ({
   const featuredImage =
     highlight?.imageUrl ?? siteSettings.heroBackgroundImageUrl ?? '/media/sections/hero/KlubN12.07 screen (1) copy.png';
 
-  // Defer video play so it doesn't block initial render/scroll
+  // Don't mount the video element at all until page is fully interactive
   useEffect(() => {
-    const timer = setTimeout(() => setVideoReady(true), 500);
-    return () => clearTimeout(timer);
+    const id = requestIdleCallback(() => setShowVideo(true), { timeout: 3000 });
+    return () => cancelIdleCallback(id);
   }, []);
-
-  useEffect(() => {
-    if (videoReady && videoRef.current) {
-      videoRef.current.play().catch(() => {});
-    }
-  }, [videoReady]);
 
   useEffect(() => {
     if (!hasShowcase) {
@@ -88,20 +82,29 @@ const HeroSection = ({
 
   return (
     <section className="relative isolate flex min-h-[65vh] lg:min-h-[80vh] w-full max-w-full flex-col justify-center overflow-hidden bg-black text-white">
-      <video
-        ref={videoRef}
-        className="absolute inset-0 h-full w-full object-cover"
-        muted
-        loop
-        playsInline
-        preload="metadata"
-      >
-        {[siteSettings.heroBackgroundVideoUrl, '/media/sections/hero/0721-copy.mp4']
-          .filter(Boolean)
-          .map((src) => (
-            <source key={src} src={src as string} type="video/mp4" />
-          ))}
-      </video>
+      {/* Background image shown immediately */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${featuredImage})` }}
+      />
+      {/* Video fades in only after browser is idle */}
+      {showVideo && (
+        <video
+          ref={videoRef}
+          className="absolute inset-0 h-full w-full object-cover animate-fade-in"
+          muted
+          loop
+          playsInline
+          autoPlay
+          preload="none"
+        >
+          {[siteSettings.heroBackgroundVideoUrl, '/media/sections/hero/0721-copy.mp4']
+            .filter(Boolean)
+            .map((src) => (
+              <source key={src} src={src as string} type="video/mp4" />
+            ))}
+        </video>
+      )}
       <div
         className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-transparent"
         style={{ opacity: siteSettings.heroOverlayOpacity ?? 0.95 }}
