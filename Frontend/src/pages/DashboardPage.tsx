@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useQuery, useMutation } from '@apollo/client';
-import { GET_USER_TICKETS, UPDATE_USER_PROFILE } from '../graphql/queries';
-import { Ticket, Calendar, TrendingUp, Upload, Award, Music, Users, Camera } from 'lucide-react';
+import { GET_USER_TICKETS, UPDATE_USER_PROFILE, HAS_PENDING_DJ_APPLICATION } from '../graphql/queries';
+import { Ticket, Calendar, TrendingUp, Upload, Award, Music, Users, Camera, Disc3, Clock } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 
 const DashboardPage = () => {
-  const { user, isAuthenticated, updateUserLocal } = useAuth();
+  const { user, isAuthenticated, isDJ, updateUserLocal } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
 
@@ -59,6 +59,12 @@ const DashboardPage = () => {
     skip: !user,
     fetchPolicy: 'cache-and-network',
   });
+
+  const { data: pendingAppData } = useQuery(HAS_PENDING_DJ_APPLICATION, {
+    variables: { userId: user?.id ?? '' },
+    skip: !user || isDJ,
+  });
+  const hasPendingApp = pendingAppData?.hasPendingDjApplication ?? false;
 
   const tickets = data?.ticketsByUser ?? [];
 
@@ -281,6 +287,47 @@ const DashboardPage = () => {
                 </Link>
               ))}
             </div>
+          </section>
+        )}
+
+        {/* Become a DJ / DJ Application Status */}
+        {!isDJ && (
+          <section>
+            {hasPendingApp ? (
+              <div className="rounded-2xl border border-yellow-500/20 bg-gradient-to-r from-yellow-950/20 via-orange-950/10 to-transparent p-6 flex items-center gap-5">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center flex-shrink-0">
+                  <Clock className="w-7 h-7 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-white">DJ Application Under Review</h3>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Our team is reviewing your application. You'll be notified once a decision is made.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <Link
+                to="/dj-enroll"
+                className="group block rounded-2xl border border-orange-500/20 bg-gradient-to-r from-orange-950/20 via-[#5D1725]/10 to-transparent p-6 hover:border-orange-500/40 transition-all"
+              >
+                <div className="flex items-center gap-5">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 to-[#FF6B35] flex items-center justify-center flex-shrink-0 group-hover:shadow-[0_0_25px_rgba(255,107,53,0.4)] transition-shadow">
+                    <Disc3 className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-white group-hover:text-orange-400 transition-colors">
+                      Are You a DJ? Join the Lineup
+                    </h3>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Apply to get featured on the platform, connect with venues, and grow your audience.
+                    </p>
+                  </div>
+                  <span className="hidden md:block text-orange-400 text-sm font-semibold group-hover:translate-x-1 transition-transform">
+                    Apply Now →
+                  </span>
+                </div>
+              </Link>
+            )}
           </section>
         )}
 

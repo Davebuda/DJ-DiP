@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useReducedMotion, useIsTouch } from '../../hooks/useReducedMotion';
 
-const PARTICLE_COUNT = 18;
+const PARTICLE_COUNT = 10;
 
 interface Particle {
   id: number;

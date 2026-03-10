@@ -118,6 +118,46 @@ namespace DJDiP.Application.Services
             };
         }
 
+        public async Task<(string Token, string Email, string FullName)?> GeneratePasswordResetTokenAsync(string email)
+        {
+            var user = await _unitOfWork.Users.GetByEmailAsync(email);
+            if (user == null) return null;
+
+            var token = Guid.NewGuid().ToString("N");
+            user.PasswordResetToken = BCrypt.Net.BCrypt.HashPassword(token);
+            user.PasswordResetTokenExpiry = DateTime.UtcNow.AddHours(1);
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return (token, user.Email, user.FullName);
+        }
+
+        public async Task<bool> ResetPasswordAsync(string email, string token, string newPassword)
+        {
+            ValidatePassword(newPassword);
+
+            var user = await _unitOfWork.Users.GetByEmailAsync(email);
+            if (user == null)
+                throw new InvalidOperationException("Invalid reset request.");
+
+            if (string.IsNullOrEmpty(user.PasswordResetToken) ||
+                user.PasswordResetTokenExpiry == null ||
+                user.PasswordResetTokenExpiry < DateTime.UtcNow)
+                throw new InvalidOperationException("Reset link has expired. Please request a new one.");
+
+            if (!BCrypt.Net.BCrypt.Verify(token, user.PasswordResetToken))
+                throw new InvalidOperationException("Invalid reset link. Please request a new one.");
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+            user.PasswordResetToken = null;
+            user.PasswordResetTokenExpiry = null;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _unitOfWork.SaveChangesAsync();
+            return true;
+        }
+
         private static string MapRole(int role) => role switch
         {
             2 => "Admin",

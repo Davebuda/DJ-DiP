@@ -56,6 +56,12 @@ const LoginPage = () => {
           </div>
           {error && <p className="text-sm text-red-400">{error}</p>}
 
+          <div className="flex justify-end">
+            <Link to="/forgot-password" className="text-xs text-gray-500 hover:text-orange-300 transition-colors">
+              Forgot password?
+            </Link>
+          </div>
+
           <button
             type="submit"
             disabled={submitting || loading}

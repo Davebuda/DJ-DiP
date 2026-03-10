@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isAuthenticated: Boolean(user),
       isAdmin:
         !!user &&
-        (user.role === 'Admin' || user.email?.toLowerCase() === '2djdip@gmail.com'),
+        (user.role === 'Admin' || user.email?.toLowerCase() === 'letsgoklubn@gmail.com'),
       isDJ: !!user && user.role === 'DJ',
     }),
     [user, token, loading, login, register, logout, updateUserLocal],

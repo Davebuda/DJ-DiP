@@ -14,9 +14,9 @@ export const EqualizerDivider = ({
   intensity?: 'low' | 'medium' | 'high';
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: false, margin: '-40px' });
+  const inView = useInView(ref, { once: true, margin: '-40px' });
 
-  const barCount = 64;
+  const barCount = 32;
   const bars = useMemo(
     () =>
       Array.from({ length: barCount }, (_, i) => {
@@ -89,7 +89,7 @@ export const SoundWaveDivider = ({
   theme?: 'orange' | 'white';
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: false, margin: '-20px' });
+  const inView = useInView(ref, { once: true, margin: '-20px' });
 
   const id = useMemo(() => `wave-${Math.random().toString(36).slice(2, 8)}`, []);
 
@@ -245,7 +245,7 @@ export const BeatPulseLine = ({
   theme?: 'orange' | 'red';
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: false, margin: '-30px' });
+  const inView = useInView(ref, { once: true, margin: '-30px' });
   const id = useMemo(() => `beat-${Math.random().toString(36).slice(2, 8)}`, []);
 
   const colors =
@@ -332,7 +332,7 @@ export const VinylSpinner = ({
   theme?: 'orange' | 'magenta';
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: false, margin: '-20px' });
+  const inView = useInView(ref, { once: true, margin: '-20px' });
 
   const label =
     theme === 'orange'
@@ -385,7 +385,7 @@ export const FrequencySpectrum = ({
   intensity?: 'low' | 'medium' | 'high';
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: false, margin: '-30px' });
+  const inView = useInView(ref, { once: true, margin: '-30px' });
 
   const scale = { low: 0.4, medium: 1, high: 1.3 }[intensity];
   const opacityMax = { low: 0.35, medium: 0.85, high: 1 }[intensity];

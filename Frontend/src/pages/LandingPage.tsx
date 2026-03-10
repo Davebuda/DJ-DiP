@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
-import { GET_LANDING_DATA } from '../graphql/queries';
+import { GET_LANDING_DATA, HAS_PENDING_DJ_APPLICATION } from '../graphql/queries';
+import { useAuth } from '../context/AuthContext';
 import NewsletterSignup from '../components/common/NewsletterSignup';
 import GallerySlideshow from '../components/gallery/GallerySlideshow';
 import { useSiteSettings } from '../context/SiteSettingsContext';
@@ -77,7 +78,7 @@ const HeroSection = ({
         muted
         loop
         playsInline
-        preload="auto"
+        preload="none"
         poster={featuredImage}
       >
         {[siteSettings.heroBackgroundVideoUrl, '/media/sections/hero/0721-copy.mp4']
@@ -147,18 +148,37 @@ const HeroSection = ({
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Link
-              to={siteSettings.heroCtaLink || '/events'}
-              className="px-6 py-3 text-sm rounded-full bg-gradient-to-r from-orange-500 via-[#FF6B35] to-orange-600 text-white font-semibold hover:from-orange-400 hover:via-[#FF6B35] hover:to-orange-500 transition-all shadow-lg shadow-orange-600/30 hover:shadow-orange-500/50"
-            >
-              {siteSettings.heroCtaText || 'Explore Events'}
-            </Link>
-            <Link
-              to="/djs"
-              className="px-6 py-3 text-sm rounded-full border-2 border-orange-600/60 text-orange-300 font-semibold hover:border-orange-500 hover:bg-orange-600/20 transition-all shadow-lg shadow-orange-600/20"
-            >
-              View Artists
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to="/dashboard"
+                  className="px-6 py-3 text-sm rounded-full bg-gradient-to-r from-orange-500 via-[#FF6B35] to-orange-600 text-white font-semibold hover:from-orange-400 hover:via-[#FF6B35] hover:to-orange-500 transition-all shadow-lg shadow-orange-600/30 hover:shadow-orange-500/50"
+                >
+                  Go to Dashboard
+                </Link>
+                <Link
+                  to="/events"
+                  className="px-6 py-3 text-sm rounded-full border-2 border-orange-600/60 text-orange-300 font-semibold hover:border-orange-500 hover:bg-orange-600/20 transition-all shadow-lg shadow-orange-600/20"
+                >
+                  Browse Events
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/register"
+                  className="px-6 py-3 text-sm rounded-full bg-gradient-to-r from-orange-500 via-[#FF6B35] to-orange-600 text-white font-semibold hover:from-orange-400 hover:via-[#FF6B35] hover:to-orange-500 transition-all shadow-lg shadow-orange-600/30 hover:shadow-orange-500/50"
+                >
+                  Join the Movement
+                </Link>
+                <Link
+                  to="/events"
+                  className="px-6 py-3 text-sm rounded-full border-2 border-orange-600/60 text-orange-300 font-semibold hover:border-orange-500 hover:bg-orange-600/20 transition-all shadow-lg shadow-orange-600/20"
+                >
+                  Explore Events
+                </Link>
+              </>
+            )}
           </div>
           {highlight && (
             <div className="space-y-2 border-l-4 border-orange-500 pl-4 py-2 bg-gradient-to-r from-orange-950/40 via-[#5D1725]/20 to-transparent rounded-r">
@@ -265,8 +285,14 @@ const CountUpStat = ({ target, label }: { target: number | string; label: string
 const LandingPage = () => {
   const { data, loading, error } = useQuery(GET_LANDING_DATA);
   const { siteSettings } = useSiteSettings();
+  const { isAuthenticated, isDJ, user } = useAuth();
   const events = data?.landing?.events ?? [];
   const djs = data?.landing?.dJs ?? [];
+
+  const { data: pendingAppData } = useQuery(HAS_PENDING_DJ_APPLICATION, {
+    variables: { userId: user?.id ?? '' },
+    skip: !user || isDJ,
+  });
   const featuredImageFallback =
     siteSettings.heroBackgroundImageUrl ?? '/media/sections/hero/KlubN12.07 screen (1) copy.png';
 
@@ -505,6 +531,7 @@ const LandingPage = () => {
                     <img
                       src={event.imageUrl ?? defaultEventImage}
                       alt={event.title}
+                      loading="lazy"
                       className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -655,6 +682,7 @@ const LandingPage = () => {
                     <img
                       src={dj.profilePictureUrl ?? dj.coverImageUrl ?? defaultDjImage}
                       alt={dj.stageName ?? dj.name}
+                      loading="lazy"
                       className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -728,6 +756,55 @@ const LandingPage = () => {
           </StaggerContainer>
         )}
       </section>
+
+      {/* ─── Are You a DJ? (logged-in non-DJ users only) ─── */}
+      {isAuthenticated && !isDJ && (
+        <ScrollReveal>
+          <section className="max-w-5xl mx-auto px-6 lg:px-8 py-16">
+            <div className="relative rounded-3xl border border-orange-500/20 bg-gradient-to-br from-orange-950/30 via-[#5D1725]/20 to-black overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,107,53,0.15),_transparent_60%)]" />
+              <div className="relative px-8 py-12 md:px-12 md:py-16 flex flex-col md:flex-row items-center gap-8">
+                <div className="flex-1 space-y-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.5em] text-orange-400">For DJs</p>
+                  <h2 className="text-3xl lg:text-4xl font-black text-white leading-tight">
+                    Are You a DJ?
+                  </h2>
+                  {pendingAppData?.hasPendingDjApplication ? (
+                    <>
+                      <p className="text-gray-400 text-lg max-w-lg">
+                        Your application is currently under review. Our team will get back to you soon.
+                      </p>
+                      <div className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-sm font-semibold">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Application Under Review
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-gray-400 text-lg max-w-lg">
+                        Join the lineup and showcase your talent. Get featured on the platform, connect with venues, and grow your audience.
+                      </p>
+                      <Link
+                        to="/dj-enroll"
+                        className="inline-block px-8 py-4 rounded-2xl bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-bold text-sm tracking-wide hover:shadow-[0_0_40px_rgba(255,107,53,0.5)] hover:scale-105 transition-all"
+                      >
+                        Apply Now
+                      </Link>
+                    </>
+                  )}
+                </div>
+                <div className="flex-shrink-0 w-32 h-32 md:w-40 md:h-40 rounded-full bg-gradient-to-br from-orange-500/20 to-[#5D1725]/20 border border-orange-500/10 flex items-center justify-center">
+                  <svg className="w-16 h-16 md:w-20 md:h-20 text-orange-500/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </section>
+        </ScrollReveal>
+      )}
 
       {/* ─── Beat Pulse ─── */}
       <BeatPulseLine theme="orange" />

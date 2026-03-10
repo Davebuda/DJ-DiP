@@ -571,7 +571,8 @@ public class Mutation
     // AUTH MUTATIONS
     public async Task<AuthPayload> Register(
         RegisterInput input,
-        [Service] IAuthService authService)
+        [Service] IAuthService authService,
+        [Service] IEmailService emailService)
     {
         if (string.IsNullOrWhiteSpace(input.FullName))
             throw new GraphQLException("Full name is required.");
@@ -582,7 +583,11 @@ public class Mutation
 
         try
         {
-            return await authService.RegisterAsync(input.FullName.Trim(), input.Email.Trim().ToLowerInvariant(), input.Password);
+            var result = await authService.RegisterAsync(input.FullName.Trim(), input.Email.Trim().ToLowerInvariant(), input.Password);
+
+            _ = emailService.SendWelcomeEmailAsync(input.Email.Trim(), input.FullName.Trim());
+
+            return result;
         }
         catch (InvalidOperationException ex)
         {
@@ -620,6 +625,54 @@ public class Mutation
         catch (Exception ex) when (ex is not GraphQLException)
         {
             throw new GraphQLException($"Login failed: {ex.Message}");
+        }
+    }
+
+    // PASSWORD RESET MUTATIONS
+    public async Task<bool> ForgotPassword(
+        string email,
+        [Service] IAuthService authService,
+        [Service] IEmailService emailService)
+    {
+        if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
+            throw new GraphQLException("A valid email address is required.");
+
+        var result = await authService.GeneratePasswordResetTokenAsync(email.Trim().ToLowerInvariant());
+
+        if (result != null)
+        {
+            var (token, userEmail, fullName) = result.Value;
+            var frontendUrl = Environment.GetEnvironmentVariable("AppSettings__FrontendUrl") ?? "http://localhost:3000";
+            var resetLink = $"{frontendUrl}/reset-password?email={Uri.EscapeDataString(userEmail)}&token={Uri.EscapeDataString(token)}";
+
+            _ = emailService.SendPasswordResetAsync(userEmail, fullName, resetLink);
+        }
+
+        // Always return true to prevent email enumeration
+        return true;
+    }
+
+    public async Task<bool> ResetPassword(
+        ResetPasswordInput input,
+        [Service] IAuthService authService)
+    {
+        if (string.IsNullOrWhiteSpace(input.Email))
+            throw new GraphQLException("Email is required.");
+        if (string.IsNullOrWhiteSpace(input.Token))
+            throw new GraphQLException("Reset token is required.");
+        if (string.IsNullOrWhiteSpace(input.NewPassword))
+            throw new GraphQLException("New password is required.");
+
+        try
+        {
+            return await authService.ResetPasswordAsync(
+                input.Email.Trim().ToLowerInvariant(),
+                input.Token,
+                input.NewPassword);
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new GraphQLException(ex.Message);
         }
     }
 
@@ -800,6 +853,8 @@ public class Mutation
     public async Task<DJApplicationDto> SubmitDJApplication(
         CreateDJApplicationInput input,
         [Service] IDJApplicationService djApplicationService,
+        [Service] IUserService userService,
+        [Service] IEmailService emailService,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
         RequireAuthentication(httpContextAccessor);
@@ -820,7 +875,22 @@ public class Mutation
                 CoverImageUrl = input.CoverImageUrl
             };
 
-            return await djApplicationService.SubmitApplicationAsync(dto);
+            var result = await djApplicationService.SubmitApplicationAsync(dto);
+
+            // Send confirmation email to applicant
+            var applicant = await userService.GetUserByIdAsync(input.UserId);
+            if (applicant != null)
+            {
+                _ = emailService.SendDJApplicationSubmittedAsync(
+                    applicant.Email, applicant.FullName, input.StageName);
+            }
+
+            // Notify admin
+            var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL") ?? "letsgoklubn@gmail.com";
+            _ = emailService.SendAdminDJApplicationNotificationAsync(
+                adminEmail, applicant?.FullName ?? "Unknown", input.StageName);
+
+            return result;
         }
         catch (InvalidOperationException ex)
         {
@@ -832,6 +902,8 @@ public class Mutation
         Guid applicationId,
         string reviewedByAdminId,
         [Service] IDJApplicationService djApplicationService,
+        [Service] IUserService userService,
+        [Service] IEmailService emailService,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
         RequireAdmin(httpContextAccessor);
@@ -844,7 +916,17 @@ public class Mutation
                 ReviewedByAdminId = reviewedByAdminId
             };
 
-            return await djApplicationService.ApproveApplicationAsync(dto);
+            var result = await djApplicationService.ApproveApplicationAsync(dto);
+
+            // Send approval email
+            var applicant = await userService.GetUserByIdAsync(result.UserId);
+            if (applicant != null)
+            {
+                _ = emailService.SendDJApplicationApprovedAsync(
+                    applicant.Email, applicant.FullName, result.StageName);
+            }
+
+            return result;
         }
         catch (InvalidOperationException ex)
         {
@@ -862,6 +944,8 @@ public class Mutation
         string reviewedByAdminId,
         string? rejectionReason,
         [Service] IDJApplicationService djApplicationService,
+        [Service] IUserService userService,
+        [Service] IEmailService emailService,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
         RequireAdmin(httpContextAccessor);
@@ -875,7 +959,17 @@ public class Mutation
                 RejectionReason = rejectionReason
             };
 
-            return await djApplicationService.RejectApplicationAsync(dto);
+            var result = await djApplicationService.RejectApplicationAsync(dto);
+
+            // Send rejection email
+            var applicant = await userService.GetUserByIdAsync(result.UserId);
+            if (applicant != null)
+            {
+                _ = emailService.SendDJApplicationRejectedAsync(
+                    applicant.Email, applicant.FullName, result.StageName, rejectionReason);
+            }
+
+            return result;
         }
         catch (InvalidOperationException ex)
         {
@@ -985,7 +1079,9 @@ public class Mutation
     // CONTACT MESSAGE MUTATIONS
     public async Task<Guid> CreateContactMessage(
         CreateContactMessageInput input,
-        [Service] IContactMessageService contactMessages)
+        [Service] IContactMessageService contactMessages,
+        [Service] IUserService userService,
+        [Service] IEmailService emailService)
     {
         var dto = new ContactMessageCreateDto
         {
@@ -993,7 +1089,19 @@ public class Mutation
             UserId = input.UserId
         };
 
-        return await contactMessages.CreateAsync(dto);
+        var result = await contactMessages.CreateAsync(dto);
+
+        // Send emails - look up user for name/email
+        var user = await userService.GetUserByIdAsync(input.UserId);
+        var senderEmail = user?.Email ?? input.UserId; // UserId may be an email for non-logged-in users
+        var senderName = user?.FullName ?? "Website Visitor";
+
+        _ = emailService.SendContactConfirmationAsync(senderEmail, senderName);
+
+        var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL") ?? "letsgoklubn@gmail.com";
+        _ = emailService.SendContactAdminNotificationAsync(adminEmail, senderName, senderEmail, input.Message);
+
+        return result;
     }
 
     public async Task<bool> DeleteContactMessage(
@@ -1009,7 +1117,8 @@ public class Mutation
     // NEWSLETTER MUTATIONS
     public async Task<NewsletterDto> SubscribeNewsletter(
         CreateNewsletterInput input,
-        [Service] INewsletterService newsletters)
+        [Service] INewsletterService newsletters,
+        [Service] IEmailService emailService)
     {
         var dto = new CreateNewsletterDto
         {
@@ -1017,7 +1126,11 @@ public class Mutation
             UserId = input.UserId
         };
 
-        return await newsletters.SubscribeAsync(dto);
+        var result = await newsletters.SubscribeAsync(dto);
+
+        _ = emailService.SendNewsletterWelcomeAsync(input.Email);
+
+        return result;
     }
 
     public async Task<bool> UnsubscribeNewsletter(
@@ -1386,6 +1499,13 @@ public class LoginInput
 {
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
+}
+
+public class ResetPasswordInput
+{
+    public string Email { get; set; } = string.Empty;
+    public string Token { get; set; } = string.Empty;
+    public string NewPassword { get; set; } = string.Empty;
 }
 
 public class CreateEventInput

@@ -43,7 +43,7 @@ export const BackgroundEffects = () => {
         className="absolute top-0 left-0 h-[300px] w-[300px] sm:h-[400px] sm:w-[400px] md:h-[600px] md:w-[600px] rounded-full opacity-[0.09]"
         style={{
           background: 'radial-gradient(circle, rgba(255,107,53,0.6) 0%, transparent 70%)',
-          filter: 'blur(80px)',
+          filter: 'blur(40px)',
           animation: reduced ? 'none' : 'orb-drift-1 55s ease-in-out infinite',
         }}
       />
@@ -51,7 +51,7 @@ export const BackgroundEffects = () => {
         className="absolute bottom-0 right-0 h-[250px] w-[250px] sm:h-[350px] sm:w-[350px] md:h-[500px] md:w-[500px] rounded-full opacity-[0.07]"
         style={{
           background: 'radial-gradient(circle, rgba(93,23,37,0.7) 0%, transparent 70%)',
-          filter: 'blur(80px)',
+          filter: 'blur(40px)',
           animation: reduced ? 'none' : 'orb-drift-2 42s ease-in-out infinite',
         }}
       />
@@ -59,7 +59,7 @@ export const BackgroundEffects = () => {
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[200px] w-[200px] sm:h-[300px] sm:w-[300px] md:h-[400px] md:w-[400px] rounded-full opacity-[0.025]"
         style={{
           background: 'radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%)',
-          filter: 'blur(80px)',
+          filter: 'blur(40px)',
           animation: reduced ? 'none' : 'orb-drift-3 50s ease-in-out infinite',
         }}
       />
@@ -79,14 +79,12 @@ export const BackgroundEffects = () => {
           >
             <div
               style={{
-                width: 'min(1000px, 90vw)',
-                height: 'min(1000px, 90vw)',
+                width: 'min(600px, 70vw)',
+                height: 'min(600px, 70vw)',
                 borderRadius: '50%',
                 background:
                   'radial-gradient(circle, rgba(255,107,53,0.10) 0%, rgba(255,107,53,0.05) 30%, rgba(255,80,40,0.02) 55%, transparent 75%)',
-                filter: 'blur(20px)',
-                mixBlendMode: 'screen',
-                animation: 'light-hue-cycle 12s ease-in-out infinite',
+                willChange: 'transform',
               }}
             />
           </motion.div>
@@ -103,14 +101,12 @@ export const BackgroundEffects = () => {
           >
             <div
               style={{
-                width: 'min(800px, 80vw)',
-                height: 'min(800px, 80vw)',
+                width: 'min(500px, 60vw)',
+                height: 'min(500px, 60vw)',
                 borderRadius: '50%',
                 background:
                   'radial-gradient(circle, rgba(180,50,70,0.07) 0%, rgba(140,40,60,0.035) 30%, rgba(93,23,37,0.012) 55%, transparent 75%)',
-                filter: 'blur(20px)',
-                mixBlendMode: 'screen',
-                animation: 'light-hue-cycle-alt 15s ease-in-out infinite',
+                willChange: 'transform',
               }}
             />
           </motion.div>

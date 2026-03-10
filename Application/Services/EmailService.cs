@@ -56,6 +56,82 @@ namespace DJDiP.Application.Services
         }
 
         // ─────────────────────────────────────────────────────────────
+        // Registration, Newsletter, Contact, Password Reset
+        // ─────────────────────────────────────────────────────────────
+
+        public async Task SendWelcomeEmailAsync(string toEmail, string toName)
+        {
+            var subject = "Welcome to KlubN!";
+            var html = BuildWelcomeHtml(toName);
+            await SendAsync(toEmail, toName, subject, html);
+        }
+
+        public async Task SendNewsletterWelcomeAsync(string toEmail)
+        {
+            var subject = "You're In – KlubN Newsletter";
+            var html = BuildNewsletterWelcomeHtml();
+            await SendAsync(toEmail, "", subject, html);
+        }
+
+        public async Task SendContactConfirmationAsync(string toEmail, string toName)
+        {
+            var subject = "We Got Your Message – KlubN";
+            var html = BuildContactConfirmationHtml(toName);
+            await SendAsync(toEmail, toName, subject, html);
+        }
+
+        public async Task SendContactAdminNotificationAsync(
+            string adminEmail, string senderName, string senderEmail, string message)
+        {
+            var subject = $"New Contact Message from {senderName}";
+            var html = BuildContactAdminHtml(senderName, senderEmail, message);
+            await SendAsync(adminEmail, "Admin", subject, html);
+        }
+
+        public async Task SendPasswordResetAsync(string toEmail, string toName, string resetLink)
+        {
+            var subject = "Reset Your Password – KlubN";
+            var html = BuildPasswordResetHtml(toName, resetLink);
+            await SendAsync(toEmail, toName, subject, html);
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // DJ Application emails
+        // ─────────────────────────────────────────────────────────────
+
+        public async Task SendDJApplicationSubmittedAsync(
+            string toEmail, string toName, string stageName)
+        {
+            var subject = $"DJ Application Received – {stageName}";
+            var html = BuildDJApplicationSubmittedHtml(toName, stageName);
+            await SendAsync(toEmail, toName, subject, html);
+        }
+
+        public async Task SendAdminDJApplicationNotificationAsync(
+            string adminEmail, string applicantName, string stageName)
+        {
+            var subject = $"New DJ Application: {stageName}";
+            var html = BuildAdminDJNotificationHtml(applicantName, stageName);
+            await SendAsync(adminEmail, "Admin", subject, html);
+        }
+
+        public async Task SendDJApplicationApprovedAsync(
+            string toEmail, string toName, string stageName)
+        {
+            var subject = $"Welcome to the Lineup, {stageName}!";
+            var html = BuildDJApplicationApprovedHtml(toName, stageName);
+            await SendAsync(toEmail, toName, subject, html);
+        }
+
+        public async Task SendDJApplicationRejectedAsync(
+            string toEmail, string toName, string stageName, string? reason)
+        {
+            var subject = $"DJ Application Update – {stageName}";
+            var html = BuildDJApplicationRejectedHtml(toName, stageName, reason);
+            await SendAsync(toEmail, toName, subject, html);
+        }
+
+        // ─────────────────────────────────────────────────────────────
         // Core send logic
         // ─────────────────────────────────────────────────────────────
 
@@ -216,6 +292,188 @@ namespace DJDiP.Application.Services
                 "<a href=\"mailto:support@klubn.com\" style=\"color:#FF6B35\">support@klubn.com</a></p>";
 
             return WrapInLayout($"Refund for {eventTitle}", body);
+        }
+
+        private static string BuildDJApplicationSubmittedHtml(string toName, string stageName)
+        {
+            Func<string, string> E = System.Net.WebUtility.HtmlEncode;
+
+            var body =
+                "<span class=\"badge\">Application Received</span>" +
+                $"<p style=\"font-size:18px;font-weight:700;color:#fff;margin:0 0 8px\">Hey {E(toName)}! &#127911;</p>" +
+                "<p style=\"color:#aaa;margin:0 0 24px\">Your DJ application has been submitted successfully. Our team will review it and get back to you.</p>" +
+                "<div class=\"tbox\">" +
+                "<div class=\"lbl\">Stage Name</div><div class=\"val big\">" + E(stageName) + "</div>" +
+                "<div class=\"lbl\">Status</div><div class=\"val\" style=\"color:#eab308\">Pending Review</div>" +
+                "</div>" +
+                "<p style=\"color:#888;font-size:13px;line-height:1.6\">" +
+                "We typically review applications within a few business days. You'll receive an email once a decision is made.</p>";
+
+            return WrapInLayout("DJ Application Received", body);
+        }
+
+        private static string BuildAdminDJNotificationHtml(string applicantName, string stageName)
+        {
+            Func<string, string> E = System.Net.WebUtility.HtmlEncode;
+
+            var body =
+                "<span class=\"badge\">New Application</span>" +
+                "<p style=\"font-size:18px;font-weight:700;color:#fff;margin:0 0 8px\">New DJ Application &#127926;</p>" +
+                "<p style=\"color:#aaa;margin:0 0 24px\">A new DJ application has been submitted and requires review.</p>" +
+                "<div class=\"tbox\">" +
+                "<div class=\"lbl\">Applicant</div><div class=\"val\">" + E(applicantName) + "</div>" +
+                "<div class=\"lbl\">Stage Name</div><div class=\"val big\">" + E(stageName) + "</div>" +
+                "</div>" +
+                "<p style=\"color:#888;font-size:13px;line-height:1.6\">" +
+                "Log in to the admin panel to review and approve or reject this application.</p>";
+
+            return WrapInLayout("New DJ Application", body);
+        }
+
+        private static string BuildDJApplicationApprovedHtml(string toName, string stageName)
+        {
+            Func<string, string> E = System.Net.WebUtility.HtmlEncode;
+
+            var body =
+                "<span class=\"badge\">Approved</span>" +
+                $"<p style=\"font-size:18px;font-weight:700;color:#fff;margin:0 0 8px\">Congratulations, {E(toName)}! &#127881;</p>" +
+                "<p style=\"color:#aaa;margin:0 0 24px\">Your DJ application has been approved. Welcome to the lineup!</p>" +
+                "<div class=\"tbox\">" +
+                "<div class=\"lbl\">Stage Name</div><div class=\"val big\">" + E(stageName) + "</div>" +
+                "<div class=\"lbl\">Status</div><div class=\"val\" style=\"color:#22c55e\">Approved</div>" +
+                "</div>" +
+                "<p style=\"color:#888;font-size:13px;line-height:1.6\">" +
+                "Your DJ profile has been created. Log in and head to your DJ Dashboard to customize your profile, " +
+                "add your top 10 tracks, and start connecting with venues.</p>";
+
+            return WrapInLayout($"Welcome to the Lineup, {stageName}!", body);
+        }
+
+        private static string BuildDJApplicationRejectedHtml(string toName, string stageName, string? reason)
+        {
+            Func<string, string> E = System.Net.WebUtility.HtmlEncode;
+
+            var reasonBlock = string.IsNullOrWhiteSpace(reason)
+                ? ""
+                : "<hr class=\"divider\"/>" +
+                  "<div class=\"lbl\">Feedback</div>" +
+                  $"<div class=\"val\" style=\"color:#f87171;font-size:14px\">{E(reason)}</div>";
+
+            var body =
+                "<span class=\"badge\">Application Update</span>" +
+                $"<p style=\"font-size:18px;font-weight:700;color:#fff;margin:0 0 8px\">Hey {E(toName)},</p>" +
+                "<p style=\"color:#aaa;margin:0 0 24px\">We've reviewed your DJ application and unfortunately it wasn't approved at this time.</p>" +
+                "<div class=\"tbox\">" +
+                "<div class=\"lbl\">Stage Name</div><div class=\"val\">" + E(stageName) + "</div>" +
+                "<div class=\"lbl\">Status</div><div class=\"val\" style=\"color:#f87171\">Not Approved</div>" +
+                reasonBlock +
+                "</div>" +
+                "<p style=\"color:#888;font-size:13px;line-height:1.6\">" +
+                "If you have questions or would like to discuss this further, feel free to reach out to us.</p>";
+
+            return WrapInLayout($"DJ Application Update – {stageName}", body);
+        }
+
+        // ─────────────────────────────────────────────────────────────
+        // Welcome, Newsletter, Contact, Password Reset templates
+        // ─────────────────────────────────────────────────────────────
+
+        private static string BuildWelcomeHtml(string toName)
+        {
+            Func<string, string> E = System.Net.WebUtility.HtmlEncode;
+
+            var body =
+                "<span class=\"badge\">Welcome</span>" +
+                $"<p style=\"font-size:18px;font-weight:700;color:#fff;margin:0 0 8px\">Hey {E(toName)}! &#127881;</p>" +
+                "<p style=\"color:#aaa;margin:0 0 24px\">Welcome to KlubN — your gateway to the best DJ events, exclusive sets, and the underground music scene.</p>" +
+                "<div class=\"tbox\">" +
+                "<div class=\"lbl\">Your Account Is Ready</div>" +
+                "<div class=\"val\">Here's what you can do now:</div>" +
+                "<ul style=\"color:#aaa;font-size:14px;line-height:2;margin:12px 0 0;padding-left:20px\">" +
+                "<li>Browse and book tickets to upcoming events</li>" +
+                "<li>Discover and follow your favorite DJs</li>" +
+                "<li>Upload media and share event moments</li>" +
+                "<li>Join the leaderboard and earn points</li>" +
+                "</ul>" +
+                "</div>" +
+                "<p style=\"color:#888;font-size:13px;line-height:1.6\">" +
+                "Are you a DJ? You can apply to join the lineup directly from your dashboard.</p>";
+
+            return WrapInLayout("Welcome to KlubN!", body);
+        }
+
+        private static string BuildNewsletterWelcomeHtml()
+        {
+            var body =
+                "<span class=\"badge\">Subscribed</span>" +
+                "<p style=\"font-size:18px;font-weight:700;color:#fff;margin:0 0 8px\">You're in! &#127911;</p>" +
+                "<p style=\"color:#aaa;margin:0 0 24px\">You've been added to the KlubN newsletter. Expect weekly drops, event announcements, presale codes, and exclusive content.</p>" +
+                "<div class=\"tbox\">" +
+                "<div class=\"lbl\">What to Expect</div>" +
+                "<div class=\"val\">One email per week. No spam. Pure music.</div>" +
+                "</div>" +
+                "<p style=\"color:#555;font-size:12px;margin-top:24px\">You can unsubscribe at any time.</p>";
+
+            return WrapInLayout("Welcome to the KlubN Newsletter", body);
+        }
+
+        private static string BuildContactConfirmationHtml(string toName)
+        {
+            Func<string, string> E = System.Net.WebUtility.HtmlEncode;
+
+            var body =
+                "<span class=\"badge\">Message Received</span>" +
+                $"<p style=\"font-size:18px;font-weight:700;color:#fff;margin:0 0 8px\">Thanks, {E(toName)}!</p>" +
+                "<p style=\"color:#aaa;margin:0 0 24px\">We've received your message and will get back to you as soon as possible — usually within 24 hours.</p>" +
+                "<p style=\"color:#888;font-size:13px;line-height:1.6\">" +
+                "If your inquiry is urgent, feel free to reach us directly at " +
+                "<a href=\"mailto:letsgoklubn@gmail.com\" style=\"color:#FF6B35\">letsgoklubn@gmail.com</a>.</p>";
+
+            return WrapInLayout("We Got Your Message", body);
+        }
+
+        private static string BuildContactAdminHtml(string senderName, string senderEmail, string message)
+        {
+            Func<string, string> E = System.Net.WebUtility.HtmlEncode;
+
+            var body =
+                "<span class=\"badge\">Contact Form</span>" +
+                "<p style=\"font-size:18px;font-weight:700;color:#fff;margin:0 0 8px\">New Contact Message &#128233;</p>" +
+                "<div class=\"tbox\">" +
+                "<div class=\"lbl\">From</div><div class=\"val\">" + E(senderName) + "</div>" +
+                "<div class=\"lbl\">Email</div><div class=\"val\">" +
+                "<a href=\"mailto:" + E(senderEmail) + "\" style=\"color:#FF6B35\">" + E(senderEmail) + "</a></div>" +
+                "<hr class=\"divider\"/>" +
+                "<div class=\"lbl\">Message</div>" +
+                "<div style=\"color:#ccc;font-size:14px;line-height:1.8;white-space:pre-wrap\">" + E(message) + "</div>" +
+                "</div>" +
+                "<p style=\"color:#888;font-size:13px\">Reply directly to this email or to the sender's address above.</p>";
+
+            return WrapInLayout("New Contact Message", body);
+        }
+
+        private static string BuildPasswordResetHtml(string toName, string resetLink)
+        {
+            Func<string, string> E = System.Net.WebUtility.HtmlEncode;
+
+            var body =
+                "<span class=\"badge\">Password Reset</span>" +
+                $"<p style=\"font-size:18px;font-weight:700;color:#fff;margin:0 0 8px\">Hey {E(toName)},</p>" +
+                "<p style=\"color:#aaa;margin:0 0 24px\">We received a request to reset your password. Click the button below to create a new one.</p>" +
+                "<div style=\"text-align:center;margin:32px 0\">" +
+                $"<a href=\"{E(resetLink)}\" style=\"display:inline-block;background:linear-gradient(135deg,#FF6B35,#5D1725);" +
+                "color:#fff;font-size:14px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;" +
+                "padding:14px 40px;border-radius:999px;text-decoration:none\">Reset Password</a>" +
+                "</div>" +
+                "<div class=\"tbox\">" +
+                "<div class=\"lbl\">Link Expires In</div><div class=\"val\">1 hour</div>" +
+                "</div>" +
+                "<p style=\"color:#888;font-size:13px;line-height:1.6\">" +
+                "If you didn't request this, you can safely ignore this email. Your password won't be changed.</p>" +
+                "<p style=\"color:#555;font-size:11px;margin-top:24px;word-break:break-all\">Direct link: " +
+                $"<a href=\"{E(resetLink)}\" style=\"color:#FF6B35\">{E(resetLink)}</a></p>";
+
+            return WrapInLayout("Reset Your Password", body);
         }
     }
 }
