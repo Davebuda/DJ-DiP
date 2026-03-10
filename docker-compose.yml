@@ -41,6 +41,8 @@ services:
       CORS__AllowedOrigins: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://localhost}
       AppSettings__BaseUrl: ${BACKEND_URL:-http://localhost:5000}
       AppSettings__FrontendUrl: ${FRONTEND_URL:-http://localhost}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@djdip.com}
+      ADMIN_DEFAULT_PASSWORD: ${ADMIN_DEFAULT_PASSWORD:?Set ADMIN_DEFAULT_PASSWORD in .env}
     ports:
       - "${BACKEND_PORT:-5000}:5000"
     volumes:

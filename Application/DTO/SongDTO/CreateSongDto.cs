@@ -5,6 +5,7 @@ namespace DJDiP.Application.DTO.SongDTO
         public string Title { get; set; } = string.Empty;
         public string Artist { get; set; } = string.Empty;
         public string? Album { get; set; }
+        public string? Genre { get; set; }
         public int Duration { get; set; } // in seconds
         public string? SpotifyId { get; set; }
     }

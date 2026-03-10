@@ -184,13 +184,27 @@ const AdminDJsPage = () => {
     event.preventDefault();
     setFeedback(null);
 
+    // Validate required fields
+    const missing: string[] = [];
+    if (!form.stageName.trim()) missing.push('Stage Name');
+    if (!form.fullName.trim()) missing.push('Full Name');
+    if (!isEditing && !form.email.trim()) missing.push('Email');
+    if (!form.bio.trim()) missing.push('Short Bio');
+    if (!form.genre.trim()) missing.push('Genre');
+    if (!form.profilePictureUrl.trim()) missing.push('Profile Picture');
+
+    if (missing.length > 0) {
+      setFeedback({ type: 'error', text: `Required fields missing: ${missing.join(', ')}` });
+      return;
+    }
+
     const payloadBase = {
       stageName: form.stageName.trim(),
-      fullName: form.fullName.trim() || null,
+      fullName: form.fullName.trim(),
       bio: form.bio.trim(),
       longBio: form.longBio.trim() || null,
       tagline: form.tagline.trim() || null,
-      genre: form.genre.trim() || 'Uncategorized',
+      genre: form.genre.trim(),
       socialLinks: serializeSocialLinks(form.socialLinks),
       profilePictureUrl: form.profilePictureUrl.trim(),
       coverImageUrl: form.coverImageUrl.trim() || null,
@@ -328,16 +342,17 @@ const AdminDJsPage = () => {
             />
           </label>
           <label className="space-y-1 text-sm font-semibold text-gray-300">
-            Full Name
+            Full Name *
             <input
               type="text"
               className={inputClass}
               value={form.fullName}
               onChange={(e) => setForm((prev) => ({ ...prev, fullName: e.target.value }))}
+              required
             />
           </label>
           <label className="space-y-1 text-sm font-semibold text-gray-300">
-            Email (new DJs only)
+            Email {isEditing ? '' : '*'}
             <input
               type="email"
               className={`${inputClass} disabled:opacity-60`}
@@ -355,8 +370,7 @@ const AdminDJsPage = () => {
               value={form.userId}
               onChange={(e) => setForm((prev) => ({ ...prev, userId: e.target.value }))}
               disabled={isEditing}
-              required={!isEditing}
-              placeholder="Link to ApplicationUser (required for new DJs)"
+              placeholder="Leave blank to auto-assign your admin account"
             />
           </label>
         </div>
@@ -391,13 +405,14 @@ const AdminDJsPage = () => {
             />
           </label>
           <label className="space-y-1 text-sm font-semibold text-gray-300">
-            Genre
+            Genre *
             <input
               type="text"
               className={inputClass}
               value={form.genre}
               onChange={(e) => setForm((prev) => ({ ...prev, genre: e.target.value }))}
               placeholder="House, EDM, Amapiano…"
+              required
             />
           </label>
           <label className="space-y-1 text-sm font-semibold text-gray-300">

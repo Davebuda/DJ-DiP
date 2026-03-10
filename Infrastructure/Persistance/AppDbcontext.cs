@@ -67,12 +67,12 @@ namespace DJDiP.Infrastructure.Persistance
                 .WithMany(dj => dj.EventDJs)
                 .HasForeignKey(edj => edj.DJId);
 
-            // DJProfile-User Relationship (One-to-One)
+            // DJProfile-User Relationship (One-to-Many: admin can create multiple DJ profiles)
             modelBuilder.Entity<DJProfile>()
                 .HasOne(dj => dj.User)
-                .WithOne(u => u.DJProfile)
-                .HasForeignKey<DJProfile>(dj => dj.UserId)
-                .OnDelete(DeleteBehavior.Cascade);  // Delete DJ profile if user is deleted
+                .WithMany(u => u.DJProfiles)
+                .HasForeignKey(dj => dj.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Order
             modelBuilder.Entity<Order>()

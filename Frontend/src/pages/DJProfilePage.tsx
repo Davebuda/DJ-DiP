@@ -179,8 +179,8 @@ const DJProfilePage = () => {
     );
   }
 
-  const heroBackground = dj.coverImageUrl ?? siteSettings.defaultDjImageUrl ?? '/media/defaults/dj.jpg';
-  const defaultEventImage = siteSettings.defaultEventImageUrl ?? '/media/defaults/event.jpg';
+  const heroBackground = dj.coverImageUrl ?? siteSettings.defaultDjImageUrl ?? '/media/defaults/dj.svg';
+  const defaultEventImage = siteSettings.defaultEventImageUrl ?? '/media/defaults/event.svg';
   const genreTags = (dj.genre ?? '')
     .split(',')
     .map((genre) => genre.trim())

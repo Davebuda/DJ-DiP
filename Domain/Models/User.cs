@@ -18,7 +18,7 @@ namespace DJDiP.Domain.Models
         public DateTime? LastLoginAt { get; set; }
 
         // Navigation Properties
-        public DJProfile? DJProfile { get; set; }  // One-to-one: User can have DJ profile
+        public List<DJProfile> DJProfiles { get; set; } = new();  // One-to-many: Admin can manage multiple DJ profiles
         public List<Order> Orders { get; set; } = new();
         public List<Ticket> Tickets { get; set; } = new();
         public List<ContactMessage> ContactMessages { get; set; } = new();

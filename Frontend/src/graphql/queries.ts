@@ -394,7 +394,7 @@ export const GET_USER_TICKETS = gql`
       id
       ticketNumber
       eventId
-      price
+      totalPrice
       purchaseDate
       isValid
       isCheckedIn
@@ -416,7 +416,7 @@ export const GET_TICKETS_BY_EVENT = gql`
       id
       ticketNumber
       userId
-      price
+      totalPrice
       purchaseDate
       isValid
       isCheckedIn
@@ -429,7 +429,7 @@ export const PURCHASE_TICKET = gql`
     purchaseTicket(input: $input) {
       id
       ticketNumber
-      price
+      totalPrice
       purchaseDate
       event {
         id

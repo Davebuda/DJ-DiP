@@ -33,7 +33,7 @@ namespace DJDiP.Application.Services
                 Id = Guid.NewGuid(),
                 Title = songDto.Title,
                 Artist = songDto.Artist,
-                Genre = null,
+                Genre = songDto.Genre,
                 Duration = songDto.Duration > 0 ? TimeSpan.FromSeconds(songDto.Duration) : null,
                 CoverImageUrl = null,
                 AudioPreviewUrl = null

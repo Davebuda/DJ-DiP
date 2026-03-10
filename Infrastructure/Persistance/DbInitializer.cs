@@ -16,7 +16,44 @@ namespace DJDiP.Infrastructure.Persistance
                 return; // DB has been seeded
             }
 
-            // Seed SiteSettings with KlubN branding
+            // Seed Admin User — password must be set via ADMIN_DEFAULT_PASSWORD env var
+            var adminPassword = Environment.GetEnvironmentVariable("ADMIN_DEFAULT_PASSWORD")
+                ?? throw new InvalidOperationException(
+                    "ADMIN_DEFAULT_PASSWORD environment variable must be set for initial database seeding.");
+
+            var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL") ?? "admin@djdip.com";
+
+            var adminUser = new ApplicationUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                Email = adminEmail,
+                FullName = "DJ DiP Admin",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword),
+                Role = 2, // Admin
+                IsEmailVerified = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            await context.ApplicationUsers.AddAsync(adminUser);
+
+            // Seed Sample Venue
+            var venue = new Venue
+            {
+                Id = Guid.NewGuid(),
+                Name = "The Underground Club",
+                Description = "Industrial warehouse turned nightlife sanctuary.",
+                Address = "Köpenicker Str. 70",
+                City = "Berlin",
+                Country = "Germany",
+                Capacity = 1000,
+                ContactEmail = "info@underground.club",
+                ImageUrl = "/media/defaults/venue.jpg"
+            };
+
+            await context.Venues.AddAsync(venue);
+
+            // Seed SiteSettings
             var siteSettings = new SiteSetting
             {
                 Id = Guid.NewGuid(),
@@ -42,28 +79,10 @@ namespace DJDiP.Infrastructure.Persistance
 
             await context.SiteSettings.AddAsync(siteSettings);
 
-            // Seed Admin User — password must be set via ADMIN_DEFAULT_PASSWORD env var
-            var adminPassword = Environment.GetEnvironmentVariable("ADMIN_DEFAULT_PASSWORD")
-                ?? throw new InvalidOperationException(
-                    "ADMIN_DEFAULT_PASSWORD environment variable must be set for initial database seeding.");
+            // Save independent entities first
+            await context.SaveChangesAsync();
 
-            var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL") ?? "admin@djdip.com";
-
-            var adminUser = new ApplicationUser
-            {
-                Id = Guid.NewGuid().ToString(),
-                Email = adminEmail,
-                FullName = "DJ DiP Admin",
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminPassword),
-                Role = 2, // Admin
-                IsEmailVerified = true,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
-
-            await context.ApplicationUsers.AddAsync(adminUser);
-
-            // Seed Sample Genres
+            // Seed Sample Genres (no DJ profile association initially)
             var genres = new List<Genre>
             {
                 new Genre { Id = Guid.NewGuid(), Name = "Techno" },
@@ -72,24 +91,9 @@ namespace DJDiP.Infrastructure.Persistance
             };
 
             await context.Genres.AddRangeAsync(genres);
+            await context.SaveChangesAsync();
 
-            // Seed Sample Venue
-            var venue = new Venue
-            {
-                Id = Guid.NewGuid(),
-                Name = "The Underground Club",
-                Description = "Industrial warehouse turned nightlife sanctuary.",
-                Address = "Köpenicker Str. 70",
-                City = "Berlin",
-                Country = "Germany",
-                Capacity = 1000,
-                ContactEmail = "info@underground.club",
-                ImageUrl = "/media/defaults/venue.jpg"
-            };
-
-            await context.Venues.AddAsync(venue);
-
-            // Seed Sample DJ Profiles (no user accounts — demo display data only)
+            // Seed Sample DJ Profiles
             var djProfiles = new List<DJProfile>
             {
                 new DJProfile
@@ -100,8 +104,7 @@ namespace DJDiP.Infrastructure.Persistance
                     StageName = "Shadow",
                     Bio = "Pioneer of underground techno",
                     ProfilePictureUrl = "/media/defaults/dj.jpg",
-                    CreatedAt = DateTime.UtcNow,
-                    Genres = new List<Genre> { genres[0] }
+                    CreatedAt = DateTime.UtcNow
                 },
                 new DJProfile
                 {
@@ -111,8 +114,7 @@ namespace DJDiP.Infrastructure.Persistance
                     StageName = "Luna",
                     Bio = "House music specialist",
                     ProfilePictureUrl = "/media/defaults/dj.jpg",
-                    CreatedAt = DateTime.UtcNow,
-                    Genres = new List<Genre> { genres[1] }
+                    CreatedAt = DateTime.UtcNow
                 },
                 new DJProfile
                 {
@@ -122,8 +124,7 @@ namespace DJDiP.Infrastructure.Persistance
                     StageName = "Echo",
                     Bio = "Trance and progressive",
                     ProfilePictureUrl = "/media/defaults/dj.jpg",
-                    CreatedAt = DateTime.UtcNow,
-                    Genres = new List<Genre> { genres[2] }
+                    CreatedAt = DateTime.UtcNow
                 },
                 new DJProfile
                 {
@@ -133,12 +134,12 @@ namespace DJDiP.Infrastructure.Persistance
                     StageName = "Neon",
                     Bio = "Electronic music producer",
                     ProfilePictureUrl = "/media/defaults/dj.jpg",
-                    CreatedAt = DateTime.UtcNow,
-                    Genres = new List<Genre> { genres[0], genres[1] }
+                    CreatedAt = DateTime.UtcNow
                 }
             };
 
             await context.DJProfiles.AddRangeAsync(djProfiles);
+            await context.SaveChangesAsync();
 
             // Seed Sample Event
             var sampleEvent = new Event
@@ -149,12 +150,10 @@ namespace DJDiP.Infrastructure.Persistance
                 Date = DateTime.UtcNow.AddDays(14),
                 Price = 25.00m,
                 ImageUrl = "/media/defaults/event.jpg",
-                Venue = venue,
-                Genres = new List<Genre> { genres[0], genres[1] }
+                VenueId = venue.Id
             };
 
             await context.Events.AddAsync(sampleEvent);
-
             await context.SaveChangesAsync();
         }
     }

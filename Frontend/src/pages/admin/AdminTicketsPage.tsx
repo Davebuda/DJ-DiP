@@ -13,7 +13,7 @@ interface Ticket {
   id: string;
   ticketNumber: string;
   userId: string;
-  price: number;
+  totalPrice: number;
   purchaseDate: string;
   isValid: boolean;
   isCheckedIn: boolean;
@@ -39,6 +39,7 @@ const AdminTicketsPage = () => {
 
   const [selectedEventId, setSelectedEventId] = useState('');
   const [userIdInput, setUserIdInput] = useState('');
+  const [emailInput, setEmailInput] = useState('');
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const events = useMemo(() => eventsData?.events ?? [], [eventsData]);
@@ -59,8 +60,8 @@ const AdminTicketsPage = () => {
     event.preventDefault();
     setFeedback(null);
 
-    if (!selectedEventId || !userIdInput.trim()) {
-      setFeedback({ type: 'error', text: 'Event and user ID are required.' });
+    if (!selectedEventId || !userIdInput.trim() || !emailInput.trim()) {
+      setFeedback({ type: 'error', text: 'Event, user ID, and email are required.' });
       return;
     }
 
@@ -70,11 +71,14 @@ const AdminTicketsPage = () => {
           input: {
             eventId: selectedEventId,
             userId: userIdInput.trim(),
+            email: emailInput.trim(),
+            termsAccepted: true,
           },
         },
       });
       await refreshTickets();
       setUserIdInput('');
+      setEmailInput('');
       setFeedback({ type: 'success', text: 'Ticket created successfully.' });
     } catch (mutationError) {
       const message =
@@ -157,7 +161,18 @@ const AdminTicketsPage = () => {
                 className={inputClass}
                 value={userIdInput}
                 onChange={(e) => setUserIdInput(e.target.value)}
-                placeholder="firebase|auth0 uid, etc."
+                placeholder="User ID"
+              />
+            </label>
+
+            <label className="space-y-1 text-sm font-semibold text-gray-300">
+              Email
+              <input
+                type="email"
+                className={inputClass}
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                placeholder="user@example.com"
               />
             </label>
 
