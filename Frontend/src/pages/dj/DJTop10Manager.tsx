@@ -9,7 +9,7 @@ import {
   DELETE_DJ_TOP10_ENTRY,
   CREATE_SONG,
 } from '../../graphql/queries';
-import { Music, Plus, Trash2, Search, Star, Disc3, ExternalLink } from 'lucide-react';
+import { Music, Plus, Trash2, Search, Star, Disc3 } from 'lucide-react';
 
 const DJTop10Manager = () => {
   const { user } = useAuth();
