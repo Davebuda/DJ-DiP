@@ -120,7 +120,7 @@ const HeroSection = ({
               .map((genre: string) => (
               <span
                 key={genre}
-                className="px-4 py-1.5 rounded-full border border-white/[0.10] bg-white/[0.05] text-xs uppercase tracking-[0.25em] text-gray-300 backdrop-blur-sm hover:border-orange-400/30 hover:text-white transition-colors cursor-default"
+                className="px-4 py-1.5 rounded-full border border-white/[0.10] bg-white/[0.05] text-xs uppercase tracking-[0.25em] text-gray-300 hover:border-orange-400/30 hover:text-white transition-colors cursor-default"
               >
                 {genre}
               </span>
@@ -210,7 +210,7 @@ const HeroSection = ({
         <div className="w-full max-w-sm space-y-4 lg:max-w-md">
           {activeShowcase ? (
             <>
-              <div className="group rounded-xl border border-orange-600/30 bg-gradient-to-br from-zinc-900/80 to-black/90 overflow-hidden backdrop-blur-sm hover:border-orange-500/60 transition-all shadow-lg shadow-orange-900/20">
+              <div className="group rounded-xl border border-orange-600/30 bg-gradient-to-br from-zinc-900/80 to-black/90 overflow-hidden hover:border-orange-500/60 transition-all shadow-lg shadow-orange-900/20">
                 <Link to={activeShowcase.href} className="relative block h-[280px] sm:h-[360px]">
                   <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
@@ -261,7 +261,7 @@ const HeroSection = ({
               </div>
             </>
           ) : (
-            <div className="rounded-xl border border-orange-600/30 bg-gradient-to-br from-zinc-900/80 to-black/90 overflow-hidden backdrop-blur-sm shadow-lg shadow-orange-900/20">
+            <div className="rounded-xl border border-orange-600/30 bg-gradient-to-br from-zinc-900/80 to-black/90 overflow-hidden shadow-lg shadow-orange-900/20">
               <div className="relative block h-[280px] sm:h-[360px]">
                 <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${featuredImage})` }} />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-orange-950/30 to-black/95" />
@@ -273,7 +273,7 @@ const HeroSection = ({
               </div>
             </div>
           )}
-          <div className="grid grid-cols-3 gap-4 border border-orange-600/30 rounded-xl px-4 py-4 bg-gradient-to-br from-orange-950/20 to-black/60 backdrop-blur-sm shadow-lg shadow-orange-900/20">
+          <div className="grid grid-cols-3 gap-4 border border-orange-600/30 rounded-xl px-4 py-4 bg-gradient-to-br from-orange-950/20 to-black/60 shadow-lg shadow-orange-900/20">
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
                 <p className="text-2xl font-bold bg-gradient-to-br from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">{stat.value}</p>
@@ -541,7 +541,7 @@ const LandingPage = () => {
                 <TiltCard intensity={10}>
                 <Link
                   to={`/events/${event.id}`}
-                  className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] backdrop-blur-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
+                  className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
                 >
                   <div className="relative overflow-hidden aspect-[16/10]">
                     <img
@@ -574,7 +574,7 @@ const LandingPage = () => {
               ['Underground Sessions', 'Warehouse Rave', 'Rooftop Sunset', 'Late Night Special'].map((name) => (
                 <div
                   key={name}
-                  className="liquid-glass rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.09] to-white/[0.02] backdrop-blur-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.10),_0_8px_32px_rgba(0,0,0,0.3)] overflow-hidden"
+                  className="liquid-glass rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.09] to-white/[0.02] shadow-[inset_0_1px_0_rgba(255,255,255,0.10),_0_8px_32px_rgba(0,0,0,0.3)] overflow-hidden"
                 >
                   <div className="aspect-[16/10] bg-white/[0.02] flex items-center justify-center">
                     <p className="text-orange-400/30 text-xs">Coming Soon</p>
@@ -636,7 +636,7 @@ const LandingPage = () => {
       <ScrollReveal>
       <section className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
         <TiltCard intensity={4}>
-        <div className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] backdrop-blur-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] p-8">
+        <div className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] p-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <CountUpStat target={events.length || 24} label="Active Events" />
             <CountUpStat target={djs.length || 42} label="Featured DJs" />
@@ -691,7 +691,7 @@ const LandingPage = () => {
               <TiltCard intensity={10}>
               <Link
                 to={`/djs/${dj.id}`}
-                className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] backdrop-blur-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
+                className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
               >
                 <div className="flex flex-col">
                   <div className="relative overflow-hidden h-60">
@@ -722,7 +722,7 @@ const LandingPage = () => {
                         .map((genre: string) => (
                           <span
                             key={`${dj.id}-${genre.trim()}`}
-                            className="px-2 py-0.5 rounded-full text-[0.6rem] font-medium bg-gradient-to-b from-white/[0.08] to-white/[0.03] text-gray-300 border border-white/[0.05] backdrop-blur-xl"
+                            className="px-2 py-0.5 rounded-full text-[0.6rem] font-medium bg-gradient-to-b from-white/[0.08] to-white/[0.03] text-gray-300 border border-white/[0.05]"
                           >
                             {genre.trim()}
                           </span>
@@ -745,11 +745,11 @@ const LandingPage = () => {
             ].map((placeholder) => (
               <StaggerItem key={placeholder.name}>
               <div
-                className="liquid-glass rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.09] to-white/[0.02] backdrop-blur-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.10),_0_8px_32px_rgba(0,0,0,0.3)] overflow-hidden"
+                className="liquid-glass rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.09] to-white/[0.02] shadow-[inset_0_1px_0_rgba(255,255,255,0.10),_0_8px_32px_rgba(0,0,0,0.3)] overflow-hidden"
               >
                 <div className="flex flex-col h-[320px]">
                   <div className="relative overflow-hidden h-40 bg-white/[0.02] flex items-center justify-center">
-                    <div className="h-16 w-16 rounded-full bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/[0.05] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl flex items-center justify-center">
+                    <div className="h-16 w-16 rounded-full bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/[0.05] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] flex items-center justify-center">
                       <span className="text-gray-600 text-2xl font-bold">{placeholder.name[0]}</span>
                     </div>
                   </div>
@@ -760,7 +760,7 @@ const LandingPage = () => {
                         <h3 className="text-sm font-bold text-white/80 mt-1">{placeholder.name}</h3>
                       </div>
                       <p className="text-gray-500 text-xs leading-relaxed">{placeholder.bio}</p>
-                      <span className="inline-block px-2 py-0.5 rounded-full text-[0.6rem] font-medium bg-gradient-to-b from-white/[0.06] to-white/[0.02] text-gray-500 border border-white/[0.04] backdrop-blur-xl">
+                      <span className="inline-block px-2 py-0.5 rounded-full text-[0.6rem] font-medium bg-gradient-to-b from-white/[0.06] to-white/[0.02] text-gray-500 border border-white/[0.04]">
                         {placeholder.genre}
                       </span>
                     </div>
@@ -829,7 +829,7 @@ const LandingPage = () => {
       <ScrollReveal>
       <section className="max-w-5xl mx-auto px-6 lg:px-8 py-12">
         <TiltCard intensity={5}>
-        <div className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] backdrop-blur-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] p-10 text-center space-y-5">
+        <div className="liquid-glass rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] p-10 text-center space-y-5">
           <p className="text-xl md:text-2xl font-medium text-white max-w-2xl mx-auto leading-relaxed">
             "Every night is a new experience. From intimate basement sets to main stage moments — this is where music comes alive."
           </p>
@@ -907,7 +907,7 @@ const LandingPage = () => {
           <TiltCard intensity={8}>
           <Link
             to="/gallery"
-            className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] backdrop-blur-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
+            className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
           >
             <div className="flex flex-col h-[300px]">
               <div className="relative overflow-hidden h-32">
@@ -916,7 +916,7 @@ const LandingPage = () => {
                   style={{ backgroundImage: `url(${featuredImageFallback})` }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-[0.55rem] font-bold uppercase tracking-wide bg-gradient-to-b from-white/[0.12] to-white/[0.04] text-white/80 border border-white/[0.06] backdrop-blur-xl">
+                <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-[0.55rem] font-bold uppercase tracking-wide bg-gradient-to-b from-white/[0.12] to-white/[0.04] text-white/80 border border-white/[0.06]">
                   Afrobeat
                 </span>
               </div>
@@ -943,7 +943,7 @@ const LandingPage = () => {
           <TiltCard intensity={8}>
           <Link
             to="/gallery"
-            className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] backdrop-blur-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
+            className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
           >
             <div className="flex flex-col h-[300px]">
               <div className="relative overflow-hidden h-32">
@@ -952,7 +952,7 @@ const LandingPage = () => {
                   style={{ backgroundImage: `url(${featuredImageFallback})` }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-[0.55rem] font-bold uppercase tracking-wide bg-gradient-to-b from-white/[0.12] to-white/[0.04] text-white/80 border border-white/[0.06] backdrop-blur-xl">
+                <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-[0.55rem] font-bold uppercase tracking-wide bg-gradient-to-b from-white/[0.12] to-white/[0.04] text-white/80 border border-white/[0.06]">
                   Hip Hop
                 </span>
               </div>
@@ -979,7 +979,7 @@ const LandingPage = () => {
           <TiltCard intensity={8}>
           <Link
             to="/gallery"
-            className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] backdrop-blur-3xl shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
+            className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
           >
             <div className="flex flex-col h-[300px]">
               <div className="relative overflow-hidden h-32">
@@ -988,7 +988,7 @@ const LandingPage = () => {
                   style={{ backgroundImage: `url(${featuredImageFallback})` }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-[0.55rem] font-bold uppercase tracking-wide bg-gradient-to-b from-white/[0.12] to-white/[0.04] text-white/80 border border-white/[0.06] backdrop-blur-xl">
+                <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-[0.55rem] font-bold uppercase tracking-wide bg-gradient-to-b from-white/[0.12] to-white/[0.04] text-white/80 border border-white/[0.06]">
                   Shatta
                 </span>
               </div>

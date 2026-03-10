@@ -44,7 +44,7 @@ export const BackgroundEffects = () => {
         style={{
           background: 'radial-gradient(circle, rgba(255,107,53,0.6) 0%, transparent 70%)',
           filter: 'blur(40px)',
-          animation: reduced ? 'none' : 'orb-drift-1 55s ease-in-out infinite',
+          willChange: 'transform',
         }}
       />
       <div
@@ -52,15 +52,7 @@ export const BackgroundEffects = () => {
         style={{
           background: 'radial-gradient(circle, rgba(93,23,37,0.7) 0%, transparent 70%)',
           filter: 'blur(40px)',
-          animation: reduced ? 'none' : 'orb-drift-2 42s ease-in-out infinite',
-        }}
-      />
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[200px] w-[200px] sm:h-[300px] sm:w-[300px] md:h-[400px] md:w-[400px] rounded-full opacity-[0.025]"
-        style={{
-          background: 'radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%)',
-          filter: 'blur(40px)',
-          animation: reduced ? 'none' : 'orb-drift-3 50s ease-in-out infinite',
+          willChange: 'transform',
         }}
       />
 
