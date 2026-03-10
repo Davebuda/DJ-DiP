@@ -27,11 +27,8 @@ nav[class*="sticky"] {
 
 /* Prevent layout thrashing on responsive changes */
 img,
-video,
 iframe {
-  contain: layout paint;
   max-width: 100%;
-  height: auto;
 }
 
 /* Optimize form inputs to prevent reflow */
@@ -60,12 +57,7 @@ table {
   table-layout: fixed;
 }
 
-/* Prevent excessive repaints on scroll containers */
-[class*="overflow-"],
-[class*="overflow-y-"],
-[class*="overflow-x-"] {
-  contain: paint;
-}
+/* Scroll containers — removed contain:paint which created scroll traps */
 
 /* Optimize complex card layouts */
 .card {

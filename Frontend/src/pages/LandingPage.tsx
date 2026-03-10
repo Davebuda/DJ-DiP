@@ -81,7 +81,7 @@ const HeroSection = ({
   };
 
   return (
-    <section className="relative isolate flex min-h-[65vh] lg:min-h-[80vh] w-full max-w-full flex-col justify-center overflow-hidden bg-black text-white">
+    <section className="relative flex min-h-[65vh] lg:min-h-[80vh] w-full max-w-full flex-col justify-center overflow-clip bg-black text-white">
       {/* Background image shown immediately */}
       <div
         className="absolute inset-0 bg-cover bg-center"
@@ -407,7 +407,7 @@ const LandingPage = () => {
   }
 
   return (
-    <div className="relative min-h-screen w-full max-w-full overflow-x-hidden text-white">
+    <div className="relative min-h-screen w-full max-w-full text-white">
       <div className="relative">
       <HeroSection
         highlight={highlightEvent}
