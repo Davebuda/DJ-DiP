@@ -76,6 +76,7 @@ export const GET_DJS = gql`
   query GetDJs {
     dJs {
       id
+      userId
       name
       stageName
       bio

@@ -3,6 +3,7 @@ namespace DJDiP.Application.DTO.DJProfileDTO
     public class DJProfileListItemDto
     {
         public Guid Id { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string StageName { get; set; } = string.Empty;
         public string Bio { get; set; } = string.Empty;

@@ -29,6 +29,7 @@ namespace DJDiP.Application.Services
                 return new DJProfileListItemDto
                 {
                     Id = dj.Id,
+                    UserId = dj.UserId,
                     Name = dj.Name,
                     StageName = dj.StageName ?? dj.Name,
                     Bio = dj.Bio,

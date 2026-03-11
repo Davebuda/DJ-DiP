@@ -38,9 +38,9 @@ const DJTop10Manager = () => {
   const [fetchMetadata] = useLazyQuery(FETCH_SONG_METADATA);
 
   useEffect(() => {
-    if (djsData?.dJs) {
+    if (djsData?.dJs && user?.id) {
       const profile = djsData.dJs.find(
-        (dj: any) => dj.name?.toLowerCase() === user?.fullName?.toLowerCase(),
+        (dj: any) => dj.userId === user.id,
       );
       if (profile) setDjId(profile.id);
     }

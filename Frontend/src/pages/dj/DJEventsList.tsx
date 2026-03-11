@@ -19,7 +19,7 @@ const DJEventsList = () => {
   useEffect(() => {
     if (djsData?.dJs) {
       const profile = djsData.dJs.find((dj: any) =>
-        dj.name?.toLowerCase() === user?.fullName?.toLowerCase()
+        dj.userId === user?.id
       );
       if (profile) setDjId(profile.id);
     }
