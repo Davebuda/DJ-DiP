@@ -54,10 +54,14 @@ const LoginPage = () => {
               className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-white focus:border-orange-400 focus:outline-none"
             />
           </div>
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && (
+            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {error}
+            </div>
+          )}
 
           <div className="flex justify-end">
-            <Link to="/forgot-password" className="text-xs text-gray-500 hover:text-orange-300 transition-colors">
+            <Link to="/forgot-password" className="text-sm text-orange-300/70 hover:text-orange-300 transition-colors">
               Forgot password?
             </Link>
           </div>

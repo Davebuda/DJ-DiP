@@ -71,6 +71,9 @@ const RegisterPage = () => {
               minLength={8}
               className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-white focus:border-orange-400 focus:outline-none"
             />
+            <p className="text-[0.65rem] text-gray-500">
+              Min 8 characters with uppercase, lowercase, digit, and special character.
+            </p>
           </div>
           <div className="space-y-2">
             <label className="text-xs uppercase tracking-[0.4em] text-gray-500">Confirm Password</label>
@@ -82,7 +85,11 @@ const RegisterPage = () => {
               className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-white focus:border-orange-400 focus:outline-none"
             />
           </div>
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && (
+            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {error}
+            </div>
+          )}
 
           <button
             type="submit"

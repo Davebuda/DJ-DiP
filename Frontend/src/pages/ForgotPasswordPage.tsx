@@ -17,7 +17,17 @@ const ForgotPasswordPage = () => {
       await forgotPassword({ variables: { email: email.trim() } });
       setSubmitted(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      let message = 'Something went wrong. Please try again.';
+      if (err && typeof err === 'object' && 'graphQLErrors' in err) {
+        const gqlErrors = (err as { graphQLErrors: { message: string }[] }).graphQLErrors;
+        if (gqlErrors?.length > 0) message = gqlErrors[0].message;
+      } else if (err && typeof err === 'object' && 'networkError' in err) {
+        const networkError = (err as { networkError: any }).networkError;
+        if (networkError?.result?.errors?.length > 0) message = networkError.result.errors[0].message;
+      } else if (err instanceof Error) {
+        message = err.message;
+      }
+      setError(message);
     }
   };
 
@@ -63,7 +73,11 @@ const ForgotPasswordPage = () => {
               className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-white focus:border-orange-400 focus:outline-none"
             />
           </div>
-          {error && <p className="text-sm text-red-400">{error}</p>}
+          {error && (
+            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+              {error}
+            </div>
+          )}
 
           <button
             type="submit"

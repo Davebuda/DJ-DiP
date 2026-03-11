@@ -61,10 +61,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const extractError = (err: unknown, fallback: string): Error => {
+    // 1. Check GraphQL errors (returned with 200 status)
     if (err && typeof err === 'object' && 'graphQLErrors' in err) {
       const gqlErrors = (err as { graphQLErrors: { message: string }[] }).graphQLErrors;
       if (gqlErrors?.length > 0 && gqlErrors[0].message) {
         return new Error(gqlErrors[0].message);
+      }
+    }
+    // 2. Check network errors (GraphQL errors returned with non-200 status)
+    if (err && typeof err === 'object' && 'networkError' in err) {
+      const networkError = (err as { networkError: any }).networkError;
+      // Apollo wraps server responses in networkError.result
+      if (networkError?.result?.errors?.length > 0) {
+        return new Error(networkError.result.errors[0].message);
+      }
+      if (networkError?.message) {
+        return new Error(networkError.message);
       }
     }
     if (err instanceof Error) return err;
