@@ -79,15 +79,20 @@ const DJTop10Manager = () => {
     if (!fetchUrl.trim()) return;
     setFetching(true);
     try {
-      const { data } = await fetchMetadata({ variables: { url: fetchUrl.trim() } });
-      if (data?.fetchSongMetadata) {
-        const m = data.fetchSongMetadata;
+      const result = await fetchMetadata({ variables: { url: fetchUrl.trim() } });
+      const m = result.data?.fetchSongMetadata;
+      if (m) {
         if (m.title) setNewTitle(m.title);
         if (m.artist) setNewArtist(m.artist);
         if (m.spotifyUrl) setNewSpotifyUrl(m.spotifyUrl);
         if (m.soundCloudUrl) setNewSoundCloudUrl(m.soundCloudUrl);
+      } else if (result.error) {
+        alert(result.error.message || 'Could not fetch metadata.');
+      } else {
+        alert('No metadata found for that URL.');
       }
     } catch (err: any) {
+      console.error('Fetch metadata error:', err);
       alert(err.message || 'Could not fetch metadata from that URL.');
     } finally {
       setFetching(false);
@@ -377,7 +382,7 @@ const DJTop10Manager = () => {
               <div className="flex-1 overflow-y-auto p-6">
                 {showCreateForm ? (
                   /* ─── Create New Song Form ─── */
-                  <form onSubmit={handleCreateAndAdd} className="space-y-5">
+                  <form onSubmit={handleCreateAndAdd} noValidate className="space-y-5">
                     <div className="flex items-center gap-3 mb-2">
                       <Disc3 className="w-8 h-8 text-orange-400" />
                       <div>
@@ -468,7 +473,7 @@ const DJTop10Manager = () => {
                         Spotify URL
                       </label>
                       <input
-                        type="url"
+                        type="text"
                         value={newSpotifyUrl}
                         onChange={(e) => setNewSpotifyUrl(e.target.value)}
                         placeholder="https://open.spotify.com/track/..."
@@ -481,7 +486,7 @@ const DJTop10Manager = () => {
                         SoundCloud URL
                       </label>
                       <input
-                        type="url"
+                        type="text"
                         value={newSoundCloudUrl}
                         onChange={(e) => setNewSoundCloudUrl(e.target.value)}
                         placeholder="https://soundcloud.com/..."
