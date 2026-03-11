@@ -43,6 +43,7 @@ import DJProfileEditor from './pages/dj/DJProfileEditor';
 import DJTop10Manager from './pages/dj/DJTop10Manager';
 import DJEventsList from './pages/dj/DJEventsList';
 import DJAnalytics from './pages/dj/DJAnalytics';
+import DJPlaylistsManager from './pages/dj/DJPlaylistsManager';
 
 const App = () => (
   <Routes>
@@ -122,6 +123,7 @@ const App = () => (
       <Route index element={<DJDashboard />} />
       <Route path="edit-profile" element={<DJProfileEditor />} />
       <Route path="top10" element={<DJTop10Manager />} />
+      <Route path="playlists" element={<DJPlaylistsManager />} />
       <Route path="events" element={<DJEventsList />} />
       <Route path="stats" element={<DJAnalytics />} />
     </Route>

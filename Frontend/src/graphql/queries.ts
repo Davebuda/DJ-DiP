@@ -836,6 +836,8 @@ export const GET_PLAYLISTS = gql`
       genre
       coverImageUrl
       curator
+      djProfileId
+      djName
       createdAt
       songs {
         id
@@ -861,6 +863,35 @@ export const GET_PLAYLIST_BY_ID = gql`
       genre
       coverImageUrl
       curator
+      djProfileId
+      djName
+      createdAt
+      songs {
+        id
+        songId
+        position
+        title
+        artist
+        genre
+        coverImageUrl
+        spotifyUrl
+        soundCloudUrl
+      }
+    }
+  }
+`;
+
+export const GET_MY_DJ_PLAYLISTS = gql`
+  query GetMyDjPlaylists($djProfileId: UUID!) {
+    myDjPlaylists(djProfileId: $djProfileId) {
+      id
+      title
+      description
+      genre
+      coverImageUrl
+      curator
+      djProfileId
+      djName
       createdAt
       songs {
         id

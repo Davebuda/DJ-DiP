@@ -8,6 +8,8 @@ namespace DJDiP.Application.DTO.PlaylistDTO
         public string? Genre { get; set; }
         public string? CoverImageUrl { get; set; }
         public string? Curator { get; set; }
+        public Guid? DjProfileId { get; set; }
+        public string? DjName { get; set; }
         public DateTime CreatedAt { get; set; }
         public List<PlaylistSongDto> Songs { get; set; } = new();
     }

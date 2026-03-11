@@ -5,6 +5,7 @@ namespace DJDiP.Application.Interfaces
     public interface IPlaylistService
     {
         Task<IEnumerable<PlaylistDto>> GetAllAsync();
+        Task<IEnumerable<PlaylistDto>> GetByDjProfileIdAsync(Guid djProfileId);
         Task<PlaylistDto?> GetByIdAsync(Guid id);
         Task<Guid> CreateAsync(CreatePlaylistDto dto);
         Task UpdateAsync(Guid id, UpdatePlaylistDto dto);

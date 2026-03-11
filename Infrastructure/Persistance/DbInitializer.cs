@@ -44,7 +44,8 @@ namespace DJDiP.Infrastructure.Persistance
                         ""PlaylistId"" UUID NOT NULL REFERENCES ""Playlists""(""Id"") ON DELETE CASCADE,
                         ""SongId"" UUID NOT NULL REFERENCES ""Songs""(""Id"") ON DELETE CASCADE,
                         ""Position"" INTEGER NOT NULL DEFAULT 0
-                      );");
+                      );
+                      ALTER TABLE ""Playlists"" ADD COLUMN IF NOT EXISTS ""DJProfileId"" UUID REFERENCES ""DJProfiles""(""Id"") ON DELETE SET NULL;");
             }
             catch { /* columns already exist or table doesn't exist yet (handled by EnsureCreated) */ }
 

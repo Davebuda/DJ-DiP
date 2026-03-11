@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Calendar, Music, Edit3, BarChart3 } from 'lucide-react';
+import { Calendar, Music, Edit3, BarChart3, ListMusic } from 'lucide-react';
 
 const DJDashboard = () => (
   <div className="p-8">
@@ -24,6 +24,12 @@ const DJDashboard = () => (
           description="Curate and manage the tracks that define your sets."
           to="/dj-dashboard/top10"
           icon={<Music className="w-5 h-5" />}
+        />
+        <DashboardTile
+          title="My Playlists"
+          description="Create and manage your curated playlists for fans to discover."
+          to="/dj-dashboard/playlists"
+          icon={<ListMusic className="w-5 h-5" />}
         />
         <DashboardTile
           title="My Events"

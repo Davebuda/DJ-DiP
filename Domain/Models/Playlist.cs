@@ -14,6 +14,10 @@ namespace DJDiP.Domain.Models
 
         public string? Curator { get; set; }
 
+        // Nullable: null = admin-created, set = DJ-owned
+        public Guid? DJProfileId { get; set; }
+        public DJProfile? DJProfile { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public List<PlaylistSong> PlaylistSongs { get; set; } = new();

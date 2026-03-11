@@ -244,6 +244,7 @@ interface UploadMomentModalProps {
 }
 
 const UploadMomentModal = ({ onClose, onSuccess }: UploadMomentModalProps) => {
+  const { token } = useAuth();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [mediaUrl, setMediaUrl] = useState('');
@@ -275,8 +276,8 @@ const UploadMomentModal = ({ onClose, onSuccess }: UploadMomentModalProps) => {
       return;
     }
 
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
+    const authToken = token || localStorage.getItem('accessToken');
+    if (!authToken) {
       setUploadError('You must be logged in to upload. Please sign in again.');
       return;
     }
@@ -290,7 +291,7 @@ const UploadMomentModal = ({ onClose, onSuccess }: UploadMomentModalProps) => {
       const baseUrl = import.meta.env.VITE_UPLOAD_API_URL ?? 'http://localhost:5000/api/FileUpload/image';
       // Try /media endpoint first (supports images + videos), fall back to /image
       const mediaUrl = baseUrl.replace(/\/image$/, '/media');
-      const headers = { Authorization: `Bearer ${token}` };
+      const headers = { Authorization: `Bearer ${authToken}` };
 
       let response = await fetch(mediaUrl, {
         method: 'POST',

@@ -18,10 +18,12 @@ namespace DJDiP.Application.Services
             var playlists = await _unitOfWork.Playlists.GetAllAsync();
             var playlistSongs = await _unitOfWork.PlaylistSongs.GetAllAsync();
             var songs = await _unitOfWork.Songs.GetAllAsync();
+            var djProfiles = await _unitOfWork.DJProfiles.GetAllAsync();
 
             var songLookup = songs.ToDictionary(s => s.Id, s => s);
+            var djLookup = djProfiles.ToDictionary(d => d.Id, d => d);
 
-            return playlists.Select(p => MapToDto(p, playlistSongs, songLookup)).ToList();
+            return playlists.Select(p => MapToDto(p, playlistSongs, songLookup, djLookup)).ToList();
         }
 
         public async Task<PlaylistDto?> GetByIdAsync(Guid id)
@@ -31,9 +33,24 @@ namespace DJDiP.Application.Services
 
             var playlistSongs = await _unitOfWork.PlaylistSongs.GetAllAsync();
             var songs = await _unitOfWork.Songs.GetAllAsync();
+            var djProfiles = await _unitOfWork.DJProfiles.GetAllAsync();
             var songLookup = songs.ToDictionary(s => s.Id, s => s);
+            var djLookup = djProfiles.ToDictionary(d => d.Id, d => d);
 
-            return MapToDto(playlist, playlistSongs, songLookup);
+            return MapToDto(playlist, playlistSongs, songLookup, djLookup);
+        }
+
+        public async Task<IEnumerable<PlaylistDto>> GetByDjProfileIdAsync(Guid djProfileId)
+        {
+            var playlists = (await _unitOfWork.Playlists.GetAllAsync())
+                .Where(p => p.DJProfileId == djProfileId);
+            var playlistSongs = await _unitOfWork.PlaylistSongs.GetAllAsync();
+            var songs = await _unitOfWork.Songs.GetAllAsync();
+            var songLookup = songs.ToDictionary(s => s.Id, s => s);
+            var djProfiles = await _unitOfWork.DJProfiles.GetAllAsync();
+            var djLookup = djProfiles.ToDictionary(d => d.Id, d => d);
+
+            return playlists.Select(p => MapToDto(p, playlistSongs, songLookup, djLookup)).ToList();
         }
 
         public async Task<Guid> CreateAsync(CreatePlaylistDto dto)
@@ -46,6 +63,7 @@ namespace DJDiP.Application.Services
                 Genre = dto.Genre,
                 CoverImageUrl = dto.CoverImageUrl,
                 Curator = dto.Curator,
+                DJProfileId = dto.DjProfileId,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -121,7 +139,8 @@ namespace DJDiP.Application.Services
         private static PlaylistDto MapToDto(
             Playlist playlist,
             IEnumerable<PlaylistSong> allPlaylistSongs,
-            IReadOnlyDictionary<Guid, Song> songLookup)
+            IReadOnlyDictionary<Guid, Song> songLookup,
+            IReadOnlyDictionary<Guid, DJProfile> djLookup)
         {
             var playlistSongs = allPlaylistSongs
                 .Where(ps => ps.PlaylistId == playlist.Id)
@@ -144,6 +163,12 @@ namespace DJDiP.Application.Services
                 })
                 .ToList();
 
+            string? djName = null;
+            if (playlist.DJProfileId.HasValue && djLookup.TryGetValue(playlist.DJProfileId.Value, out var dj))
+            {
+                djName = dj.StageName ?? dj.Name;
+            }
+
             return new PlaylistDto
             {
                 Id = playlist.Id,
@@ -152,6 +177,8 @@ namespace DJDiP.Application.Services
                 Genre = playlist.Genre,
                 CoverImageUrl = playlist.CoverImageUrl,
                 Curator = playlist.Curator,
+                DjProfileId = playlist.DJProfileId,
+                DjName = djName,
                 CreatedAt = playlist.CreatedAt,
                 Songs = playlistSongs
             };

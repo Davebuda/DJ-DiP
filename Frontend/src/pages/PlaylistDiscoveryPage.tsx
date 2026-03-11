@@ -22,6 +22,8 @@ type Playlist = {
   genre?: string | null;
   coverImageUrl?: string | null;
   curator?: string | null;
+  djProfileId?: string | null;
+  djName?: string | null;
   songs: PlaylistSong[];
 };
 
@@ -154,8 +156,10 @@ const PlaylistDiscoveryPage = () => {
                                 {playlist.genre}
                               </span>
                             )}
-                            {playlist.curator && (
-                              <span className="text-xs text-gray-500">by {playlist.curator}</span>
+                            {(playlist.djName || playlist.curator) && (
+                              <span className="text-xs text-gray-500">
+                                by {playlist.djName || playlist.curator}
+                              </span>
                             )}
                           </div>
                         </div>

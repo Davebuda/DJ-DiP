@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client';
 import { useAuth } from '../../context/AuthContext';
-import { GET_DJS, GET_DJ_BY_ID, UPDATE_DJ } from '../../graphql/queries';
+import { GET_DJS, GET_DJ_BY_ID, UPDATE_DJ, UPDATE_USER_PROFILE } from '../../graphql/queries';
 import { Camera, Save, X, Plus, Music } from 'lucide-react';
 import ImageUpload from '../../components/common/ImageUpload';
 
@@ -12,7 +12,7 @@ interface SocialLink {
 }
 
 const DJProfileEditor = () => {
-  const { user, isDJ } = useAuth();
+  const { user, isDJ, updateUserLocal } = useAuth();
   const navigate = useNavigate();
   const [djId, setDjId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -26,6 +26,7 @@ const DJProfileEditor = () => {
   const [updateDJ] = useMutation(UPDATE_DJ, {
     refetchQueries: [{ query: GET_DJS }, { query: GET_DJ_BY_ID, variables: { id: djId } }],
   });
+  const [updateUserProfile] = useMutation(UPDATE_USER_PROFILE);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -111,6 +112,26 @@ const DJProfileEditor = () => {
           },
         },
       });
+
+      // Sync DJ profile picture to user account picture
+      if (formData.profilePictureUrl && user) {
+        try {
+          await updateUserProfile({
+            variables: {
+              input: {
+                id: user.id,
+                fullName: user.fullName,
+                email: user.email,
+                profilePictureUrl: formData.profilePictureUrl,
+              },
+            },
+          });
+          updateUserLocal({ profilePictureUrl: formData.profilePictureUrl });
+        } catch {
+          // Non-critical — DJ profile saved even if user sync fails
+        }
+      }
+
       alert('Profile updated successfully!');
       navigate('/dj-dashboard');
     } catch (error) {

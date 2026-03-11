@@ -578,6 +578,13 @@ public class Query
     {
         return await playlistService.GetByIdAsync(id);
     }
+
+    public async Task<IEnumerable<PlaylistDto>> MyDjPlaylists(
+        Guid djProfileId,
+        [Service] IPlaylistService playlistService)
+    {
+        return await playlistService.GetByDjProfileIdAsync(djProfileId);
+    }
 }
 
 public class LandingPageData
@@ -1247,15 +1254,54 @@ public class Mutation
         }
     }
 
-    // PLAYLIST MUTATIONS
+    // PLAYLIST MUTATIONS (Admin or owning DJ)
+    private async Task RequirePlaylistOwnerOrAdmin(
+        Guid playlistId,
+        IPlaylistService playlistService,
+        IHttpContextAccessor accessor,
+        IUnitOfWork unitOfWork)
+    {
+        var userId = RequireAuthentication(accessor);
+        var role = accessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+        if (role == "Admin") return;
+
+        var playlist = await playlistService.GetByIdAsync(playlistId);
+        if (playlist == null) throw new GraphQLException("Playlist not found.");
+
+        if (playlist.DjProfileId == null)
+            throw new GraphQLException("Access denied. Only admins can modify admin-created playlists.");
+
+        var djProfiles = await unitOfWork.DJProfiles.GetAllAsync();
+        var ownerProfile = djProfiles.FirstOrDefault(d => d.Id == playlist.DjProfileId.Value);
+        if (ownerProfile == null || ownerProfile.UserId != userId)
+            throw new GraphQLException("Access denied. You can only modify your own playlists.");
+    }
+
     public async Task<Guid> CreatePlaylist(
         CreatePlaylistInput input,
         [Service] IPlaylistService playlistService,
-        [Service] IHttpContextAccessor httpContextAccessor)
+        [Service] IHttpContextAccessor httpContextAccessor,
+        [Service] IUnitOfWork unitOfWork)
     {
-        RequireAdmin(httpContextAccessor);
+        var userId = RequireAuthentication(httpContextAccessor);
+        var role = httpContextAccessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+
         if (string.IsNullOrWhiteSpace(input.Title))
             throw new GraphQLException("Playlist title is required.");
+
+        Guid? djProfileId = input.DjProfileId;
+
+        // If DJ (not admin), verify they own the DJ profile
+        if (role != "Admin")
+        {
+            if (djProfileId == null)
+                throw new GraphQLException("DJs must associate playlists with their profile.");
+
+            var djProfiles = await unitOfWork.DJProfiles.GetAllAsync();
+            var djProfile = djProfiles.FirstOrDefault(d => d.Id == djProfileId.Value);
+            if (djProfile == null || djProfile.UserId != userId)
+                throw new GraphQLException("Access denied. You can only create playlists for your own DJ profile.");
+        }
 
         var dto = new CreatePlaylistDto
         {
@@ -1263,7 +1309,8 @@ public class Mutation
             Description = input.Description,
             Genre = input.Genre,
             CoverImageUrl = input.CoverImageUrl,
-            Curator = input.Curator
+            Curator = input.Curator,
+            DjProfileId = djProfileId
         };
 
         return await playlistService.CreateAsync(dto);
@@ -1273,9 +1320,10 @@ public class Mutation
         Guid id,
         UpdatePlaylistInput input,
         [Service] IPlaylistService playlistService,
-        [Service] IHttpContextAccessor httpContextAccessor)
+        [Service] IHttpContextAccessor httpContextAccessor,
+        [Service] IUnitOfWork unitOfWork)
     {
-        RequireAdmin(httpContextAccessor);
+        await RequirePlaylistOwnerOrAdmin(id, playlistService, httpContextAccessor, unitOfWork);
         var dto = new UpdatePlaylistDto
         {
             Title = input.Title,
@@ -1292,9 +1340,10 @@ public class Mutation
     public async Task<bool> DeletePlaylist(
         Guid id,
         [Service] IPlaylistService playlistService,
-        [Service] IHttpContextAccessor httpContextAccessor)
+        [Service] IHttpContextAccessor httpContextAccessor,
+        [Service] IUnitOfWork unitOfWork)
     {
-        RequireAdmin(httpContextAccessor);
+        await RequirePlaylistOwnerOrAdmin(id, playlistService, httpContextAccessor, unitOfWork);
         await playlistService.DeleteAsync(id);
         return true;
     }
@@ -1302,9 +1351,10 @@ public class Mutation
     public async Task<Guid> AddPlaylistSong(
         AddPlaylistSongInput input,
         [Service] IPlaylistService playlistService,
-        [Service] IHttpContextAccessor httpContextAccessor)
+        [Service] IHttpContextAccessor httpContextAccessor,
+        [Service] IUnitOfWork unitOfWork)
     {
-        RequireAdmin(httpContextAccessor);
+        await RequirePlaylistOwnerOrAdmin(input.PlaylistId, playlistService, httpContextAccessor, unitOfWork);
         var dto = new AddPlaylistSongDto
         {
             PlaylistId = input.PlaylistId,
@@ -1318,9 +1368,14 @@ public class Mutation
     public async Task<bool> RemovePlaylistSong(
         Guid id,
         [Service] IPlaylistService playlistService,
-        [Service] IHttpContextAccessor httpContextAccessor)
+        [Service] IHttpContextAccessor httpContextAccessor,
+        [Service] IUnitOfWork unitOfWork)
     {
-        RequireAdmin(httpContextAccessor);
+        // Need to look up the playlist from the song entry
+        var entry = await unitOfWork.PlaylistSongs.GetByIdAsync(id);
+        if (entry != null)
+            await RequirePlaylistOwnerOrAdmin(entry.PlaylistId, playlistService, httpContextAccessor, unitOfWork);
+
         await playlistService.RemoveSongAsync(id);
         return true;
     }
@@ -1934,6 +1989,7 @@ public class CreatePlaylistInput
     public string? Genre { get; set; }
     public string? CoverImageUrl { get; set; }
     public string? Curator { get; set; }
+    public Guid? DjProfileId { get; set; }
 }
 
 public class UpdatePlaylistInput
