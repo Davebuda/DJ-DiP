@@ -192,6 +192,11 @@ builder.Services
         // Preserve messages from GraphQLException (intentional user-facing errors)
         if (error.Exception is GraphQLException)
             return error.WithMessage(error.Exception.Message);
+        // Log actual exception details before sanitizing
+        if (error.Exception != null)
+            Console.Error.WriteLine($"[GraphQL ERROR] {error.Exception.GetType().Name}: {error.Exception.Message}\n{error.Exception.StackTrace}");
+        else
+            Console.Error.WriteLine($"[GraphQL ERROR] No exception. Code={error.Code} Message={error.Message}");
         // Hide internal details in production
         if (!builder.Environment.IsDevelopment())
             return error.WithMessage("An unexpected error occurred.");
