@@ -1482,17 +1482,28 @@ public class Mutation
         return true;
     }
 
-    // DJ MIX MUTATIONS (Admin only)
+    // DJ MIX MUTATIONS (Authenticated DJs or Admin)
     public async Task<Guid> CreateDjMix(
         CreateDJMixInput input,
         [Service] IDJMixService djMixService,
-        [Service] IHttpContextAccessor httpContextAccessor)
+        [Service] IHttpContextAccessor httpContextAccessor,
+        [Service] IUnitOfWork unitOfWork)
     {
-        RequireAdmin(httpContextAccessor);
+        var userId = RequireAuthentication(httpContextAccessor);
         if (string.IsNullOrWhiteSpace(input.Title))
             throw new GraphQLException("Mix title is required.");
         if (string.IsNullOrWhiteSpace(input.MixUrl))
             throw new GraphQLException("Mix URL is required.");
+
+        // Verify DJ owns the profile (unless admin)
+        var role = httpContextAccessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+        if (role != "Admin" && input.DjProfileId.HasValue)
+        {
+            var djProfiles = await unitOfWork.DJProfiles.GetAllAsync();
+            var djProfile = djProfiles.FirstOrDefault(d => d.Id == input.DjProfileId.Value);
+            if (djProfile == null || djProfile.UserId != userId)
+                throw new GraphQLException("Access denied. You can only create mixes for your own DJ profile.");
+        }
 
         var dto = new CreateDJMixDto
         {
@@ -1512,9 +1523,19 @@ public class Mutation
         Guid id,
         UpdateDJMixInput input,
         [Service] IDJMixService djMixService,
-        [Service] IHttpContextAccessor httpContextAccessor)
+        [Service] IHttpContextAccessor httpContextAccessor,
+        [Service] IUnitOfWork unitOfWork)
     {
-        RequireAdmin(httpContextAccessor);
+        var userId = RequireAuthentication(httpContextAccessor);
+        var role = httpContextAccessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+        if (role != "Admin" && input.DjProfileId.HasValue)
+        {
+            var djProfiles = await unitOfWork.DJProfiles.GetAllAsync();
+            var djProfile = djProfiles.FirstOrDefault(d => d.Id == input.DjProfileId.Value);
+            if (djProfile == null || djProfile.UserId != userId)
+                throw new GraphQLException("Access denied. You can only modify your own mixes.");
+        }
+
         var dto = new CreateDJMixDto
         {
             Title = input.Title,
@@ -1535,7 +1556,7 @@ public class Mutation
         [Service] IDJMixService djMixService,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireAuthentication(httpContextAccessor);
         await djMixService.DeleteAsync(id);
         return true;
     }
@@ -2071,7 +2092,7 @@ public class UpdateSiteSettingsInput
     public string HeroCtaLink { get; set; } = string.Empty;
     public string HeroBackgroundImageUrl { get; set; } = string.Empty;
     public string HeroBackgroundVideoUrl { get; set; } = string.Empty;
-    public decimal HeroOverlayOpacity { get; set; }
+    public double HeroOverlayOpacity { get; set; }
     public string HeroGenres { get; set; } = string.Empty;
     public string HeroLocation { get; set; } = string.Empty;
     public string HeroVibes { get; set; } = string.Empty;

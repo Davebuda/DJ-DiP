@@ -1,3 +1,4 @@
+using System.Text.Json;
 using DJDiP.Application.Interfaces;
 using DJDiP.Application.DTO.EventDTO;
 using DJDiP.Domain.Models;
@@ -30,7 +31,11 @@ namespace DJDiP.Application.Services
                 {
                     Id = e.Venue.Id,
                     Name = e.Venue.Name,
-                    City = e.Venue.City
+                    City = e.Venue.City,
+                    ImageUrl = e.Venue.ImageUrl,
+                    ImageUrls = !string.IsNullOrEmpty(e.Venue.ImageUrls)
+                        ? JsonSerializer.Deserialize<List<string>>(e.Venue.ImageUrls)
+                        : null
                 }
             }).ToList();
         }
@@ -60,7 +65,11 @@ namespace DJDiP.Application.Services
                     Description = ev.Venue.Description,
                     Address = ev.Venue.Address,
                     City = ev.Venue.City,
-                    Country = ev.Venue.Country
+                    Country = ev.Venue.Country,
+                    ImageUrl = ev.Venue.ImageUrl,
+                    ImageUrls = !string.IsNullOrEmpty(ev.Venue.ImageUrls)
+                        ? JsonSerializer.Deserialize<List<string>>(ev.Venue.ImageUrls)
+                        : null
                 }
             };
         }

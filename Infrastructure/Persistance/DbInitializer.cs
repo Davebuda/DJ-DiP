@@ -118,7 +118,7 @@ namespace DJDiP.Infrastructure.Persistance
                 HeroCtaText = "JOIN THE MOVEMENT",
                 HeroCtaLink = "/events",
                 HeroBackgroundImageUrl = "/media/sections/hero/hero-background.jpg",
-                HeroOverlayOpacity = 0.5m,
+                HeroOverlayOpacity = 0.5,
                 EnableNewsletter = true,
                 EnableNotifications = true,
                 EnableReviews = true,

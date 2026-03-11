@@ -22,7 +22,7 @@ namespace DJDiP.Domain.Models
         public string HeroCtaLink { get; set; } = "/events";
         public string HeroBackgroundImageUrl { get; set; } = "/media/sections/hero/hero-background.jpg";
         public string HeroBackgroundVideoUrl { get; set; } = string.Empty;
-        public decimal HeroOverlayOpacity { get; set; } = 0.5m;
+        public double HeroOverlayOpacity { get; set; } = 0.5;
         public string HeroGenres { get; set; } = string.Empty;
         public string HeroLocation { get; set; } = string.Empty;
         public string HeroVibes { get; set; } = string.Empty;

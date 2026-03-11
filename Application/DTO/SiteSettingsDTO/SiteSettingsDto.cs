@@ -16,7 +16,7 @@ namespace DJDiP.Application.DTO.SiteSettingsDTO
         public string HeroCtaLink { get; set; } = string.Empty;
         public string HeroBackgroundImageUrl { get; set; } = string.Empty;
         public string HeroBackgroundVideoUrl { get; set; } = string.Empty;
-        public decimal HeroOverlayOpacity { get; set; }
+        public double HeroOverlayOpacity { get; set; }
         public string HeroGenres { get; set; } = string.Empty;
         public string HeroLocation { get; set; } = string.Empty;
         public string HeroVibes { get; set; } = string.Empty;
