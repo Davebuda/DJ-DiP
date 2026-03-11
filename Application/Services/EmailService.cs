@@ -149,9 +149,17 @@ namespace DJDiP.Application.Services
             {
                 var message = new MimeMessage();
                 message.From.Add(new MailboxAddress(_settings.FromName, _settings.FromAddress));
+                message.ReplyTo.Add(new MailboxAddress(_settings.FromName, _settings.FromAddress));
                 message.To.Add(new MailboxAddress(toName, toEmail));
                 message.Subject = subject;
-                message.Body = new BodyBuilder { HtmlBody = htmlBody }.ToMessageBody();
+
+                // Include plain-text alternative to improve deliverability / avoid spam filters
+                var builder = new BodyBuilder
+                {
+                    HtmlBody = htmlBody,
+                    TextBody = StripHtml(htmlBody)
+                };
+                message.Body = builder.ToMessageBody();
 
                 using var client = new SmtpClient();
                 var secureOption = _settings.UseSsl
@@ -170,6 +178,16 @@ namespace DJDiP.Application.Services
                 // Log but never throw — email failure must never block the purchase flow
                 _logger.LogError(ex, "[EmailService] Failed to send '{Subject}' to {Email}", subject, toEmail);
             }
+        }
+
+        private static string StripHtml(string html)
+        {
+            // Quick conversion: remove tags and decode common entities
+            var text = System.Text.RegularExpressions.Regex.Replace(html, "<style[^>]*>.*?</style>", "", System.Text.RegularExpressions.RegexOptions.Singleline);
+            text = System.Text.RegularExpressions.Regex.Replace(text, "<[^>]+>", " ");
+            text = System.Net.WebUtility.HtmlDecode(text);
+            text = System.Text.RegularExpressions.Regex.Replace(text, @"\s{2,}", " ").Trim();
+            return text;
         }
 
         // ─────────────────────────────────────────────────────────────

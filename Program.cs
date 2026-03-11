@@ -692,7 +692,14 @@ public class Mutation
             var frontendUrl = Environment.GetEnvironmentVariable("AppSettings__FrontendUrl") ?? "http://localhost:3000";
             var resetLink = $"{frontendUrl}/reset-password?email={Uri.EscapeDataString(userEmail)}&token={Uri.EscapeDataString(token)}";
 
-            _ = emailService.SendPasswordResetAsync(userEmail, fullName, resetLink);
+            try
+            {
+                await emailService.SendPasswordResetAsync(userEmail, fullName, resetLink);
+            }
+            catch
+            {
+                // Swallow to prevent email enumeration — errors are logged inside EmailService
+            }
         }
 
         // Always return true to prevent email enumeration

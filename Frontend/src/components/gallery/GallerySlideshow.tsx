@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_FEATURED_GALLERY_MEDIA } from '../../graphql/queries';
+import { GET_FEATURED_GALLERY_MEDIA, GET_GALLERY_MEDIA } from '../../graphql/queries';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 
 interface GalleryMedia {
@@ -16,9 +16,16 @@ const GallerySlideshow = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  const { data, loading } = useQuery(GET_FEATURED_GALLERY_MEDIA);
+  const { data: featuredData, loading: featuredLoading } = useQuery(GET_FEATURED_GALLERY_MEDIA);
+  const { data: allData, loading: allLoading } = useQuery(GET_GALLERY_MEDIA, {
+    variables: { approvedOnly: true },
+  });
 
-  const media: GalleryMedia[] = data?.featuredGalleryMedia || [];
+  // Use featured media if available, otherwise fall back to all approved media
+  const featured: GalleryMedia[] = featuredData?.featuredGalleryMedia || [];
+  const approved: GalleryMedia[] = allData?.galleryMedia || [];
+  const media = featured.length > 0 ? featured : approved;
+  const loading = featuredLoading || allLoading;
 
   useEffect(() => {
     if (!isAutoPlaying || media.length === 0) return;
