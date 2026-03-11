@@ -35,7 +35,7 @@ namespace DJDiP.Application.Services
                 Artist = songDto.Artist,
                 Genre = songDto.Genre,
                 Duration = songDto.Duration > 0 ? TimeSpan.FromSeconds(songDto.Duration) : null,
-                CoverImageUrl = null,
+                CoverImageUrl = songDto.CoverImageUrl,
                 AudioPreviewUrl = null,
                 SpotifyUrl = songDto.SpotifyUrl,
                 SoundCloudUrl = songDto.SoundCloudUrl

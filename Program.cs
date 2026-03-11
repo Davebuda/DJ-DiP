@@ -167,6 +167,7 @@ builder.Services.AddScoped<IDJApplicationService, DJApplicationService>();
 builder.Services.AddScoped<ISiteSettingsService, SiteSettingsService>();
 builder.Services.AddScoped<IGalleryMediaService, GalleryMediaService>();
 builder.Services.AddScoped<IPlaylistService, PlaylistService>();
+builder.Services.AddHttpClient();
 builder.Services.AddScoped<IFileUploadService>(sp =>
 {
     var env = sp.GetRequiredService<IWebHostEnvironment>();
@@ -585,6 +586,87 @@ public class Query
     {
         return await playlistService.GetByDjProfileIdAsync(djProfileId);
     }
+
+    // Fetch song metadata from Spotify/SoundCloud oEmbed
+    public async Task<SongMetadataResult> FetchSongMetadata(
+        string url,
+        [Service] IHttpClientFactory httpClientFactory)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            throw new GraphQLException("URL is required.");
+
+        var client = httpClientFactory.CreateClient();
+        client.Timeout = TimeSpan.FromSeconds(10);
+
+        try
+        {
+            if (url.Contains("spotify.com", StringComparison.OrdinalIgnoreCase))
+            {
+                var oembedUrl = $"https://open.spotify.com/oembed?url={Uri.EscapeDataString(url)}";
+                var response = await client.GetStringAsync(oembedUrl);
+                var json = System.Text.Json.JsonDocument.Parse(response);
+                var root = json.RootElement;
+
+                var fullTitle = root.GetProperty("title").GetString() ?? "";
+                var thumbnailUrl = root.TryGetProperty("thumbnail_url", out var thumb) ? thumb.GetString() : null;
+
+                // Spotify title format: "Artist - Track Name"
+                var parts = fullTitle.Split(" - ", 2);
+                var artist = parts.Length > 1 ? parts[0].Trim() : "";
+                var title = parts.Length > 1 ? parts[1].Trim() : fullTitle.Trim();
+
+                return new SongMetadataResult
+                {
+                    Title = title,
+                    Artist = artist,
+                    CoverImageUrl = thumbnailUrl,
+                    SpotifyUrl = url,
+                    SoundCloudUrl = null
+                };
+            }
+            else if (url.Contains("soundcloud.com", StringComparison.OrdinalIgnoreCase))
+            {
+                var oembedUrl = $"https://soundcloud.com/oembed?format=json&url={Uri.EscapeDataString(url)}";
+                var response = await client.GetStringAsync(oembedUrl);
+                var json = System.Text.Json.JsonDocument.Parse(response);
+                var root = json.RootElement;
+
+                var title = root.TryGetProperty("title", out var t) ? t.GetString() ?? "" : "";
+                var artist = root.TryGetProperty("author_name", out var a) ? a.GetString() ?? "" : "";
+                var thumbnailUrl = root.TryGetProperty("thumbnail_url", out var thumb) ? thumb.GetString() : null;
+
+                return new SongMetadataResult
+                {
+                    Title = title,
+                    Artist = artist,
+                    CoverImageUrl = thumbnailUrl,
+                    SpotifyUrl = null,
+                    SoundCloudUrl = url
+                };
+            }
+            else
+            {
+                throw new GraphQLException("URL must be a Spotify or SoundCloud link.");
+            }
+        }
+        catch (HttpRequestException)
+        {
+            throw new GraphQLException("Could not fetch metadata from that URL. Please check the link.");
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            throw new GraphQLException("Unexpected response from music service.");
+        }
+    }
+}
+
+public class SongMetadataResult
+{
+    public string Title { get; set; } = string.Empty;
+    public string Artist { get; set; } = string.Empty;
+    public string? CoverImageUrl { get; set; }
+    public string? SpotifyUrl { get; set; }
+    public string? SoundCloudUrl { get; set; }
 }
 
 public class LandingPageData
@@ -1240,6 +1322,7 @@ public class Mutation
             Album = input.Album,
             Genre = input.Genre,
             Duration = input.Duration,
+            CoverImageUrl = input.CoverImageUrl,
             SpotifyUrl = input.SpotifyUrl,
             SoundCloudUrl = input.SoundCloudUrl
         };
@@ -1889,6 +1972,7 @@ public class CreateSongInput
     public string? Album { get; set; }
     public string? Genre { get; set; }
     public int Duration { get; set; }
+    public string? CoverImageUrl { get; set; }
     public string? SpotifyUrl { get; set; }
     public string? SoundCloudUrl { get; set; }
 }

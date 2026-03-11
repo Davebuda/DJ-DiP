@@ -359,6 +359,18 @@ export const CREATE_SONG = gql`
   }
 `;
 
+export const FETCH_SONG_METADATA = gql`
+  query FetchSongMetadata($url: String!) {
+    fetchSongMetadata(url: $url) {
+      title
+      artist
+      coverImageUrl
+      spotifyUrl
+      soundCloudUrl
+    }
+  }
+`;
+
 export const GET_FOLLOWED_DJS = gql`
   query GetFollowedDJs($userId: String!) {
     followedDjs(userId: $userId) {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/client';
 import { useAuth } from '../../context/AuthContext';
 import {
   GET_DJS,
@@ -11,6 +11,7 @@ import {
   ADD_PLAYLIST_SONG,
   REMOVE_PLAYLIST_SONG,
   CREATE_SONG,
+  FETCH_SONG_METADATA,
 } from '../../graphql/queries';
 import {
   ListMusic,
@@ -67,9 +68,12 @@ const DJPlaylistsManager = () => {
     title: '',
     artist: '',
     genre: '',
+    coverImageUrl: '',
     spotifyUrl: '',
     soundCloudUrl: '',
   });
+  const [fetchUrl, setFetchUrl] = useState('');
+  const [fetching, setFetching] = useState(false);
 
   const { data: djsData } = useQuery(GET_DJS);
   const { data: playlistsData, refetch: refetchPlaylists } = useQuery(GET_MY_DJ_PLAYLISTS, {
@@ -84,6 +88,7 @@ const DJPlaylistsManager = () => {
   const [addPlaylistSong] = useMutation(ADD_PLAYLIST_SONG);
   const [removePlaylistSong] = useMutation(REMOVE_PLAYLIST_SONG);
   const [createSong] = useMutation(CREATE_SONG);
+  const [fetchMetadata] = useLazyQuery(FETCH_SONG_METADATA);
 
   useEffect(() => {
     if (djsData?.dJs) {
@@ -175,6 +180,29 @@ const DJPlaylistsManager = () => {
     }
   };
 
+  const handleFetchMetadata = async () => {
+    if (!fetchUrl.trim()) return;
+    setFetching(true);
+    try {
+      const { data } = await fetchMetadata({ variables: { url: fetchUrl.trim() } });
+      if (data?.fetchSongMetadata) {
+        const m = data.fetchSongMetadata;
+        setNewSong({
+          title: m.title || '',
+          artist: m.artist || '',
+          genre: '',
+          coverImageUrl: m.coverImageUrl || '',
+          spotifyUrl: m.spotifyUrl || '',
+          soundCloudUrl: m.soundCloudUrl || '',
+        });
+      }
+    } catch (err: any) {
+      alert(err.message || 'Could not fetch metadata from that URL.');
+    } finally {
+      setFetching(false);
+    }
+  };
+
   const handleCreateSong = async (playlistId: string, currentSongCount: number) => {
     if (!newSong.title.trim() || !newSong.artist.trim()) return;
     try {
@@ -184,6 +212,7 @@ const DJPlaylistsManager = () => {
             title: newSong.title,
             artist: newSong.artist,
             genre: newSong.genre || null,
+            coverImageUrl: newSong.coverImageUrl || null,
             spotifyUrl: newSong.spotifyUrl || null,
             soundCloudUrl: newSong.soundCloudUrl || null,
           },
@@ -200,7 +229,8 @@ const DJPlaylistsManager = () => {
           },
         });
       }
-      setNewSong({ title: '', artist: '', genre: '', spotifyUrl: '', soundCloudUrl: '' });
+      setNewSong({ title: '', artist: '', genre: '', coverImageUrl: '', spotifyUrl: '', soundCloudUrl: '' });
+      setFetchUrl('');
       setShowNewSongForm(false);
       setShowAddSongModal(null);
       refetchSongs();
@@ -558,8 +588,48 @@ const DJPlaylistsManager = () => {
                 </button>
               </>
             ) : (
-              /* New song form */
+              /* New song form with URL auto-fetch */
               <div className="space-y-3">
+                {/* URL paste + fetch */}
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">
+                    Paste a Spotify or SoundCloud URL
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={fetchUrl}
+                      onChange={(e) => setFetchUrl(e.target.value)}
+                      placeholder="https://open.spotify.com/track/... or https://soundcloud.com/..."
+                      className="flex-1 rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none"
+                    />
+                    <button
+                      onClick={handleFetchMetadata}
+                      disabled={!fetchUrl.trim() || fetching}
+                      className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-purple-500 text-white text-sm font-semibold hover:shadow-lg transition disabled:opacity-50 whitespace-nowrap"
+                    >
+                      {fetching ? 'Fetching...' : 'Fetch Details'}
+                    </button>
+                  </div>
+                </div>
+
+                {newSong.coverImageUrl && (
+                  <div className="flex items-center gap-3 rounded-lg bg-black/20 border border-white/5 p-2">
+                    <img
+                      src={newSong.coverImageUrl}
+                      alt="Cover"
+                      className="w-12 h-12 rounded-md object-cover shrink-0"
+                    />
+                    <p className="text-xs text-gray-400">Cover image fetched</p>
+                  </div>
+                )}
+
+                <div className="border-t border-white/5 pt-3">
+                  <p className="text-xs text-gray-500 mb-2">
+                    Details auto-filled from URL, or enter manually:
+                  </p>
+                </div>
+
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
                     <label className="block text-xs text-gray-400 mb-1">Title *</label>
@@ -589,27 +659,29 @@ const DJPlaylistsManager = () => {
                     />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-xs text-gray-400 mb-1">Spotify URL</label>
-                  <input
-                    type="text"
-                    value={newSong.spotifyUrl}
-                    onChange={(e) => setNewSong({ ...newSong, spotifyUrl: e.target.value })}
-                    className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none"
-                    placeholder="https://open.spotify.com/track/..."
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-gray-400 mb-1">SoundCloud URL</label>
-                  <input
-                    type="text"
-                    value={newSong.soundCloudUrl}
-                    onChange={(e) =>
-                      setNewSong({ ...newSong, soundCloudUrl: e.target.value })
-                    }
-                    className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none"
-                    placeholder="https://soundcloud.com/..."
-                  />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">Spotify URL</label>
+                    <input
+                      type="text"
+                      value={newSong.spotifyUrl}
+                      onChange={(e) => setNewSong({ ...newSong, spotifyUrl: e.target.value })}
+                      className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none"
+                      placeholder="https://open.spotify.com/track/..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">SoundCloud URL</label>
+                    <input
+                      type="text"
+                      value={newSong.soundCloudUrl}
+                      onChange={(e) =>
+                        setNewSong({ ...newSong, soundCloudUrl: e.target.value })
+                      }
+                      className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none"
+                      placeholder="https://soundcloud.com/..."
+                    />
+                  </div>
                 </div>
                 <div className="flex gap-3">
                   <button
@@ -624,7 +696,11 @@ const DJPlaylistsManager = () => {
                     Create & Add
                   </button>
                   <button
-                    onClick={() => setShowNewSongForm(false)}
+                    onClick={() => {
+                      setShowNewSongForm(false);
+                      setFetchUrl('');
+                      setNewSong({ title: '', artist: '', genre: '', coverImageUrl: '', spotifyUrl: '', soundCloudUrl: '' });
+                    }}
                     className="px-4 py-2 rounded-lg border border-white/10 text-gray-400 text-sm hover:text-white transition"
                   >
                     Back

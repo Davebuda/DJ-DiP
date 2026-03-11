@@ -1,5 +1,5 @@
 import { FormEvent, useMemo, useState } from 'react';
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
 import {
   CREATE_DJ_TOP10_ENTRY,
   CREATE_PLAYLIST,
@@ -12,6 +12,7 @@ import {
   GET_DJS,
   GET_PLAYLISTS,
   GET_SONGS,
+  FETCH_SONG_METADATA,
 } from '../../graphql/queries';
 
 /* ── Types ── */
@@ -127,8 +128,11 @@ const PlaylistsTab = () => {
   // New song inline form
   const [showNewSong, setShowNewSong] = useState(false);
   const [songForm, setSongForm] = useState({
-    title: '', artist: '', genre: '', duration: '', spotifyUrl: '', soundCloudUrl: '',
+    title: '', artist: '', genre: '', duration: '', coverImageUrl: '', spotifyUrl: '', soundCloudUrl: '',
   });
+  const [fetchUrl, setFetchUrl] = useState('');
+  const [fetching, setFetching] = useState(false);
+  const [fetchMetadata] = useLazyQuery(FETCH_SONG_METADATA);
 
   const handleCreatePlaylist = async (e: FormEvent) => {
     e.preventDefault();
@@ -190,6 +194,30 @@ const PlaylistsTab = () => {
     }
   };
 
+  const handleFetchMetadata = async () => {
+    if (!fetchUrl.trim()) return;
+    setFetching(true);
+    try {
+      const { data: metaData } = await fetchMetadata({ variables: { url: fetchUrl.trim() } });
+      if (metaData?.fetchSongMetadata) {
+        const m = metaData.fetchSongMetadata;
+        setSongForm((p) => ({
+          ...p,
+          title: m.title || '',
+          artist: m.artist || '',
+          coverImageUrl: m.coverImageUrl || '',
+          spotifyUrl: m.spotifyUrl || p.spotifyUrl,
+          soundCloudUrl: m.soundCloudUrl || p.soundCloudUrl,
+        }));
+        setFeedback({ type: 'success', text: 'Song details fetched from URL.' });
+      }
+    } catch (err) {
+      setFeedback({ type: 'error', text: err instanceof Error ? err.message : 'Could not fetch metadata.' });
+    } finally {
+      setFetching(false);
+    }
+  };
+
   const handleCreateSong = async (e: FormEvent) => {
     e.preventDefault();
     if (!songForm.title.trim() || !songForm.artist.trim()) {
@@ -205,6 +233,7 @@ const PlaylistsTab = () => {
             artist: songForm.artist.trim(),
             genre: songForm.genre.trim() || null,
             duration: Number.isFinite(durationSeconds) && durationSeconds > 0 ? durationSeconds : 0,
+            coverImageUrl: songForm.coverImageUrl.trim() || null,
             spotifyUrl: songForm.spotifyUrl.trim() || null,
             soundCloudUrl: songForm.soundCloudUrl.trim() || null,
           },
@@ -213,7 +242,8 @@ const PlaylistsTab = () => {
       await refetchSongs();
       const newId = res.data?.createSong;
       if (newId) setAddSongId(newId);
-      setSongForm({ title: '', artist: '', genre: '', duration: '', spotifyUrl: '', soundCloudUrl: '' });
+      setSongForm({ title: '', artist: '', genre: '', duration: '', coverImageUrl: '', spotifyUrl: '', soundCloudUrl: '' });
+      setFetchUrl('');
       setShowNewSong(false);
       setFeedback({ type: 'success', text: 'Song created. Now add it to the playlist.' });
     } catch (err) {
@@ -365,6 +395,21 @@ const PlaylistsTab = () => {
                 {showNewSong && (
                   <form className="rounded-2xl border border-white/10 bg-black/20 p-4 space-y-3" onSubmit={handleCreateSong}>
                     <p className="text-sm font-semibold text-gray-300">Create New Song</p>
+                    {/* URL auto-fetch */}
+                    <div className="flex gap-2">
+                      <input type="url" className={`${inputClass} flex-1`} placeholder="Paste Spotify or SoundCloud URL..."
+                        value={fetchUrl} onChange={(e) => setFetchUrl(e.target.value)} />
+                      <button type="button" className="btn-outline whitespace-nowrap" disabled={!fetchUrl.trim() || fetching}
+                        onClick={handleFetchMetadata}>
+                        {fetching ? 'Fetching...' : 'Fetch Details'}
+                      </button>
+                    </div>
+                    {songForm.coverImageUrl && (
+                      <div className="flex items-center gap-3">
+                        <img src={songForm.coverImageUrl} alt="Cover" className="w-10 h-10 rounded object-cover" />
+                        <span className="text-xs text-gray-400">Cover image fetched</span>
+                      </div>
+                    )}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <input type="text" className={inputClass} placeholder="Title *" value={songForm.title}
                         onChange={(e) => setSongForm((p) => ({ ...p, title: e.target.value }))} required />
