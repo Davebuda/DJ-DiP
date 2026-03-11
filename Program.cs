@@ -10,6 +10,7 @@ using DJDiP.Application.DTO.DJTop10DTO;
 using DJDiP.Application.DTO.TicketDTO;
 using DJDiP.Application.DTO.SongDTO;
 using DJDiP.Application.DTO.SiteSettingsDTO;
+using DJDiP.Application.DTO.PlaylistDTO;
 using DJDiP.Application.DTO.GalleryDTO;
 using DJDiP.Application.DTO.UserDTO;
 using DJDiP.Application.DTO.Auth;
@@ -165,6 +166,7 @@ builder.Services.AddScoped<ISongService, SongService>();
 builder.Services.AddScoped<IDJApplicationService, DJApplicationService>();
 builder.Services.AddScoped<ISiteSettingsService, SiteSettingsService>();
 builder.Services.AddScoped<IGalleryMediaService, GalleryMediaService>();
+builder.Services.AddScoped<IPlaylistService, PlaylistService>();
 builder.Services.AddScoped<IFileUploadService>(sp =>
 {
     var env = sp.GetRequiredService<IWebHostEnvironment>();
@@ -540,6 +542,20 @@ public class Query
             Comment = r.Comment,
             CreatedAt = r.CreatedAt
         });
+    }
+
+    // Playlists
+    public async Task<IEnumerable<PlaylistDto>> Playlists(
+        [Service] IPlaylistService playlistService)
+    {
+        return await playlistService.GetAllAsync();
+    }
+
+    public async Task<PlaylistDto?> Playlist(
+        Guid id,
+        [Service] IPlaylistService playlistService)
+    {
+        return await playlistService.GetByIdAsync(id);
     }
 }
 
@@ -1203,6 +1219,84 @@ public class Mutation
         }
     }
 
+    // PLAYLIST MUTATIONS
+    public async Task<Guid> CreatePlaylist(
+        CreatePlaylistInput input,
+        [Service] IPlaylistService playlistService,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        RequireAdmin(httpContextAccessor);
+        if (string.IsNullOrWhiteSpace(input.Title))
+            throw new GraphQLException("Playlist title is required.");
+
+        var dto = new CreatePlaylistDto
+        {
+            Title = input.Title,
+            Description = input.Description,
+            Genre = input.Genre,
+            CoverImageUrl = input.CoverImageUrl,
+            Curator = input.Curator
+        };
+
+        return await playlistService.CreateAsync(dto);
+    }
+
+    public async Task<bool> UpdatePlaylist(
+        Guid id,
+        UpdatePlaylistInput input,
+        [Service] IPlaylistService playlistService,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        RequireAdmin(httpContextAccessor);
+        var dto = new UpdatePlaylistDto
+        {
+            Title = input.Title,
+            Description = input.Description,
+            Genre = input.Genre,
+            CoverImageUrl = input.CoverImageUrl,
+            Curator = input.Curator
+        };
+
+        await playlistService.UpdateAsync(id, dto);
+        return true;
+    }
+
+    public async Task<bool> DeletePlaylist(
+        Guid id,
+        [Service] IPlaylistService playlistService,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        RequireAdmin(httpContextAccessor);
+        await playlistService.DeleteAsync(id);
+        return true;
+    }
+
+    public async Task<Guid> AddPlaylistSong(
+        AddPlaylistSongInput input,
+        [Service] IPlaylistService playlistService,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        RequireAdmin(httpContextAccessor);
+        var dto = new AddPlaylistSongDto
+        {
+            PlaylistId = input.PlaylistId,
+            SongId = input.SongId,
+            Position = input.Position
+        };
+
+        return await playlistService.AddSongAsync(dto);
+    }
+
+    public async Task<bool> RemovePlaylistSong(
+        Guid id,
+        [Service] IPlaylistService playlistService,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        RequireAdmin(httpContextAccessor);
+        await playlistService.RemoveSongAsync(id);
+        return true;
+    }
+
     // SITE SETTINGS MUTATIONS
     public async Task<SiteSettingsDto> UpdateSiteSettings(
         UpdateSiteSettingsInput input,
@@ -1789,4 +1883,29 @@ public class DJReviewDto
     public int Rating { get; set; }
     public string? Comment { get; set; }
     public DateTime CreatedAt { get; set; }
+}
+
+public class CreatePlaylistInput
+{
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string? Genre { get; set; }
+    public string? CoverImageUrl { get; set; }
+    public string? Curator { get; set; }
+}
+
+public class UpdatePlaylistInput
+{
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string? Genre { get; set; }
+    public string? CoverImageUrl { get; set; }
+    public string? Curator { get; set; }
+}
+
+public class AddPlaylistSongInput
+{
+    public Guid PlaylistId { get; set; }
+    public Guid SongId { get; set; }
+    public int Position { get; set; }
 }

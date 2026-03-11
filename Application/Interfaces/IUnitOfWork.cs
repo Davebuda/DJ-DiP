@@ -25,6 +25,8 @@ namespace DJDiP.Application.Interfaces
         IRepository<GalleryMedia> GalleryMedia { get; }
         IRepository<DJReview> DJReviews { get; }
         IDJApplicationRepository DJApplications { get; }
+        IRepository<Playlist> Playlists { get; }
+        IRepository<PlaylistSong> PlaylistSongs { get; }
 
         Task<int> SaveChangesAsync();
         Task BeginTransactionAsync();

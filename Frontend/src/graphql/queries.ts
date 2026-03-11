@@ -806,3 +806,84 @@ export const CREATE_DJ_REVIEW = gql`
     createDjReview(input: $input)
   }
 `;
+
+// PLAYLIST QUERIES & MUTATIONS
+export const GET_PLAYLISTS = gql`
+  query GetPlaylists {
+    playlists {
+      id
+      title
+      description
+      genre
+      coverImageUrl
+      curator
+      createdAt
+      songs {
+        id
+        songId
+        position
+        title
+        artist
+        genre
+        coverImageUrl
+        spotifyUrl
+        soundCloudUrl
+      }
+    }
+  }
+`;
+
+export const GET_PLAYLIST_BY_ID = gql`
+  query GetPlaylistById($id: UUID!) {
+    playlist(id: $id) {
+      id
+      title
+      description
+      genre
+      coverImageUrl
+      curator
+      createdAt
+      songs {
+        id
+        songId
+        position
+        title
+        artist
+        genre
+        coverImageUrl
+        spotifyUrl
+        soundCloudUrl
+      }
+    }
+  }
+`;
+
+export const CREATE_PLAYLIST = gql`
+  mutation CreatePlaylist($input: CreatePlaylistInput!) {
+    createPlaylist(input: $input)
+  }
+`;
+
+export const UPDATE_PLAYLIST = gql`
+  mutation UpdatePlaylist($id: UUID!, $input: UpdatePlaylistInput!) {
+    updatePlaylist(id: $id, input: $input)
+  }
+`;
+
+export const DELETE_PLAYLIST = gql`
+  mutation DeletePlaylist($id: UUID!) {
+    deletePlaylist(id: $id)
+  }
+`;
+
+export const ADD_PLAYLIST_SONG = gql`
+  mutation AddPlaylistSong($input: AddPlaylistSongInput!) {
+    addPlaylistSong(input: $input)
+  }
+`;
+
+export const REMOVE_PLAYLIST_SONG = gql`
+  mutation RemovePlaylistSong($id: UUID!) {
+    removePlaylistSong(id: $id)
+  }
+`;

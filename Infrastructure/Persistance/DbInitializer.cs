@@ -27,6 +27,24 @@ namespace DJDiP.Infrastructure.Persistance
                       ALTER TABLE ""SiteSettings"" ADD COLUMN IF NOT EXISTS ""ConceptHeading"" TEXT DEFAULT '';
                       ALTER TABLE ""SiteSettings"" ADD COLUMN IF NOT EXISTS ""LineupHeading"" TEXT DEFAULT '';
                       ALTER TABLE ""SiteSettings"" ADD COLUMN IF NOT EXISTS ""GalleryVideoUrl"" TEXT DEFAULT '';");
+
+                // Create Playlists table if it doesn't exist (EnsureCreated won't add new tables to existing DBs)
+                await context.Database.ExecuteSqlRawAsync(
+                    @"CREATE TABLE IF NOT EXISTS ""Playlists"" (
+                        ""Id"" UUID PRIMARY KEY,
+                        ""Title"" TEXT NOT NULL DEFAULT '',
+                        ""Description"" TEXT,
+                        ""Genre"" TEXT,
+                        ""CoverImageUrl"" TEXT,
+                        ""Curator"" TEXT,
+                        ""CreatedAt"" TIMESTAMP NOT NULL DEFAULT NOW()
+                      );
+                      CREATE TABLE IF NOT EXISTS ""PlaylistSongs"" (
+                        ""Id"" UUID PRIMARY KEY,
+                        ""PlaylistId"" UUID NOT NULL REFERENCES ""Playlists""(""Id"") ON DELETE CASCADE,
+                        ""SongId"" UUID NOT NULL REFERENCES ""Songs""(""Id"") ON DELETE CASCADE,
+                        ""Position"" INTEGER NOT NULL DEFAULT 0
+                      );");
             }
             catch { /* columns already exist or table doesn't exist yet (handled by EnsureCreated) */ }
 

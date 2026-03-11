@@ -47,6 +47,8 @@ namespace DJDiP.Infrastructure.Persistance
         public DbSet<SocialMediaLinks> SocialMediaLinks => Set<SocialMediaLinks>();
         public DbSet<PriceRule> PriceRules => Set<PriceRule>();
         public DbSet<UserPoints> UserPoints => Set<UserPoints>();
+        public DbSet<Playlist> Playlists => Set<Playlist>();
+        public DbSet<PlaylistSong> PlaylistSongs => Set<PlaylistSong>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -273,6 +275,17 @@ namespace DJDiP.Infrastructure.Persistance
                 .HasOne(up => up.User)
                 .WithOne(u => u.Points)
                 .HasForeignKey<UserPoints>(up => up.UserId);
+
+            // PlaylistSong
+            modelBuilder.Entity<PlaylistSong>()
+                .HasOne(ps => ps.Playlist)
+                .WithMany(p => p.PlaylistSongs)
+                .HasForeignKey(ps => ps.PlaylistId);
+
+            modelBuilder.Entity<PlaylistSong>()
+                .HasOne(ps => ps.Song)
+                .WithMany()
+                .HasForeignKey(ps => ps.SongId);
 
             // ========== INDEXES ==========
 

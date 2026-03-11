@@ -1,0 +1,11 @@
+namespace DJDiP.Application.DTO.PlaylistDTO
+{
+    public class CreatePlaylistDto
+    {
+        public string Title { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public string? Genre { get; set; }
+        public string? CoverImageUrl { get; set; }
+        public string? Curator { get; set; }
+    }
+}
