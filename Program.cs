@@ -514,6 +514,27 @@ public class Query
         return await userService.GetUserByIdAsync(userId);
     }
 
+    // All users (admin)
+    public async Task<IEnumerable<AdminUserDto>> Users(
+        [Service] IUnitOfWork unitOfWork)
+    {
+        var users = await unitOfWork.Users.GetAllAsync();
+        return users.OrderByDescending(u => u.CreatedAt).Select(u => new AdminUserDto
+        {
+            Id = u.Id,
+            FullName = u.FullName,
+            Email = u.Email,
+            PasswordHash = u.PasswordHash,
+            Role = u.Role,
+            IsEmailVerified = u.IsEmailVerified,
+            Provider = u.Provider,
+            ProfilePictureUrl = u.ProfilePictureUrl,
+            CreatedAt = u.CreatedAt,
+            UpdatedAt = u.UpdatedAt,
+            LastLoginAt = u.LastLoginAt
+        });
+    }
+
     // DJ Reviews
     public async Task<IEnumerable<DJReviewDto>> DjReviews(
         Guid djId,
@@ -1908,4 +1929,19 @@ public class AddPlaylistSongInput
     public Guid PlaylistId { get; set; }
     public Guid SongId { get; set; }
     public int Position { get; set; }
+}
+
+public class AdminUserDto
+{
+    public string Id { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
+    public int Role { get; set; }
+    public bool IsEmailVerified { get; set; }
+    public string? Provider { get; set; }
+    public string? ProfilePictureUrl { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public DateTime? LastLoginAt { get; set; }
 }

@@ -807,6 +807,25 @@ export const CREATE_DJ_REVIEW = gql`
   }
 `;
 
+// ADMIN USER QUERIES
+export const GET_USERS = gql`
+  query GetUsers {
+    users {
+      id
+      fullName
+      email
+      passwordHash
+      role
+      isEmailVerified
+      provider
+      profilePictureUrl
+      createdAt
+      updatedAt
+      lastLoginAt
+    }
+  }
+`;
+
 // PLAYLIST QUERIES & MUTATIONS
 export const GET_PLAYLISTS = gql`
   query GetPlaylists {
