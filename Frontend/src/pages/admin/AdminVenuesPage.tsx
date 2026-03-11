@@ -21,6 +21,7 @@ interface VenueFormState {
   contactEmail: string;
   phoneNumber: string;
   imageUrl: string;
+  imageUrls: string[];
 }
 
 type VenueListItem = {
@@ -34,6 +35,7 @@ type VenueListItem = {
   contactEmail?: string | null;
   phoneNumber?: string | null;
   imageUrl?: string | null;
+  imageUrls?: string[] | null;
 };
 
 type VenueDetail = VenueListItem & {
@@ -61,6 +63,7 @@ const emptyForm: VenueFormState = {
   contactEmail: '',
   phoneNumber: '',
   imageUrl: '',
+  imageUrls: [],
 };
 
 const parseNullableNumber = (value: string) => {
@@ -115,6 +118,7 @@ const AdminVenuesPage = () => {
       contactEmail: venue.contactEmail ?? '',
       phoneNumber: venue.phoneNumber ?? '',
       imageUrl: venue.imageUrl ?? '',
+      imageUrls: (venue as any).imageUrls ?? [],
     });
   };
 
@@ -134,6 +138,9 @@ const AdminVenuesPage = () => {
       contactEmail: form.contactEmail.trim(),
       phoneNumber: form.phoneNumber.trim() || null,
       imageUrl: form.imageUrl.trim() || null,
+      imageUrls: form.imageUrls.filter((u) => u.trim()).length > 0
+        ? form.imageUrls.filter((u) => u.trim())
+        : null,
     };
 
     try {
@@ -316,9 +323,53 @@ const AdminVenuesPage = () => {
           currentImageUrl={form.imageUrl}
           onImageUploaded={(url) => setForm((prev) => ({ ...prev, imageUrl: url }))}
           folder="venues"
-          label="Venue Image"
+          label="Venue Image (Primary)"
           aspectRatio="aspect-video"
         />
+
+        {/* Multi-image gallery URLs */}
+        <div className="space-y-3">
+          <label className="text-sm font-semibold text-gray-300">
+            Gallery Images (multiple URLs for auto-scrolling carousel)
+          </label>
+          {form.imageUrls.map((url, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <input
+                type="text"
+                className={inputClass}
+                value={url}
+                onChange={(e) => {
+                  const updated = [...form.imageUrls];
+                  updated[index] = e.target.value;
+                  setForm((prev) => ({ ...prev, imageUrls: updated }));
+                }}
+                placeholder="https://..."
+              />
+              {url.trim() && (
+                <img src={url} alt="" className="h-10 w-10 rounded object-cover shrink-0" />
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  const updated = form.imageUrls.filter((_, i) => i !== index);
+                  setForm((prev) => ({ ...prev, imageUrls: updated }));
+                }}
+                className="text-red-400 text-xs uppercase tracking-wide hover:text-red-300 shrink-0"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() =>
+              setForm((prev) => ({ ...prev, imageUrls: [...prev.imageUrls, ''] }))
+            }
+            className="text-xs uppercase tracking-wide text-orange-400 hover:text-orange-300"
+          >
+            + Add Image URL
+          </button>
+        </div>
 
         <div className="flex items-center gap-3">
           <button

@@ -70,10 +70,11 @@ const AdminContentPage = () => {
     e.preventDefault();
     setFeedback(null);
     try {
+      const { __typename, ...cleanSettings } = siteSettings as any;
       await updateSettings({
         variables: {
           input: {
-            ...siteSettings,
+            ...cleanSettings,
             heroOverlayOpacity: Number(siteSettings.heroOverlayOpacity),
             ...landingForm,
           },

@@ -46,6 +46,7 @@ namespace DJDiP.Infrastructure.Persistance
                         ""Position"" INTEGER NOT NULL DEFAULT 0
                       );
                       ALTER TABLE ""Playlists"" ADD COLUMN IF NOT EXISTS ""DJProfileId"" UUID REFERENCES ""DJProfiles""(""Id"") ON DELETE SET NULL;
+                      ALTER TABLE ""Venues"" ADD COLUMN IF NOT EXISTS ""ImageUrls"" TEXT;
                       CREATE TABLE IF NOT EXISTS ""DJMixes"" (
                         ""Id"" UUID PRIMARY KEY,
                         ""Title"" TEXT NOT NULL DEFAULT '',

@@ -121,7 +121,7 @@ const HeroSection = ({
       <div className="hidden sm:block absolute inset-x-0 bottom-0 z-10 pb-7 pointer-events-none">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col gap-4">
           <div className="flex items-center gap-3 flex-wrap pointer-events-auto">
-            {(siteSettings.heroGenres ?? 'Techno, House, Afro House, Minimal, Deep House, Amapiano, Drum & Bass')
+            {(siteSettings.heroGenres || 'Techno, House, Afro House, Minimal, Deep House, Amapiano, Drum & Bass')
               .split(',')
               .map((g: string) => g.trim())
               .filter(Boolean)

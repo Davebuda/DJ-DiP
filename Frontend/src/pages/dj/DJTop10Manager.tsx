@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@apollo/client';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/client';
 import { useAuth } from '../../context/AuthContext';
 import {
   GET_DJS,
@@ -8,6 +8,7 @@ import {
   CREATE_DJ_TOP10_ENTRY,
   DELETE_DJ_TOP10_ENTRY,
   CREATE_SONG,
+  FETCH_SONG_METADATA,
 } from '../../graphql/queries';
 import { Music, Plus, Trash2, Search, Star, Disc3 } from 'lucide-react';
 
@@ -24,6 +25,8 @@ const DJTop10Manager = () => {
   const [newSpotifyUrl, setNewSpotifyUrl] = useState('');
   const [newSoundCloudUrl, setNewSoundCloudUrl] = useState('');
   const [creating, setCreating] = useState(false);
+  const [fetchUrl, setFetchUrl] = useState('');
+  const [fetching, setFetching] = useState(false);
 
   const { data: djsData } = useQuery(GET_DJS);
   const { data: songsData, refetch: refetchSongs } = useQuery(GET_SONGS);
@@ -32,6 +35,7 @@ const DJTop10Manager = () => {
   const [createEntry] = useMutation(CREATE_DJ_TOP10_ENTRY);
   const [deleteEntry] = useMutation(DELETE_DJ_TOP10_ENTRY);
   const [createSong] = useMutation(CREATE_SONG);
+  const [fetchMetadata] = useLazyQuery(FETCH_SONG_METADATA);
 
   useEffect(() => {
     if (djsData?.dJs) {
@@ -71,9 +75,31 @@ const DJTop10Manager = () => {
     }
   };
 
+  const handleFetchMetadata = async () => {
+    if (!fetchUrl.trim()) return;
+    setFetching(true);
+    try {
+      const { data } = await fetchMetadata({ variables: { url: fetchUrl.trim() } });
+      if (data?.fetchSongMetadata) {
+        const m = data.fetchSongMetadata;
+        if (m.title) setNewTitle(m.title);
+        if (m.artist) setNewArtist(m.artist);
+        if (m.spotifyUrl) setNewSpotifyUrl(m.spotifyUrl);
+        if (m.soundCloudUrl) setNewSoundCloudUrl(m.soundCloudUrl);
+      }
+    } catch (err: any) {
+      alert(err.message || 'Could not fetch metadata from that URL.');
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  const hasUrl = !!(newSpotifyUrl.trim() || newSoundCloudUrl.trim() || fetchUrl.trim());
+  const canSubmit = !creating && ((newTitle.trim() && newArtist.trim()) || hasUrl);
+
   const handleCreateAndAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!djId || !newTitle.trim() || !newArtist.trim()) return;
+    if (!djId || !canSubmit) return;
 
     setCreating(true);
     try {
@@ -86,17 +112,25 @@ const DJTop10Manager = () => {
         durationSeconds = parseInt(newDuration) || 0;
       }
 
+      // Auto-detect URL type from fetchUrl if specific fields are empty
+      let spotifyUrl = newSpotifyUrl.trim() || null;
+      let soundCloudUrl = newSoundCloudUrl.trim() || null;
+      if (fetchUrl.trim()) {
+        if (!spotifyUrl && fetchUrl.includes('spotify.com')) spotifyUrl = fetchUrl.trim();
+        if (!soundCloudUrl && fetchUrl.includes('soundcloud.com')) soundCloudUrl = fetchUrl.trim();
+      }
+
       // Create the song
       const { data } = await createSong({
         variables: {
           input: {
-            title: newTitle.trim(),
-            artist: newArtist.trim(),
+            title: newTitle.trim() || null,
+            artist: newArtist.trim() || null,
             album: null,
             genre: newGenre.trim() || null,
             duration: durationSeconds,
-            spotifyUrl: newSpotifyUrl.trim() || null,
-            soundCloudUrl: newSoundCloudUrl.trim() || null,
+            spotifyUrl,
+            soundCloudUrl,
           },
         },
       });
@@ -119,6 +153,7 @@ const DJTop10Manager = () => {
       setNewDuration('');
       setNewSpotifyUrl('');
       setNewSoundCloudUrl('');
+      setFetchUrl('');
       setShowCreateForm(false);
       setShowAddModal(false);
       setSearchQuery('');
@@ -348,14 +383,39 @@ const DJTop10Manager = () => {
                       <div>
                         <p className="text-white font-semibold">Create a New Track</p>
                         <p className="text-xs text-gray-500">
-                          Add a song that isn't in the library yet
+                          Paste a URL to auto-fill details, or enter manually
                         </p>
                       </div>
                     </div>
 
                     <div className="space-y-2">
                       <label className="block text-sm font-medium text-gray-300">
-                        Song Title *
+                        Paste a Spotify or SoundCloud URL
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={fetchUrl}
+                          onChange={(e) => setFetchUrl(e.target.value)}
+                          placeholder="https://open.spotify.com/track/... or https://soundcloud.com/..."
+                          className="flex-1 px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white focus:border-purple-500 focus:outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleFetchMetadata}
+                          disabled={!fetchUrl.trim() || fetching}
+                          className="px-4 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-purple-500 text-white text-sm font-semibold hover:shadow-lg transition disabled:opacity-50 whitespace-nowrap"
+                        >
+                          {fetching ? 'Fetching...' : 'Fetch'}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-white/10 pt-4" />
+
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-300">
+                        Song Title {hasUrl ? '' : '*'}
                       </label>
                       <input
                         type="text"
@@ -363,20 +423,18 @@ const DJTop10Manager = () => {
                         onChange={(e) => setNewTitle(e.target.value)}
                         placeholder="e.g. Strobe"
                         className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white focus:border-orange-500 focus:outline-none"
-                        required
                         autoFocus
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-300">Artist *</label>
+                      <label className="block text-sm font-medium text-gray-300">Artist {hasUrl ? '' : '*'}</label>
                       <input
                         type="text"
                         value={newArtist}
                         onChange={(e) => setNewArtist(e.target.value)}
                         placeholder="e.g. deadmau5"
                         className="w-full px-4 py-3 rounded-xl bg-black/40 border border-white/10 text-white focus:border-orange-500 focus:outline-none"
-                        required
                       />
                     </div>
 
@@ -433,7 +491,7 @@ const DJTop10Manager = () => {
 
                     <button
                       type="submit"
-                      disabled={creating || !newTitle.trim() || !newArtist.trim()}
+                      disabled={!canSubmit}
                       className="w-full py-3 rounded-xl bg-gradient-to-r from-orange-500 to-[#FF6B35] text-white font-bold uppercase tracking-wider hover:shadow-[0_0_25px_rgba(255,107,53,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {creating ? 'Creating...' : 'Create & Add to Top 10'}

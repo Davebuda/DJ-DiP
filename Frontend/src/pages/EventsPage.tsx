@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { GET_EVENTS, GET_GENRES } from '../graphql/queries';
@@ -16,7 +16,47 @@ type Event = {
     id: string;
     name: string;
     city: string;
+    imageUrl?: string;
+    imageUrls?: string[];
   };
+};
+
+const VenueImageCarousel = ({ images }: { images: string[] }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [images.length]);
+
+  if (images.length === 0) return null;
+
+  return (
+    <div className="relative w-14 h-14 rounded-xl overflow-hidden shrink-0">
+      {images.map((url, i) => (
+        <img
+          key={url}
+          src={url}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+          style={{ opacity: i === currentIndex ? 1 : 0 }}
+        />
+      ))}
+      {images.length > 1 && (
+        <div className="absolute bottom-0.5 left-1/2 -translate-x-1/2 flex gap-0.5">
+          {images.map((_, i) => (
+            <span
+              key={i}
+              className={`w-1 h-1 rounded-full transition-colors ${i === currentIndex ? 'bg-orange-400' : 'bg-white/30'}`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 type Genre = {
@@ -237,10 +277,19 @@ const EventsPage = () => {
 
                       {/* Venue + Price */}
                       <div className="flex items-end justify-between pt-4 border-t border-orange-400/15">
-                        <div>
-                          <p className="text-[10px] uppercase tracking-[0.4em] text-orange-200/40">Venue</p>
-                          <p className="text-sm text-orange-100 font-medium">{featured.venue.name}</p>
-                          <p className="text-xs text-orange-200/40">{featured.venue.city}</p>
+                        <div className="flex items-center gap-3">
+                          {(() => {
+                            const venueImages = [
+                              ...(featured.venue.imageUrls ?? []),
+                              ...(featured.venue.imageUrl && !(featured.venue.imageUrls ?? []).includes(featured.venue.imageUrl) ? [featured.venue.imageUrl] : []),
+                            ].filter(Boolean);
+                            return venueImages.length > 0 ? <VenueImageCarousel images={venueImages} /> : null;
+                          })()}
+                          <div>
+                            <p className="text-[10px] uppercase tracking-[0.4em] text-orange-200/40">Venue</p>
+                            <p className="text-sm text-orange-100 font-medium">{featured.venue.name}</p>
+                            <p className="text-xs text-orange-200/40">{featured.venue.city}</p>
+                          </div>
                         </div>
                         <div className="text-right">
                           <p className="text-[10px] uppercase tracking-[0.4em] text-orange-200/40">From</p>
@@ -299,10 +348,19 @@ const EventsPage = () => {
                         <p className="text-gray-400 text-sm line-clamp-2">{event.description}</p>
 
                         <div className="flex items-center justify-between pt-2 border-t border-white/10">
-                          <div>
-                            <p className="text-xs uppercase tracking-[0.3em] text-gray-500">Venue</p>
-                            <p className="text-sm text-white">{event.venue.name}</p>
-                            <p className="text-xs text-gray-500">{event.venue.city}</p>
+                          <div className="flex items-center gap-3">
+                            {(() => {
+                              const venueImages = [
+                                ...(event.venue.imageUrls ?? []),
+                                ...(event.venue.imageUrl && !(event.venue.imageUrls ?? []).includes(event.venue.imageUrl) ? [event.venue.imageUrl] : []),
+                              ].filter(Boolean);
+                              return venueImages.length > 0 ? <VenueImageCarousel images={venueImages} /> : null;
+                            })()}
+                            <div>
+                              <p className="text-xs uppercase tracking-[0.3em] text-gray-500">Venue</p>
+                              <p className="text-sm text-white">{event.venue.name}</p>
+                              <p className="text-xs text-gray-500">{event.venue.city}</p>
+                            </div>
                           </div>
                           <div className="text-right">
                             <p className="text-xs uppercase tracking-[0.3em] text-gray-500">Price</p>

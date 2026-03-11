@@ -1185,7 +1185,8 @@ public class Mutation
             Capacity = input.Capacity,
             ContactEmail = input.ContactEmail,
             PhoneNumber = input.PhoneNumber,
-            ImageUrl = input.ImageUrl
+            ImageUrl = input.ImageUrl,
+            ImageUrls = input.ImageUrls
         };
 
         try
@@ -1218,7 +1219,8 @@ public class Mutation
             Capacity = input.Capacity,
             ContactEmail = input.ContactEmail,
             PhoneNumber = input.PhoneNumber,
-            ImageUrl = input.ImageUrl
+            ImageUrl = input.ImageUrl,
+            ImageUrls = input.ImageUrls
         };
 
         await venues.UpdateAsync(id, dto);
@@ -1326,10 +1328,11 @@ public class Mutation
         CreateSongInput input,
         [Service] ISongService songService)
     {
-        if (string.IsNullOrWhiteSpace(input.Title))
-            throw new GraphQLException("Song title is required.");
-        if (string.IsNullOrWhiteSpace(input.Artist))
-            throw new GraphQLException("Artist is required.");
+        var hasUrl = !string.IsNullOrWhiteSpace(input.SpotifyUrl) || !string.IsNullOrWhiteSpace(input.SoundCloudUrl);
+        if (string.IsNullOrWhiteSpace(input.Title) && !hasUrl)
+            throw new GraphQLException("Song title is required (or provide a URL).");
+        if (string.IsNullOrWhiteSpace(input.Artist) && !hasUrl)
+            throw new GraphQLException("Artist is required (or provide a URL).");
 
         var dto = new CreateSongDto
         {
@@ -1982,6 +1985,7 @@ public class CreateVenueInput
     public string ContactEmail { get; set; } = string.Empty;
     public string? PhoneNumber { get; set; }
     public string? ImageUrl { get; set; }
+    public List<string>? ImageUrls { get; set; }
 }
 
 public class UpdateVenueInput : CreateVenueInput

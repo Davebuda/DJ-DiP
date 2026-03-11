@@ -204,17 +204,26 @@ const DJPlaylistsManager = () => {
   };
 
   const handleCreateSong = async (playlistId: string, currentSongCount: number) => {
-    if (!newSong.title.trim() || !newSong.artist.trim()) return;
+    const songHasUrl = !!(newSong.spotifyUrl?.trim() || newSong.soundCloudUrl?.trim() || fetchUrl.trim());
+    if (!newSong.title.trim() && !newSong.artist.trim() && !songHasUrl) return;
     try {
+      // Auto-detect URL type from fetchUrl if specific fields are empty
+      let spotifyUrl = newSong.spotifyUrl?.trim() || null;
+      let soundCloudUrl = newSong.soundCloudUrl?.trim() || null;
+      if (fetchUrl.trim()) {
+        if (!spotifyUrl && fetchUrl.includes('spotify.com')) spotifyUrl = fetchUrl.trim();
+        if (!soundCloudUrl && fetchUrl.includes('soundcloud.com')) soundCloudUrl = fetchUrl.trim();
+      }
+
       const { data } = await createSong({
         variables: {
           input: {
-            title: newSong.title,
-            artist: newSong.artist,
+            title: newSong.title.trim() || null,
+            artist: newSong.artist.trim() || null,
             genre: newSong.genre || null,
             coverImageUrl: newSong.coverImageUrl || null,
-            spotifyUrl: newSong.spotifyUrl || null,
-            soundCloudUrl: newSong.soundCloudUrl || null,
+            spotifyUrl,
+            soundCloudUrl,
           },
         },
       });
@@ -626,13 +635,13 @@ const DJPlaylistsManager = () => {
 
                 <div className="border-t border-white/5 pt-3">
                   <p className="text-xs text-gray-500 mb-2">
-                    Details auto-filled from URL, or enter manually:
+                    Details auto-filled from URL, or enter manually. URL alone is enough to add a song.
                   </p>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="block text-xs text-gray-400 mb-1">Title *</label>
+                    <label className="block text-xs text-gray-400 mb-1">Title</label>
                     <input
                       type="text"
                       value={newSong.title}
@@ -641,7 +650,7 @@ const DJPlaylistsManager = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-400 mb-1">Artist *</label>
+                    <label className="block text-xs text-gray-400 mb-1">Artist</label>
                     <input
                       type="text"
                       value={newSong.artist}
@@ -689,7 +698,7 @@ const DJPlaylistsManager = () => {
                       const p = playlists.find((pl) => pl.id === showAddSongModal);
                       handleCreateSong(showAddSongModal!, p?.songs.length ?? 0);
                     }}
-                    disabled={!newSong.title.trim() || !newSong.artist.trim()}
+                    disabled={!newSong.title.trim() && !newSong.artist.trim() && !newSong.spotifyUrl?.trim() && !newSong.soundCloudUrl?.trim() && !fetchUrl.trim()}
                     className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black text-sm font-semibold hover:shadow-lg transition disabled:opacity-50"
                   >
                     <Save className="w-4 h-4" />

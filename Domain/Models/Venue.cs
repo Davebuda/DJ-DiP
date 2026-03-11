@@ -18,6 +18,7 @@ namespace DJDiP.Domain.Models
         public string? PhoneNumber { get; set; }
 
         public string? ImageUrl { get; set; }
+        public string? ImageUrls { get; set; }
 
         public List<Event> Events { get; set; } = new();
     }

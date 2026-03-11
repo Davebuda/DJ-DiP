@@ -162,6 +162,8 @@ export const GET_EVENTS = gql`
         id
         name
         city
+        imageUrl
+        imageUrls
       }
     }
   }
@@ -206,6 +208,8 @@ export const GET_EVENT_BY_ID = gql`
         address
         city
         country
+        imageUrl
+        imageUrls
       }
     }
   }
@@ -262,6 +266,7 @@ export const GET_VENUES = gql`
       contactEmail
       phoneNumber
       imageUrl
+      imageUrls
     }
   }
 `;
@@ -281,6 +286,7 @@ export const GET_VENUE_BY_ID = gql`
       contactEmail
       phoneNumber
       imageUrl
+      imageUrls
     }
   }
 `;

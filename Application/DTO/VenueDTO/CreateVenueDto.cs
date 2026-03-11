@@ -17,5 +17,6 @@ public class CreateVenueDto
     public string? PhoneNumber { get; set; }
     
     public string? ImageUrl { get; set; }
+    public List<string>? ImageUrls { get; set; }
 }
 }

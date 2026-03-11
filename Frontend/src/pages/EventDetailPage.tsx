@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
 import { Link, useParams } from 'react-router-dom';
 import { ExternalLink, MapPin, Clock, Calendar, Users, Music, ChevronLeft } from 'lucide-react';
@@ -10,6 +10,44 @@ import { TiltCard } from '../components/effects/TiltCard';
 type DJ = { id: string; stageName: string; profilePictureUrl?: string; genre: string };
 type Genre = { id: string; name: string };
 type RelatedEvent = { id: string; title: string; date: string; price: number; imageUrl?: string; genres: string[]; venue: { id: string; name: string; city: string } };
+
+const VenueGallery = ({ images }: { images: string[] }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [images.length]);
+
+  if (images.length === 0) return null;
+
+  return (
+    <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden">
+      {images.map((url, i) => (
+        <img
+          key={url}
+          src={url}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+          style={{ opacity: i === currentIndex ? 1 : 0 }}
+        />
+      ))}
+      {images.length > 1 && (
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+          {images.map((_, i) => (
+            <span
+              key={i}
+              className={`w-1.5 h-1.5 rounded-full transition-colors ${i === currentIndex ? 'bg-orange-400' : 'bg-white/40'}`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const EventDetailPage = () => {
   const { id } = useParams();
@@ -241,6 +279,13 @@ const EventDetailPage = () => {
                   <p className="text-xs uppercase tracking-[0.5em] text-orange-400 font-semibold">Venue</p>
                 </div>
                 <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6 space-y-3">
+                  {(() => {
+                    const venueImages = [
+                      ...(event.venue.imageUrls ?? []),
+                      ...(event.venue.imageUrl && !(event.venue.imageUrls ?? []).includes(event.venue.imageUrl) ? [event.venue.imageUrl] : []),
+                    ].filter(Boolean);
+                    return venueImages.length > 0 ? <VenueGallery images={venueImages} /> : null;
+                  })()}
                   <h3 className="text-xl font-bold">{event.venue.name}</h3>
                   <p className="text-gray-400 text-sm">
                     {event.venue.address}{event.venue.city ? `, ${event.venue.city}` : ''}{event.venue.country ? `, ${event.venue.country}` : ''}

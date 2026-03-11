@@ -1,3 +1,4 @@
+using System.Text.Json;
 using DJDiP.Application.DTO.VenueDTO;
 using DJDiP.Application.Interfaces;
 using DJDiP.Domain.Models;
@@ -40,7 +41,8 @@ namespace DJDiP.Application.Services
                 Capacity = dto.Capacity,
                 ContactEmail = dto.ContactEmail,
                 PhoneNumber = dto.PhoneNumber,
-                ImageUrl = dto.ImageUrl
+                ImageUrl = dto.ImageUrl,
+                ImageUrls = dto.ImageUrls != null ? JsonSerializer.Serialize(dto.ImageUrls) : null
             };
 
             await _unitOfWork.Venues.AddAsync(venue);
@@ -68,6 +70,7 @@ namespace DJDiP.Application.Services
             venue.ContactEmail = dto.ContactEmail;
             venue.PhoneNumber = dto.PhoneNumber;
             venue.ImageUrl = dto.ImageUrl;
+            venue.ImageUrls = dto.ImageUrls != null ? JsonSerializer.Serialize(dto.ImageUrls) : null;
 
             await _unitOfWork.Venues.UpdateAsync(venue);
             await _unitOfWork.SaveChangesAsync();
@@ -98,7 +101,10 @@ namespace DJDiP.Application.Services
             Capacity = venue.Capacity,
             ContactEmail = venue.ContactEmail,
             PhoneNumber = venue.PhoneNumber,
-            ImageUrl = venue.ImageUrl
+            ImageUrl = venue.ImageUrl,
+            ImageUrls = !string.IsNullOrEmpty(venue.ImageUrls)
+                ? JsonSerializer.Deserialize<List<string>>(venue.ImageUrls)
+                : null
         };
     }
 }
