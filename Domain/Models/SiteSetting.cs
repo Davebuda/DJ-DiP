@@ -23,6 +23,19 @@ namespace DJDiP.Domain.Models
         public string HeroBackgroundImageUrl { get; set; } = "/media/sections/hero/hero-background.jpg";
         public string HeroBackgroundVideoUrl { get; set; } = string.Empty;
         public decimal HeroOverlayOpacity { get; set; } = 0.5m;
+        public string HeroGenres { get; set; } = string.Empty;
+        public string HeroLocation { get; set; } = string.Empty;
+        public string HeroVibes { get; set; } = string.Empty;
+
+        // Landing Page Content
+        public string BrandHeadline { get; set; } = string.Empty;
+        public string BrandNarrative { get; set; } = string.Empty;
+        public string EventsHeading { get; set; } = string.Empty;
+        public string EventsTagline { get; set; } = string.Empty;
+        public string CultureHeading { get; set; } = string.Empty;
+        public string ConceptHeading { get; set; } = string.Empty;
+        public string LineupHeading { get; set; } = string.Empty;
+        public string GalleryVideoUrl { get; set; } = string.Empty;
 
         // Contact
         public string ContactEmail { get; set; } = string.Empty;

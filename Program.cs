@@ -1227,6 +1227,17 @@ public class Mutation
             HeroBackgroundImageUrl = input.HeroBackgroundImageUrl,
             HeroBackgroundVideoUrl = input.HeroBackgroundVideoUrl,
             HeroOverlayOpacity = input.HeroOverlayOpacity,
+            HeroGenres = input.HeroGenres,
+            HeroLocation = input.HeroLocation,
+            HeroVibes = input.HeroVibes,
+            BrandHeadline = input.BrandHeadline,
+            BrandNarrative = input.BrandNarrative,
+            EventsHeading = input.EventsHeading,
+            EventsTagline = input.EventsTagline,
+            CultureHeading = input.CultureHeading,
+            ConceptHeading = input.ConceptHeading,
+            LineupHeading = input.LineupHeading,
+            GalleryVideoUrl = input.GalleryVideoUrl,
             ContactEmail = input.ContactEmail,
             ContactPhone = input.ContactPhone,
             ContactAddress = input.ContactAddress,
@@ -1708,6 +1719,17 @@ public class UpdateSiteSettingsInput
     public string HeroBackgroundImageUrl { get; set; } = string.Empty;
     public string HeroBackgroundVideoUrl { get; set; } = string.Empty;
     public decimal HeroOverlayOpacity { get; set; }
+    public string HeroGenres { get; set; } = string.Empty;
+    public string HeroLocation { get; set; } = string.Empty;
+    public string HeroVibes { get; set; } = string.Empty;
+    public string BrandHeadline { get; set; } = string.Empty;
+    public string BrandNarrative { get; set; } = string.Empty;
+    public string EventsHeading { get; set; } = string.Empty;
+    public string EventsTagline { get; set; } = string.Empty;
+    public string CultureHeading { get; set; } = string.Empty;
+    public string ConceptHeading { get; set; } = string.Empty;
+    public string LineupHeading { get; set; } = string.Empty;
+    public string GalleryVideoUrl { get; set; } = string.Empty;
     public string ContactEmail { get; set; } = string.Empty;
     public string ContactPhone { get; set; } = string.Empty;
     public string ContactAddress { get; set; } = string.Empty;

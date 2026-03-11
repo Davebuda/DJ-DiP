@@ -492,6 +492,17 @@ export const GET_SITE_SETTINGS = gql`
       heroBackgroundImageUrl
       heroBackgroundVideoUrl
       heroOverlayOpacity
+      heroGenres
+      heroLocation
+      heroVibes
+      brandHeadline
+      brandNarrative
+      eventsHeading
+      eventsTagline
+      cultureHeading
+      conceptHeading
+      lineupHeading
+      galleryVideoUrl
       contactEmail
       contactPhone
       contactAddress
@@ -535,6 +546,17 @@ export const UPDATE_SITE_SETTINGS = gql`
       heroBackgroundImageUrl
       heroBackgroundVideoUrl
       heroOverlayOpacity
+      heroGenres
+      heroLocation
+      heroVibes
+      brandHeadline
+      brandNarrative
+      eventsHeading
+      eventsTagline
+      cultureHeading
+      conceptHeading
+      lineupHeading
+      galleryVideoUrl
       contactEmail
       contactPhone
       contactAddress

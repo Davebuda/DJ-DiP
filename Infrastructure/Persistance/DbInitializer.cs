@@ -15,7 +15,18 @@ namespace DJDiP.Infrastructure.Persistance
             {
                 await context.Database.ExecuteSqlRawAsync(
                     @"ALTER TABLE ""Songs"" ADD COLUMN IF NOT EXISTS ""SpotifyUrl"" TEXT;
-                      ALTER TABLE ""Songs"" ADD COLUMN IF NOT EXISTS ""SoundCloudUrl"" TEXT;");
+                      ALTER TABLE ""Songs"" ADD COLUMN IF NOT EXISTS ""SoundCloudUrl"" TEXT;
+                      ALTER TABLE ""SiteSettings"" ADD COLUMN IF NOT EXISTS ""HeroGenres"" TEXT DEFAULT '';
+                      ALTER TABLE ""SiteSettings"" ADD COLUMN IF NOT EXISTS ""HeroLocation"" TEXT DEFAULT '';
+                      ALTER TABLE ""SiteSettings"" ADD COLUMN IF NOT EXISTS ""HeroVibes"" TEXT DEFAULT '';
+                      ALTER TABLE ""SiteSettings"" ADD COLUMN IF NOT EXISTS ""BrandHeadline"" TEXT DEFAULT '';
+                      ALTER TABLE ""SiteSettings"" ADD COLUMN IF NOT EXISTS ""BrandNarrative"" TEXT DEFAULT '';
+                      ALTER TABLE ""SiteSettings"" ADD COLUMN IF NOT EXISTS ""EventsHeading"" TEXT DEFAULT '';
+                      ALTER TABLE ""SiteSettings"" ADD COLUMN IF NOT EXISTS ""EventsTagline"" TEXT DEFAULT '';
+                      ALTER TABLE ""SiteSettings"" ADD COLUMN IF NOT EXISTS ""CultureHeading"" TEXT DEFAULT '';
+                      ALTER TABLE ""SiteSettings"" ADD COLUMN IF NOT EXISTS ""ConceptHeading"" TEXT DEFAULT '';
+                      ALTER TABLE ""SiteSettings"" ADD COLUMN IF NOT EXISTS ""LineupHeading"" TEXT DEFAULT '';
+                      ALTER TABLE ""SiteSettings"" ADD COLUMN IF NOT EXISTS ""GalleryVideoUrl"" TEXT DEFAULT '';");
             }
             catch { /* columns already exist or table doesn't exist yet (handled by EnsureCreated) */ }
 
