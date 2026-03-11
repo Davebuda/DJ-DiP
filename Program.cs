@@ -1332,6 +1332,8 @@ public class Mutation
         [Service] IHttpContextAccessor httpContextAccessor)
     {
         RequireAdmin(httpContextAccessor);
+        try
+        {
         var dto = new UpdateSiteSettingsDto
         {
             Id = input.Id,
@@ -1384,6 +1386,11 @@ public class Mutation
         };
 
         return await siteSettingsService.UpdateAsync(dto);
+        }
+        catch (Exception ex) when (ex is not GraphQLException)
+        {
+            throw new GraphQLException($"Failed to save settings: {ex.Message}");
+        }
     }
 
     // GALLERY MEDIA MUTATIONS
@@ -1409,7 +1416,14 @@ public class Mutation
             Tags = input.Tags
         };
 
-        return await galleryMediaService.CreateAsync(dto, userIdClaim);
+        try
+        {
+            return await galleryMediaService.CreateAsync(dto, userIdClaim);
+        }
+        catch (Exception ex) when (ex is not GraphQLException)
+        {
+            throw new GraphQLException($"Failed to create gallery media: {ex.Message}");
+        }
     }
 
     public async Task<bool> UpdateGalleryMedia(

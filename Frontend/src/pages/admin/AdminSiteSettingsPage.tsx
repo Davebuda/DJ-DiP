@@ -32,11 +32,14 @@ const AdminSiteSettingsPage = () => {
     event.preventDefault();
     setFeedback(null);
     try {
+      // Strip __typename that Apollo adds to cached objects — HotChocolate rejects unknown fields
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { __typename, ...cleanForm } = form as SiteSettings & { __typename?: string };
       const response = await updateSettings({
         variables: {
           input: {
-            ...form,
-            heroOverlayOpacity: Number(form.heroOverlayOpacity),
+            ...cleanForm,
+            heroOverlayOpacity: Number(cleanForm.heroOverlayOpacity),
           },
         },
       });
