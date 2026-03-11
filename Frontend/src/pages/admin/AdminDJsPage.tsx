@@ -5,6 +5,7 @@ import {
   DELETE_DJ,
   GET_DJ_BY_ID,
   GET_DJS,
+  GET_GENRES,
   UPDATE_DJ,
 } from '../../graphql/queries';
 import ImageUpload from '../../components/common/ImageUpload';
@@ -123,6 +124,8 @@ const AdminDJsPage = () => {
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const { data, loading, error, refetch } = useQuery<DJsQueryData>(GET_DJS);
+  const { data: genresData } = useQuery(GET_GENRES);
+  const genreOptions: { id: string; name: string }[] = genresData?.genres ?? [];
   const [fetchDetail, { loading: detailLoading }] = useLazyQuery<DJDetailQueryData, { id: string }>(
     GET_DJ_BY_ID,
   );
@@ -404,17 +407,43 @@ const AdminDJsPage = () => {
               onChange={(e) => setForm((prev) => ({ ...prev, tagline: e.target.value }))}
             />
           </label>
-          <label className="space-y-1 text-sm font-semibold text-gray-300">
+          <div className="space-y-1 text-sm font-semibold text-gray-300">
             Genre *
-            <input
-              type="text"
-              className={inputClass}
-              value={form.genre}
-              onChange={(e) => setForm((prev) => ({ ...prev, genre: e.target.value }))}
-              placeholder="House, EDM, Amapiano…"
-              required
-            />
-          </label>
+            <div className="flex flex-wrap gap-2 mt-1">
+              {genreOptions.map((g) => {
+                const selected = form.genre
+                  .split(',')
+                  .map((s) => s.trim())
+                  .filter(Boolean)
+                  .includes(g.name);
+                return (
+                  <button
+                    key={g.id}
+                    type="button"
+                    onClick={() =>
+                      setForm((prev) => {
+                        const current = prev.genre
+                          .split(',')
+                          .map((s) => s.trim())
+                          .filter(Boolean);
+                        const next = selected
+                          ? current.filter((n) => n !== g.name)
+                          : [...current, g.name];
+                        return { ...prev, genre: next.join(', ') };
+                      })
+                    }
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                      selected
+                        ? 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black border-orange-500'
+                        : 'bg-black/40 text-gray-400 border-white/10 hover:border-orange-400/50 hover:text-white'
+                    }`}
+                  >
+                    {g.name}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
           <label className="space-y-1 text-sm font-semibold text-gray-300">
             Years Experience
             <input
