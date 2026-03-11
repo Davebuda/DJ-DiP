@@ -86,6 +86,10 @@ export const GET_DJS = gql`
       followerCount
       averageRating
       reviewCount
+      specialties
+      achievements
+      yearsExperience
+      influencedBy
     }
   }
 `;
@@ -947,5 +951,41 @@ export const ADD_PLAYLIST_SONG = gql`
 export const REMOVE_PLAYLIST_SONG = gql`
   mutation RemovePlaylistSong($id: UUID!) {
     removePlaylistSong(id: $id)
+  }
+`;
+
+// DJ MIXES QUERIES & MUTATIONS
+export const GET_DJ_MIXES = gql`
+  query GetDjMixes {
+    djMixes {
+      id
+      title
+      description
+      mixUrl
+      thumbnailUrl
+      genre
+      mixType
+      djProfileId
+      djName
+      createdAt
+    }
+  }
+`;
+
+export const CREATE_DJ_MIX = gql`
+  mutation CreateDjMix($input: CreateDJMixInput!) {
+    createDjMix(input: $input)
+  }
+`;
+
+export const UPDATE_DJ_MIX = gql`
+  mutation UpdateDjMix($id: UUID!, $input: UpdateDJMixInput!) {
+    updateDjMix(id: $id, input: $input)
+  }
+`;
+
+export const DELETE_DJ_MIX = gql`
+  mutation DeleteDjMix($id: UUID!) {
+    deleteDjMix(id: $id)
   }
 `;

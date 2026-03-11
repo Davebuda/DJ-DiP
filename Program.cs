@@ -11,6 +11,7 @@ using DJDiP.Application.DTO.TicketDTO;
 using DJDiP.Application.DTO.SongDTO;
 using DJDiP.Application.DTO.SiteSettingsDTO;
 using DJDiP.Application.DTO.PlaylistDTO;
+using DJDiP.Application.DTO.MixDTO;
 using DJDiP.Application.DTO.GalleryDTO;
 using DJDiP.Application.DTO.UserDTO;
 using DJDiP.Application.DTO.Auth;
@@ -167,6 +168,7 @@ builder.Services.AddScoped<IDJApplicationService, DJApplicationService>();
 builder.Services.AddScoped<ISiteSettingsService, SiteSettingsService>();
 builder.Services.AddScoped<IGalleryMediaService, GalleryMediaService>();
 builder.Services.AddScoped<IPlaylistService, PlaylistService>();
+builder.Services.AddScoped<IDJMixService, DJMixService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IFileUploadService>(sp =>
 {
@@ -657,6 +659,20 @@ public class Query
         {
             throw new GraphQLException("Unexpected response from music service.");
         }
+    }
+
+    // DJ Mixes
+    public async Task<IEnumerable<DJMixDto>> DjMixes(
+        [Service] IDJMixService djMixService)
+    {
+        return await djMixService.GetAllAsync();
+    }
+
+    public async Task<DJMixDto?> DjMix(
+        Guid id,
+        [Service] IDJMixService djMixService)
+    {
+        return await djMixService.GetByIdAsync(id);
     }
 }
 
@@ -1463,6 +1479,64 @@ public class Mutation
         return true;
     }
 
+    // DJ MIX MUTATIONS (Admin only)
+    public async Task<Guid> CreateDjMix(
+        CreateDJMixInput input,
+        [Service] IDJMixService djMixService,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        RequireAdmin(httpContextAccessor);
+        if (string.IsNullOrWhiteSpace(input.Title))
+            throw new GraphQLException("Mix title is required.");
+        if (string.IsNullOrWhiteSpace(input.MixUrl))
+            throw new GraphQLException("Mix URL is required.");
+
+        var dto = new CreateDJMixDto
+        {
+            Title = input.Title,
+            Description = input.Description,
+            MixUrl = input.MixUrl,
+            ThumbnailUrl = input.ThumbnailUrl,
+            Genre = input.Genre,
+            MixType = input.MixType,
+            DjProfileId = input.DjProfileId
+        };
+
+        return await djMixService.CreateAsync(dto);
+    }
+
+    public async Task<bool> UpdateDjMix(
+        Guid id,
+        UpdateDJMixInput input,
+        [Service] IDJMixService djMixService,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        RequireAdmin(httpContextAccessor);
+        var dto = new CreateDJMixDto
+        {
+            Title = input.Title,
+            Description = input.Description,
+            MixUrl = input.MixUrl,
+            ThumbnailUrl = input.ThumbnailUrl,
+            Genre = input.Genre,
+            MixType = input.MixType,
+            DjProfileId = input.DjProfileId
+        };
+
+        await djMixService.UpdateAsync(id, dto);
+        return true;
+    }
+
+    public async Task<bool> DeleteDjMix(
+        Guid id,
+        [Service] IDJMixService djMixService,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        RequireAdmin(httpContextAccessor);
+        await djMixService.DeleteAsync(id);
+        return true;
+    }
+
     // SITE SETTINGS MUTATIONS
     public async Task<SiteSettingsDto> UpdateSiteSettings(
         UpdateSiteSettingsInput input,
@@ -2090,6 +2164,28 @@ public class AddPlaylistSongInput
     public Guid PlaylistId { get; set; }
     public Guid SongId { get; set; }
     public int Position { get; set; }
+}
+
+public class CreateDJMixInput
+{
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string MixUrl { get; set; } = string.Empty;
+    public string? ThumbnailUrl { get; set; }
+    public string? Genre { get; set; }
+    public string? MixType { get; set; }
+    public Guid? DjProfileId { get; set; }
+}
+
+public class UpdateDJMixInput
+{
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string MixUrl { get; set; } = string.Empty;
+    public string? ThumbnailUrl { get; set; }
+    public string? Genre { get; set; }
+    public string? MixType { get; set; }
+    public Guid? DjProfileId { get; set; }
 }
 
 public class AdminUserDto

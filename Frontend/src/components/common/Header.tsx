@@ -10,6 +10,7 @@ const Header = () => {
     { label: 'Events', to: '/events' },
     { label: 'DJs', to: '/djs' },
     { label: 'Playlists', to: '/playlists' },
+    { label: 'Mixes', to: '/mixes' },
     { label: 'Gallery', to: '/gallery' },
     { label: 'Tickets', to: '/tickets' },
     { label: 'Contact', to: '/contact' },

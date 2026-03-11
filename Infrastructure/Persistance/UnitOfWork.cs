@@ -33,6 +33,7 @@ namespace DJDiP.Infrastructure.Persistance
         private IDJApplicationRepository? _djApplications;
         private IRepository<Playlist>? _playlists;
         private IRepository<PlaylistSong>? _playlistSongs;
+        private IRepository<DJMix>? _djMixes;
 
         public UnitOfWork(AppDbContext context)
         {
@@ -62,6 +63,7 @@ namespace DJDiP.Infrastructure.Persistance
         public IDJApplicationRepository DJApplications => _djApplications ??= new DJApplicationRepository(_context);
         public IRepository<Playlist> Playlists => _playlists ??= new Repository<Playlist>(_context);
         public IRepository<PlaylistSong> PlaylistSongs => _playlistSongs ??= new Repository<PlaylistSong>(_context);
+        public IRepository<DJMix> DJMixes => _djMixes ??= new Repository<DJMix>(_context);
 
         public async Task<int> SaveChangesAsync()
         {

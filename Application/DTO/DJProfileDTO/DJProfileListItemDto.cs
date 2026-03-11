@@ -13,5 +13,9 @@ namespace DJDiP.Application.DTO.DJProfileDTO
         public int FollowerCount { get; set; }
         public double AverageRating { get; set; }
         public int ReviewCount { get; set; }
+        public string? Specialties { get; set; }
+        public string? Achievements { get; set; }
+        public int? YearsExperience { get; set; }
+        public string? InfluencedBy { get; set; }
     }
 }

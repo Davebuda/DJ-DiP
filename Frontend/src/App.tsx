@@ -44,6 +44,8 @@ import DJTop10Manager from './pages/dj/DJTop10Manager';
 import DJEventsList from './pages/dj/DJEventsList';
 import DJAnalytics from './pages/dj/DJAnalytics';
 import DJPlaylistsManager from './pages/dj/DJPlaylistsManager';
+import MixesPage from './pages/MixesPage';
+import AdminMixesPage from './pages/admin/AdminMixesPage';
 
 const App = () => (
   <Routes>
@@ -104,6 +106,7 @@ const App = () => (
       />
       <Route path="gallery" element={<GalleryPage />} />
       <Route path="playlists" element={<PlaylistDiscoveryPage />} />
+      <Route path="mixes" element={<MixesPage />} />
       <Route path="gamification" element={<GamificationPage />} />
       <Route path="login" element={<LoginPage />} />
       <Route path="register" element={<RegisterPage />} />
@@ -143,6 +146,7 @@ const App = () => (
       <Route path="dj-applications" element={<AdminDJApplicationsPage />} />
       <Route path="tickets" element={<AdminTicketsPage />} />
       <Route path="playlists" element={<AdminPlaylistsPage />} />
+      <Route path="mixes" element={<AdminMixesPage />} />
       <Route path="gallery" element={<AdminGalleryPage />} />
       <Route path="genres" element={<AdminGenresPage />} />
       <Route path="users" element={<AdminUsersPage />} />

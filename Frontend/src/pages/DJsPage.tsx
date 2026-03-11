@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { FOLLOW_DJ, GET_DJS, GET_FOLLOWED_DJS, UNFOLLOW_DJ, GET_DJ_APPLICATION_BY_USER, GET_DJ_TOP10_LISTS } from '../graphql/queries';
@@ -19,6 +19,61 @@ type DJ = {
   followerCount: number;
   averageRating: number;
   reviewCount: number;
+  specialties?: string;
+  achievements?: string;
+  yearsExperience?: number;
+  influencedBy?: string;
+};
+
+const DJHighlights = ({ dj }: { dj: DJ }) => {
+  const [index, setIndex] = useState(0);
+
+  const highlights = useMemo(() => {
+    const items: { label: string; value: string }[] = [];
+    if (dj.specialties) items.push({ label: 'Specialties', value: dj.specialties });
+    if (dj.achievements) items.push({ label: 'Achievements', value: dj.achievements });
+    if (dj.yearsExperience) items.push({ label: 'Experience', value: `${dj.yearsExperience} years` });
+    if (dj.influencedBy) items.push({ label: 'Influenced by', value: dj.influencedBy });
+    return items;
+  }, [dj]);
+
+  useEffect(() => {
+    if (highlights.length <= 1) return;
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % highlights.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [highlights.length]);
+
+  if (highlights.length === 0) return null;
+
+  const current = highlights[index];
+
+  return (
+    <div className="px-1 overflow-hidden">
+      <div
+        key={`${current.label}-${index}`}
+        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-500/10 to-transparent border border-orange-400/15 animate-fade-in"
+      >
+        <span className="text-[0.55rem] uppercase tracking-wider text-orange-400/70 font-bold whitespace-nowrap flex-shrink-0">
+          {current.label}
+        </span>
+        <span className="text-[0.65rem] text-gray-300 truncate">{current.value}</span>
+      </div>
+      {highlights.length > 1 && (
+        <div className="flex justify-center gap-1 mt-1.5">
+          {highlights.map((_, i) => (
+            <div
+              key={i}
+              className={`w-1 h-1 rounded-full transition-all duration-300 ${
+                i === index ? 'bg-orange-400 w-2.5' : 'bg-white/15'
+              }`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 const sortOptions = [
@@ -391,6 +446,9 @@ const DJsPage = () => {
                     <span className="text-[0.6rem] text-white/25 mx-0.5">|</span>
                     <span className="text-[0.65rem] text-gray-500">Oslo, NO</span>
                   </div>
+
+                  {/* Highlights widget */}
+                  <DJHighlights dj={dj} />
 
                   {/* Top Tracks Preview */}
                   {top10ByDj.has(dj.id) && (

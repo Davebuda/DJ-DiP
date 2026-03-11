@@ -38,7 +38,11 @@ namespace DJDiP.Application.Services
                     CoverImageUrl = dj.CoverImageUrl,
                     FollowerCount = followerCounts.TryGetValue(dj.Id, out var count) ? count : 0,
                     AverageRating = hasReviews ? Math.Round(reviews!.Average(r => r.Rating), 1) : 0,
-                    ReviewCount = hasReviews ? reviews!.Count : 0
+                    ReviewCount = hasReviews ? reviews!.Count : 0,
+                    Specialties = dj.Specialties,
+                    Achievements = dj.Achievements,
+                    YearsExperience = dj.YearsExperience,
+                    InfluencedBy = dj.InfluencedBy
                 };
             });
         }

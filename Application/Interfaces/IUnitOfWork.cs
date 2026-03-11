@@ -27,6 +27,7 @@ namespace DJDiP.Application.Interfaces
         IDJApplicationRepository DJApplications { get; }
         IRepository<Playlist> Playlists { get; }
         IRepository<PlaylistSong> PlaylistSongs { get; }
+        IRepository<DJMix> DJMixes { get; }
 
         Task<int> SaveChangesAsync();
         Task BeginTransactionAsync();

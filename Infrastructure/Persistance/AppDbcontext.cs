@@ -49,6 +49,7 @@ namespace DJDiP.Infrastructure.Persistance
         public DbSet<UserPoints> UserPoints => Set<UserPoints>();
         public DbSet<Playlist> Playlists => Set<Playlist>();
         public DbSet<PlaylistSong> PlaylistSongs => Set<PlaylistSong>();
+        public DbSet<DJMix> DJMixes => Set<DJMix>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
