@@ -189,15 +189,14 @@ builder.Services
     .AddMutationType<Mutation>()
     .AddErrorFilter(error =>
     {
-        // Preserve messages from GraphQLException (intentional user-facing errors)
+        // No exception means it's an intentional GraphQL error — preserve message as-is
+        if (error.Exception == null)
+            return error;
+        // GraphQLException — preserve the intentional message
         if (error.Exception is GraphQLException)
             return error.WithMessage(error.Exception.Message);
-        // Log actual exception details before sanitizing
-        if (error.Exception != null)
-            Console.Error.WriteLine($"[GraphQL ERROR] {error.Exception.GetType().Name}: {error.Exception.Message}\n{error.Exception.StackTrace}");
-        else
-            Console.Error.WriteLine($"[GraphQL ERROR] No exception. Code={error.Code} Message={error.Message}");
-        // Hide internal details in production
+        // Unexpected exception — log details, then sanitize in production
+        Console.Error.WriteLine($"[GraphQL ERROR] {error.Exception.GetType().Name}: {error.Exception.Message}\n{error.Exception.StackTrace}");
         if (!builder.Environment.IsDevelopment())
             return error.WithMessage("An unexpected error occurred.");
         return error;
