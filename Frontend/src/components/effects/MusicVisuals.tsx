@@ -193,8 +193,8 @@ export const MarqueeStrip = ({
   return (
     <div className="relative w-full overflow-hidden select-none py-8 md:py-10" aria-hidden="true">
       {/* Top & bottom edge lines */}
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.15] to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/[0.15] to-transparent" />
 
       <div
         className="flex whitespace-nowrap"
@@ -208,7 +208,7 @@ export const MarqueeStrip = ({
                 <span
                   className="text-3xl sm:text-5xl md:text-7xl font-bold uppercase tracking-[0.08em] px-2 sm:px-4"
                   style={{
-                    WebkitTextStroke: '1px rgba(255,255,255,0.06)',
+                    WebkitTextStroke: '1px rgba(255,255,255,0.22)',
                     color: 'transparent',
                   }}
                 >
@@ -218,8 +218,8 @@ export const MarqueeStrip = ({
                 <span
                   className={`text-3xl sm:text-5xl md:text-7xl font-bold uppercase tracking-[0.08em] px-2 sm:px-4 ${
                     isAccent
-                      ? 'bg-gradient-to-b from-orange-500/[0.08] to-orange-500/[0.02] bg-clip-text text-transparent'
-                      : 'text-white/[0.03]'
+                      ? 'bg-gradient-to-b from-orange-500/[0.25] to-orange-500/[0.10] bg-clip-text text-transparent'
+                      : 'text-white/[0.12]'
                   }`}
                 >
                   {word}

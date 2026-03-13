@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
-import { GET_LANDING_DATA, HAS_PENDING_DJ_APPLICATION } from '../graphql/queries';
+import { GET_LANDING_DATA, HAS_PENDING_DJ_APPLICATION, GET_DJ_MIXES } from '../graphql/queries';
 import { useAuth } from '../context/AuthContext';
 import NewsletterSignup from '../components/common/NewsletterSignup';
 import GallerySlideshow from '../components/gallery/GallerySlideshow';
@@ -316,6 +316,7 @@ const LandingPage = () => {
     variables: { userId: user?.id ?? '' },
     skip: !user || isDJ,
   });
+  const { data: mixesData } = useQuery(GET_DJ_MIXES);
   const featuredImageFallback =
     siteSettings.heroBackgroundImageUrl ?? '/media/sections/hero/KlubN12.07 screen (1) copy.png';
 
@@ -911,113 +912,51 @@ const LandingPage = () => {
         </div>
 
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <StaggerItem>
-          <TiltCard intensity={8}>
-          <Link
-            to="/gallery"
-            className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
-          >
-            <div className="flex flex-col h-[300px]">
-              <div className="relative overflow-hidden h-32">
-                <div
-                  className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
-                  style={{ backgroundImage: `url(${featuredImageFallback})` }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-[0.55rem] font-bold uppercase tracking-wide bg-gradient-to-b from-white/[0.12] to-white/[0.04] text-white/80 border border-white/[0.06]">
-                  Afrobeat
-                </span>
-              </div>
-              <div className="flex-1 p-4 flex flex-col justify-between">
-                <div className="space-y-2">
-                  <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-orange-400/80">Weekly Mix</p>
-                  <h3 className="text-base font-bold text-white group-hover:text-orange-400 transition-colors">
-                    Afterhours Pulse
-                  </h3>
-                  <p className="text-gray-400 text-xs leading-relaxed line-clamp-2">
-                    Afrobeat and Amapiano grooves curated from our best club nights.
-                  </p>
+          {(mixesData?.djMixes ?? []).slice(0, 3).map((mix: any) => (
+            <StaggerItem key={mix.id}>
+            <TiltCard intensity={8}>
+            <a
+              href={mix.mixUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
+            >
+              <div className="flex flex-col h-[300px]">
+                <div className="relative overflow-hidden h-32">
+                  <div
+                    className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
+                    style={{ backgroundImage: `url(${mix.thumbnailUrl || featuredImageFallback})` }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  {mix.genre && (
+                    <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-[0.55rem] font-bold uppercase tracking-wide bg-gradient-to-b from-white/[0.12] to-white/[0.04] text-white/80 border border-white/[0.06]">
+                      {mix.genre}
+                    </span>
+                  )}
                 </div>
-                <span className="inline-flex items-center gap-2 text-orange-400 text-xs font-semibold group-hover:gap-3 transition-all">
-                  Listen Now →
-                </span>
-              </div>
-            </div>
-          </Link>
-          </TiltCard>
-          </StaggerItem>
-
-          <StaggerItem>
-          <TiltCard intensity={8}>
-          <Link
-            to="/gallery"
-            className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
-          >
-            <div className="flex flex-col h-[300px]">
-              <div className="relative overflow-hidden h-32">
-                <div
-                  className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
-                  style={{ backgroundImage: `url(${featuredImageFallback})` }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-[0.55rem] font-bold uppercase tracking-wide bg-gradient-to-b from-white/[0.12] to-white/[0.04] text-white/80 border border-white/[0.06]">
-                  Hip Hop
-                </span>
-              </div>
-              <div className="flex-1 p-4 flex flex-col justify-between">
-                <div className="space-y-2">
-                  <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-orange-400/80">Live Set</p>
-                  <h3 className="text-base font-bold text-white group-hover:text-orange-400 transition-colors">
-                    Peak Hour Sessions
-                  </h3>
-                  <p className="text-gray-400 text-xs leading-relaxed line-clamp-2">
-                    High-energy Hip Hop and R&B straight from the KlubN dancefloor.
-                  </p>
+                <div className="flex-1 p-4 flex flex-col justify-between">
+                  <div className="space-y-2">
+                    {mix.mixType && (
+                      <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-orange-400/80">{mix.mixType}</p>
+                    )}
+                    <h3 className="text-base font-bold text-white group-hover:text-orange-400 transition-colors">
+                      {mix.title}
+                    </h3>
+                    {mix.description && (
+                      <p className="text-gray-400 text-xs leading-relaxed line-clamp-2">
+                        {mix.description}
+                      </p>
+                    )}
+                  </div>
+                  <span className="inline-flex items-center gap-2 text-orange-400 text-xs font-semibold group-hover:gap-3 transition-all">
+                    Listen Now →
+                  </span>
                 </div>
-                <span className="inline-flex items-center gap-2 text-orange-400 text-xs font-semibold group-hover:gap-3 transition-all">
-                  Listen Now →
-                </span>
               </div>
-            </div>
-          </Link>
-          </TiltCard>
-          </StaggerItem>
-
-          <StaggerItem>
-          <TiltCard intensity={8}>
-          <Link
-            to="/gallery"
-            className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
-          >
-            <div className="flex flex-col h-[300px]">
-              <div className="relative overflow-hidden h-32">
-                <div
-                  className="absolute inset-0 bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
-                  style={{ backgroundImage: `url(${featuredImageFallback})` }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-[0.55rem] font-bold uppercase tracking-wide bg-gradient-to-b from-white/[0.12] to-white/[0.04] text-white/80 border border-white/[0.06]">
-                  Shatta
-                </span>
-              </div>
-              <div className="flex-1 p-4 flex flex-col justify-between">
-                <div className="space-y-2">
-                  <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-orange-400/80">Club Culture</p>
-                  <h3 className="text-base font-bold text-white group-hover:text-orange-400 transition-colors">
-                    Deep Cuts
-                  </h3>
-                  <p className="text-gray-400 text-xs leading-relaxed line-clamp-2">
-                    Shatta and Dancehall riddims that keep Oslo's dancefloors moving.
-                  </p>
-                </div>
-                <span className="inline-flex items-center gap-2 text-orange-400 text-xs font-semibold group-hover:gap-3 transition-all">
-                  Listen Now →
-                </span>
-              </div>
-            </div>
-          </Link>
-          </TiltCard>
-          </StaggerItem>
+            </a>
+            </TiltCard>
+            </StaggerItem>
+          ))}
         </StaggerContainer>
       </section>
 
