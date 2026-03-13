@@ -24,7 +24,7 @@ const ContactPage = () => {
   };
 
   const contactDetails = [
-    { icon: Mail, label: 'Email', value: siteSettings.contactEmail || 'hello@djdip.com', href: `mailto:${siteSettings.contactEmail || 'hello@djdip.com'}` },
+    { icon: Mail, label: 'Email', value: siteSettings.contactEmail || 'letsgoklubn@gmail.com', href: `mailto:${siteSettings.contactEmail || 'letsgoklubn@gmail.com'}` },
     { icon: Phone, label: 'Phone', value: siteSettings.contactPhone || 'N/A', href: siteSettings.contactPhone ? `tel:${siteSettings.contactPhone}` : undefined },
     { icon: MapPin, label: 'Location', value: siteSettings.contactAddress || 'Oslo, Norway', href: undefined },
     { icon: Clock, label: 'Response Time', value: 'Usually within 24 hours', href: undefined },

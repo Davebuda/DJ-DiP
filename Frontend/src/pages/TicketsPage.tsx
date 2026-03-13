@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
-import { GET_USER_TICKETS } from '../graphql/queries';
+import { GET_USER_TICKETS, GET_EVENTS } from '../graphql/queries';
 import { useAuth } from '../context/AuthContext';
 
 type Ticket = {
@@ -19,6 +19,17 @@ type Ticket = {
   };
 };
 
+type EventItem = {
+  id: string;
+  title: string;
+  date: string;
+  price: number;
+  imageUrl?: string;
+  ticketingUrl?: string;
+  genres: string[];
+  venue: { name: string; city: string };
+};
+
 const TicketsPage = () => {
   const { user, isAuthenticated } = useAuth();
   const { data, loading, error, refetch } = useQuery(GET_USER_TICKETS, {
@@ -26,8 +37,19 @@ const TicketsPage = () => {
     skip: !user,
     fetchPolicy: 'cache-and-network',
   });
+  const { data: eventsData } = useQuery(GET_EVENTS);
 
   const tickets = data?.ticketsByUser ?? [];
+
+  // Upcoming events the user hasn't purchased a ticket to
+  const ticketEventIds = new Set(tickets.map((t: Ticket) => t.event.id));
+  const upcomingEvents: EventItem[] = useMemo(() => {
+    const now = new Date();
+    return (eventsData?.events ?? [])
+      .filter((e: EventItem) => new Date(e.date) > now && !ticketEventIds.has(e.id))
+      .sort((a: EventItem, b: EventItem) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(0, 3);
+  }, [eventsData, ticketEventIds]);
 
   const formatter = useMemo(
     () =>
@@ -142,6 +164,60 @@ const TicketsPage = () => {
             </div>
           ))}
         </div>
+
+        {/* Upcoming Events suggestion section */}
+        {upcomingEvents.length > 0 && (
+          <div className="space-y-4 pt-8 border-t border-white/5">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <p className="text-xs uppercase tracking-[0.5em] text-orange-400 font-bold">Upcoming</p>
+                <h2 className="text-xl font-semibold text-white">Events You Might Like</h2>
+              </div>
+              <Link
+                to="/events"
+                className="text-sm uppercase tracking-[0.3em] text-gray-400 hover:text-orange-300 transition-colors"
+              >
+                See All
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {upcomingEvents.map((ev: EventItem) => (
+                <Link
+                  key={ev.id}
+                  to={`/events/${ev.id}`}
+                  className="tile overflow-hidden group hover:border-orange-400/40 transition-colors"
+                >
+                  {ev.imageUrl && (
+                    <div className="aspect-video overflow-hidden">
+                      <img
+                        src={ev.imageUrl}
+                        alt={ev.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  )}
+                  <div className="p-4 space-y-2">
+                    <p className="text-white font-semibold text-sm line-clamp-2">{ev.title}</p>
+                    <p className="text-gray-400 text-xs">
+                      {formatter.format(new Date(ev.date))}
+                    </p>
+                    <p className="text-gray-500 text-xs">{ev.venue.name}{ev.venue.city ? ` · ${ev.venue.city}` : ''}</p>
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-orange-300 text-sm font-bold">
+                        {ev.price > 0 ? `$${ev.price.toFixed(2)}` : 'Free'}
+                      </span>
+                      {ev.ticketingUrl ? (
+                        <span className="text-xs text-green-400 uppercase tracking-wider">Tickets Available</span>
+                      ) : (
+                        <span className="text-xs text-gray-500 uppercase tracking-wider">View Details</span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -20,7 +20,10 @@ using DJDiP.Application.Services;
 using DJDiP.Application.Options;
 using DJDiP.Infrastructure.Persistance;
 using DJDiP.Domain.Models;
+using System.Net;
 using HotChocolate;
+using HotChocolate.AspNetCore.Serialization;
+using HotChocolate.Execution;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -183,6 +186,11 @@ builder.Services.AddScoped<IFileUploadService>(sp =>
 builder.Services.AddControllers();
 
 // ========== GRAPHQL ==========
+// HotChocolate 13 follows GraphQL-over-HTTP spec and returns HTTP 500 when data is null.
+// Apollo Client treats non-200 as a network error and can't read the errors array.
+// This custom serializer always returns HTTP 200 so Apollo can handle errors properly.
+builder.Services.AddSingleton<IHttpResultSerializer, AlwaysOkResultSerializer>();
+
 builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
@@ -859,7 +867,8 @@ public class Mutation
             GenreIds = input.GenreIds ?? new List<Guid>(),
             DJIds = input.DjIds ?? new List<Guid>(),
             ImageUrl = input.ImageUrl,
-            VideoUrl = input.VideoUrl
+            VideoUrl = input.VideoUrl,
+            TicketingUrl = input.TicketingUrl
         };
 
         try
@@ -890,7 +899,8 @@ public class Mutation
             GenreIds = input.GenreIds ?? new List<Guid>(),
             DJIds = input.DjIds ?? new List<Guid>(),
             ImageUrl = input.ImageUrl,
-            VideoUrl = input.VideoUrl
+            VideoUrl = input.VideoUrl,
+            TicketingUrl = input.TicketingUrl
         };
 
         await events.UpdateAsync(id, dto);
@@ -1919,6 +1929,7 @@ public class CreateEventInput
     public List<Guid>? DjIds { get; set; }
     public string? ImageUrl { get; set; }
     public string? VideoUrl { get; set; }
+    public string? TicketingUrl { get; set; }
 }
 
 public class UpdateEventInput
@@ -1932,6 +1943,7 @@ public class UpdateEventInput
     public List<Guid>? DjIds { get; set; }
     public string? ImageUrl { get; set; }
     public string? VideoUrl { get; set; }
+    public string? TicketingUrl { get; set; }
 }
 
 public class CreateDjInput
@@ -2234,4 +2246,24 @@ public class AdminUserDto
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public DateTime? LastLoginAt { get; set; }
+}
+
+/// <summary>
+/// Always returns HTTP 200 for GraphQL responses so Apollo Client can parse errors properly.
+/// HotChocolate 13 by default returns HTTP 500 when data is null (GraphQL-over-HTTP spec),
+/// but Apollo treats any non-200 as a network error and cannot read the errors array.
+/// </summary>
+public class AlwaysOkResultSerializer : IHttpResultSerializer
+{
+    private readonly DefaultHttpResultSerializer _inner = new();
+
+    public string GetContentType(IExecutionResult result) => _inner.GetContentType(result);
+
+    public HttpStatusCode GetStatusCode(IExecutionResult result) => HttpStatusCode.OK;
+
+    public ValueTask SerializeAsync(
+        IExecutionResult result,
+        Stream responseStream,
+        CancellationToken cancellationToken = default)
+        => _inner.SerializeAsync(result, responseStream, cancellationToken);
 }

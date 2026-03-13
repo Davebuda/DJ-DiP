@@ -158,6 +158,7 @@ export const GET_EVENTS = gql`
       date
       price
       imageUrl
+      ticketingUrl
       genres
       venue {
         id

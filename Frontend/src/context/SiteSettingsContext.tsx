@@ -70,7 +70,7 @@ export const defaultSiteSettings: SiteSettings = {
   heroBackgroundImageUrl: '/media/defaults/event.svg',
   heroBackgroundVideoUrl: '',
   heroOverlayOpacity: 0.6,
-  contactEmail: 'hello@djdip.com',
+  contactEmail: 'letsgoklubn@gmail.com',
   contactPhone: '+1 (555) 555-5555',
   contactAddress: 'Worldwide',
   facebookUrl: 'https://facebook.com',

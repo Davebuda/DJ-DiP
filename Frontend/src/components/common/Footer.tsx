@@ -2,7 +2,7 @@ import { useSiteSettings } from '../../context/SiteSettingsContext';
 
 const Footer = () => {
   const { siteSettings } = useSiteSettings();
-  const contactEmail = siteSettings.contactEmail || 'hello@djdip.com';
+  const contactEmail = siteSettings.contactEmail || 'letsgoklubn@gmail.com';
   const footerText =
     siteSettings.footerText ||
     'Nightlife technology for the selectors, venues, and fans pushing culture forward.';

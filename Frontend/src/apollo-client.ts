@@ -20,6 +20,13 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path }) => {
       console.error(`[GraphQL error]: Message: ${message}`, locations, path);
+      // If session expired, clear localStorage and redirect to login
+      if (message === 'Authentication required.') {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        window.location.href = '/login?expired=1';
+      }
     });
   }
   if (networkError) {
