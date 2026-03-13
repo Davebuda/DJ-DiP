@@ -91,6 +91,13 @@ export const GET_DJS = gql`
       achievements
       yearsExperience
       influencedBy
+      upcomingEvents {
+        eventId
+        title
+        date
+        venueName
+        city
+      }
     }
   }
 `;

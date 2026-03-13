@@ -5,7 +5,7 @@ import { FOLLOW_DJ, GET_DJS, GET_FOLLOWED_DJS, UNFOLLOW_DJ, GET_DJ_APPLICATION_B
 import { useAuth } from '../context/AuthContext';
 import DJApplicationForm from '../components/DJApplicationForm';
 import { useSiteSettings } from '../context/SiteSettingsContext';
-import { Star, Music } from 'lucide-react';
+import { Star, Music, CalendarDays } from 'lucide-react';
 
 type DJ = {
   id: string;
@@ -23,6 +23,7 @@ type DJ = {
   achievements?: string;
   yearsExperience?: number;
   influencedBy?: string;
+  upcomingEvents?: { eventId: string; title: string; date: string; venueName: string; city?: string }[];
 };
 
 const SongTicker = ({ tracks }: { tracks: { title: string; artist: string }[] }) => {
@@ -46,6 +47,48 @@ const SongTicker = ({ tracks }: { tracks: { title: string; artist: string }[] })
       </div>
       {tracks.length > 1 && (
         <span className="text-[0.5rem] text-gray-600 flex-shrink-0 tabular-nums">{index + 1}/{tracks.length}</span>
+      )}
+    </div>
+  );
+};
+
+const DJHighlights = ({ dj }: { dj: DJ }) => {
+  const [index, setIndex] = useState(0);
+  const highlights = useMemo(() => {
+    const items: { label: string; value: string }[] = [];
+    if (dj.specialties) items.push({ label: 'Specialties', value: dj.specialties });
+    if (dj.achievements) items.push({ label: 'Achievements', value: dj.achievements });
+    if (dj.yearsExperience) items.push({ label: 'Experience', value: `${dj.yearsExperience} yrs` });
+    if (dj.influencedBy) items.push({ label: 'Influenced by', value: dj.influencedBy });
+    return items;
+  }, [dj]);
+
+  useEffect(() => {
+    if (highlights.length <= 1) return;
+    const timer = setInterval(() => setIndex((p) => (p + 1) % highlights.length), 3500);
+    return () => clearInterval(timer);
+  }, [highlights.length]);
+
+  if (highlights.length === 0) return null;
+  const current = highlights[index];
+
+  return (
+    <div className="px-1">
+      <div
+        key={`${current.label}-${index}`}
+        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-500/10 to-transparent border border-orange-400/15 animate-fade-in"
+      >
+        <span className="text-[0.5rem] uppercase tracking-wider text-orange-400/70 font-bold whitespace-nowrap flex-shrink-0">
+          {current.label}
+        </span>
+        <span className="text-[0.62rem] text-gray-300 truncate">{current.value}</span>
+      </div>
+      {highlights.length > 1 && (
+        <div className="flex justify-center gap-1 mt-1.5">
+          {highlights.map((_, i) => (
+            <div key={i} className={`h-1 rounded-full transition-all duration-300 ${i === index ? 'w-2.5 bg-orange-400' : 'w-1 bg-white/15'}`} />
+          ))}
+        </div>
       )}
     </div>
   );
@@ -423,8 +466,37 @@ const DJsPage = () => {
                     </div>
                   </Link>
 
+                  {/* Highlights auto-scroll */}
+                  <DJHighlights dj={dj} />
+
                   {/* Song ticker */}
                   {tracks.length > 0 && <SongTicker tracks={tracks} />}
+
+                  {/* Next upcoming event */}
+                  {(() => {
+                    const now = new Date();
+                    const next = (dj.upcomingEvents ?? [])
+                      .filter((e) => new Date(e.date) >= now)
+                      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
+                    if (!next) return null;
+                    return (
+                      <Link
+                        to={`/events/${next.eventId}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-orange-500/[0.07] border border-orange-400/20 hover:border-orange-400/50 transition group/ev"
+                      >
+                        <CalendarDays className="w-3.5 h-3.5 text-orange-400 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[0.6rem] uppercase tracking-wider text-orange-400/70 leading-none">Next Set</p>
+                          <p className="text-[0.68rem] text-white/80 truncate mt-0.5">{next.title}</p>
+                          <p className="text-[0.58rem] text-gray-500 truncate">
+                            {new Date(next.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            {' · '}{next.venueName}{next.city ? `, ${next.city}` : ''}
+                          </p>
+                        </div>
+                      </Link>
+                    );
+                  })()}
 
                   {/* View Profile button */}
                   <Link
