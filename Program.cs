@@ -20,9 +20,7 @@ using DJDiP.Application.Services;
 using DJDiP.Application.Options;
 using DJDiP.Infrastructure.Persistance;
 using DJDiP.Domain.Models;
-using System.Net;
 using HotChocolate;
-using HotChocolate.AspNetCore.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -185,6 +183,14 @@ builder.Services.AddScoped<IFileUploadService>(sp =>
 builder.Services.AddControllers();
 
 // ========== GRAPHQL ==========
+// Use legacy HTTP transport so HotChocolate returns HTTP 200 (not 500) when data is null.
+// The new GraphQL-over-HTTP spec returns 500 for null data, but Apollo Client needs 200
+// to read the errors array properly. Legacy mode restores the pre-spec-compliant behavior.
+builder.Services.AddHttpResponseFormatter(new HotChocolate.AspNetCore.Serialization.HttpResponseFormatterOptions
+{
+    HttpTransportVersion = HotChocolate.AspNetCore.HttpTransportVersion.Legacy
+});
+
 builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
@@ -209,10 +215,6 @@ builder.Services
     })
     .ModifyOptions(o => o.StrictValidation = false);
 
-// HotChocolate 13 follows GraphQL-over-HTTP spec and returns HTTP 500 when data is null.
-// Apollo Client treats non-200 as a network error and can't read the errors array.
-// Registering AFTER AddGraphQLServer ensures this wins over HC's default formatter.
-builder.Services.AddHttpResponseFormatter<AlwaysOkHttpResponseFormatter>();
 
 var app = builder.Build();
 
@@ -2247,16 +2249,3 @@ public class AdminUserDto
     public DateTime? LastLoginAt { get; set; }
 }
 
-/// <summary>
-/// Always returns HTTP 200 for GraphQL responses so Apollo Client can parse errors properly.
-/// HotChocolate 13 by default returns HTTP 500 when data is null (GraphQL-over-HTTP spec),
-/// but Apollo treats any non-200 as a network error and cannot read the errors array.
-/// </summary>
-public class AlwaysOkHttpResponseFormatter : DefaultHttpResponseFormatter
-{
-    protected override HttpStatusCode OnDetermineStatusCode(
-        HotChocolate.Execution.IQueryResult result,
-        DefaultHttpResponseFormatter.FormatInfo format,
-        HttpStatusCode? proposedStatusCode)
-        => HttpStatusCode.OK;
-}
