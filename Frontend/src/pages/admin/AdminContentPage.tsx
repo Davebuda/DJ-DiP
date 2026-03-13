@@ -10,7 +10,7 @@ const AdminContentPage = () => {
     'w-full rounded border border-white/10 bg-black/40 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500';
   const textareaClass = `${inputClass} min-h-[120px]`;
 
-  const { siteSettings, refetch } = useSiteSettings();
+  const { siteSettings, loading, refetch } = useSiteSettings();
   const [updateSettings, { loading: saving }] = useMutation(UPDATE_SITE_SETTINGS);
 
   const [activeTab, setActiveTab] = useState<ContentTab>('landing');
@@ -98,6 +98,10 @@ const AdminContentPage = () => {
     { id: 'faq', label: 'FAQ' },
     { id: 'terms', label: 'Terms & Privacy' },
   ];
+
+  if (loading) {
+    return <div className="text-sm text-gray-400">Loading settings…</div>;
+  }
 
   return (
     <div className="space-y-8">
