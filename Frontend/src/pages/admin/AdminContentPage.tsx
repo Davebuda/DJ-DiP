@@ -71,20 +71,67 @@ const AdminContentPage = () => {
     e.preventDefault();
     setFeedback(null);
     try {
-      const { __typename, ...cleanSettings } = siteSettings as any;
+      // Build the input explicitly — never spread the Apollo cache object directly
+      // because cache proxies can include internal properties that HotChocolate rejects.
       await updateSettings({
         variables: {
           input: {
-            ...cleanSettings,
+            id: siteSettings.id,
+            siteName: siteSettings.siteName,
+            tagline: siteSettings.tagline,
+            logoUrl: siteSettings.logoUrl,
+            faviconUrl: siteSettings.faviconUrl,
+            primaryColor: siteSettings.primaryColor,
+            secondaryColor: siteSettings.secondaryColor,
+            accentColor: siteSettings.accentColor,
+            heroTitle: siteSettings.heroTitle,
+            heroSubtitle: siteSettings.heroSubtitle,
+            heroCtaText: siteSettings.heroCtaText,
+            heroCtaLink: siteSettings.heroCtaLink,
+            heroBackgroundImageUrl: siteSettings.heroBackgroundImageUrl,
+            heroBackgroundVideoUrl: siteSettings.heroBackgroundVideoUrl,
             heroOverlayOpacity: Number(siteSettings.heroOverlayOpacity),
-            ...landingForm,
+            contactEmail: siteSettings.contactEmail,
+            contactPhone: siteSettings.contactPhone,
+            contactAddress: siteSettings.contactAddress,
+            facebookUrl: siteSettings.facebookUrl,
+            instagramUrl: siteSettings.instagramUrl,
+            twitterUrl: siteSettings.twitterUrl,
+            youTubeUrl: siteSettings.youTubeUrl,
+            tikTokUrl: siteSettings.tikTokUrl,
+            soundCloudUrl: siteSettings.soundCloudUrl,
+            defaultEventImageUrl: siteSettings.defaultEventImageUrl,
+            defaultDjImageUrl: siteSettings.defaultDjImageUrl,
+            defaultVenueImageUrl: siteSettings.defaultVenueImageUrl,
+            enableNewsletter: siteSettings.enableNewsletter,
+            enableNotifications: siteSettings.enableNotifications,
+            enableReviews: siteSettings.enableReviews,
+            enableGamification: siteSettings.enableGamification,
+            enableSubscriptions: siteSettings.enableSubscriptions,
+            metaDescription: siteSettings.metaDescription,
+            metaKeywords: siteSettings.metaKeywords,
+            footerText: siteSettings.footerText,
+            copyrightText: siteSettings.copyrightText,
+            // Landing page content fields from the form
+            heroGenres: landingForm.heroGenres,
+            heroLocation: landingForm.heroLocation,
+            heroVibes: landingForm.heroVibes,
+            brandHeadline: landingForm.brandHeadline,
+            brandNarrative: landingForm.brandNarrative,
+            eventsHeading: landingForm.eventsHeading,
+            eventsTagline: landingForm.eventsTagline,
+            cultureHeading: landingForm.cultureHeading,
+            conceptHeading: landingForm.conceptHeading,
+            lineupHeading: landingForm.lineupHeading,
+            galleryVideoUrl: landingForm.galleryVideoUrl,
           },
         },
       });
       await refetch();
       setFeedback({ type: 'success', text: 'Landing page content saved.' });
-    } catch (err) {
-      setFeedback({ type: 'error', text: err instanceof Error ? err.message : 'Failed to save.' });
+    } catch (err: any) {
+      const msg = err?.graphQLErrors?.[0]?.message || err?.message || 'Failed to save.';
+      setFeedback({ type: 'error', text: msg });
     }
   };
 
