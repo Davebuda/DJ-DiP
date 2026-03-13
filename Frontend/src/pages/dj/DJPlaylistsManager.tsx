@@ -48,6 +48,7 @@ type Playlist = {
   curator?: string | null;
   djProfileId?: string | null;
   djName?: string | null;
+  playlistUrl?: string | null;
   songs: PlaylistSong[];
 };
 
@@ -62,7 +63,8 @@ const DJPlaylistsManager = () => {
   const [showNewSongForm, setShowNewSongForm] = useState(false);
 
   // Form state for create/edit playlist
-  const [form, setForm] = useState({ title: '', description: '', genre: '', coverImageUrl: '' });
+  const [form, setForm] = useState({ title: '', description: '', genre: '', coverImageUrl: '', playlistUrl: '' });
+  const [fetchingPlaylist, setFetchingPlaylist] = useState(false);
 
   // New song form
   const [newSong, setNewSong] = useState({
@@ -103,22 +105,44 @@ const DJPlaylistsManager = () => {
   const playlists: Playlist[] = playlistsData?.myDjPlaylists ?? [];
   const allSongs = songsData?.songs ?? [];
 
+  const handleFetchPlaylistMetadata = async () => {
+    if (!form.playlistUrl.trim()) return;
+    setFetchingPlaylist(true);
+    try {
+      const { data } = await fetchMetadata({ variables: { url: form.playlistUrl.trim() } });
+      if (data?.fetchSongMetadata) {
+        const m = data.fetchSongMetadata;
+        setForm((p) => ({
+          ...p,
+          title: p.title || m.title || '',
+          coverImageUrl: p.coverImageUrl || m.coverImageUrl || '',
+        }));
+      }
+    } catch (err: any) {
+      alert(err.message || 'Could not fetch playlist details.');
+    } finally {
+      setFetchingPlaylist(false);
+    }
+  };
+
   const handleCreatePlaylist = async () => {
-    if (!form.title.trim() || !djId) return;
+    if (!djId) return;
+    if (!form.playlistUrl.trim() && !form.title.trim()) return;
     try {
       await createPlaylist({
         variables: {
           input: {
-            title: form.title,
+            title: form.title.trim() || 'Untitled Playlist',
             description: form.description || null,
             genre: form.genre || null,
             coverImageUrl: form.coverImageUrl || null,
             curator: user?.fullName || null,
             djProfileId: djId,
+            playlistUrl: form.playlistUrl || null,
           },
         },
       });
-      setForm({ title: '', description: '', genre: '', coverImageUrl: '' });
+      setForm({ title: '', description: '', genre: '', coverImageUrl: '', playlistUrl: '' });
       setShowCreateForm(false);
       refetchPlaylists();
     } catch (err: any) {
@@ -127,22 +151,23 @@ const DJPlaylistsManager = () => {
   };
 
   const handleUpdatePlaylist = async (id: string) => {
-    if (!form.title.trim()) return;
+    if (!form.playlistUrl.trim() && !form.title.trim()) return;
     try {
       await updatePlaylist({
         variables: {
           id,
           input: {
-            title: form.title,
+            title: form.title.trim() || 'Untitled Playlist',
             description: form.description || null,
             genre: form.genre || null,
             coverImageUrl: form.coverImageUrl || null,
             curator: user?.fullName || null,
+            playlistUrl: form.playlistUrl || null,
           },
         },
       });
       setEditingId(null);
-      setForm({ title: '', description: '', genre: '', coverImageUrl: '' });
+      setForm({ title: '', description: '', genre: '', coverImageUrl: '', playlistUrl: '' });
       refetchPlaylists();
     } catch (err: any) {
       alert(err.message || 'Failed to update playlist');
@@ -257,6 +282,7 @@ const DJPlaylistsManager = () => {
       description: playlist.description || '',
       genre: playlist.genre || '',
       coverImageUrl: playlist.coverImageUrl || '',
+      playlistUrl: playlist.playlistUrl || '',
     });
   };
 
@@ -282,7 +308,7 @@ const DJPlaylistsManager = () => {
           onClick={() => {
             setShowCreateForm(true);
             setEditingId(null);
-            setForm({ title: '', description: '', genre: '', coverImageUrl: '' });
+            setForm({ title: '', description: '', genre: '', coverImageUrl: '', playlistUrl: '' });
           }}
           className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black text-sm font-semibold hover:shadow-lg hover:shadow-orange-500/25 transition"
         >
@@ -297,17 +323,42 @@ const DJPlaylistsManager = () => {
           <h2 className="text-lg font-semibold text-white">
             {editingId ? 'Edit Playlist' : 'Create Playlist'}
           </h2>
+
+          {/* URL first — paste to auto-fill everything */}
+          <div>
+            <label className="block text-xs uppercase tracking-wider text-gray-400 mb-1">
+              Spotify / SoundCloud Playlist URL
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="url"
+                value={form.playlistUrl}
+                onChange={(e) => setForm({ ...form, playlistUrl: e.target.value })}
+                className="flex-1 rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none"
+                placeholder="https://open.spotify.com/playlist/... or https://soundcloud.com/..."
+              />
+              <button
+                type="button"
+                onClick={handleFetchPlaylistMetadata}
+                disabled={!form.playlistUrl.trim() || fetchingPlaylist}
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-purple-500 text-white text-sm font-semibold hover:shadow-lg transition disabled:opacity-50 whitespace-nowrap"
+              >
+                {fetchingPlaylist ? 'Fetching…' : 'Fetch Details'}
+              </button>
+            </div>
+          </div>
+
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="block text-xs uppercase tracking-wider text-gray-400 mb-1">
-                Title *
+                Title <span className="normal-case text-gray-500">(auto-filled from URL)</span>
               </label>
               <input
                 type="text"
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none"
-                placeholder="My Awesome Playlist"
+                placeholder="Auto-filled or enter manually"
               />
             </div>
             <div>
@@ -339,7 +390,7 @@ const DJPlaylistsManager = () => {
                 currentImageUrl={form.coverImageUrl}
                 onImageUploaded={(url) => setForm({ ...form, coverImageUrl: url })}
                 folder="playlists"
-                label="Cover Image"
+                label="Cover Image (auto-fetched from URL)"
                 aspectRatio="aspect-square"
               />
             </div>
@@ -349,7 +400,8 @@ const DJPlaylistsManager = () => {
               onClick={() =>
                 editingId ? handleUpdatePlaylist(editingId) : handleCreatePlaylist()
               }
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black text-sm font-semibold hover:shadow-lg transition"
+              disabled={!form.playlistUrl.trim() && !form.title.trim()}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black text-sm font-semibold hover:shadow-lg transition disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               {editingId ? 'Save Changes' : 'Create'}
@@ -358,7 +410,7 @@ const DJPlaylistsManager = () => {
               onClick={() => {
                 setShowCreateForm(false);
                 setEditingId(null);
-                setForm({ title: '', description: '', genre: '', coverImageUrl: '' });
+                setForm({ title: '', description: '', genre: '', coverImageUrl: '', playlistUrl: '' });
               }}
               className="px-4 py-2 rounded-lg border border-white/10 text-gray-400 text-sm hover:text-white transition"
             >

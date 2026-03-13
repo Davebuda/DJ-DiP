@@ -125,6 +125,7 @@ const PlaylistsTab = () => {
   const [form, setForm] = useState({ title: '', description: '', genre: '', coverImageUrl: '', curator: '', playlistUrl: '' });
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [addSongId, setAddSongId] = useState('');
+  const [fetchingPlaylist, setFetchingPlaylist] = useState(false);
 
   // New song inline form
   const [showNewSong, setShowNewSong] = useState(false);
@@ -135,17 +136,39 @@ const PlaylistsTab = () => {
   const [fetching, setFetching] = useState(false);
   const [fetchMetadata] = useLazyQuery(FETCH_SONG_METADATA);
 
+  const handleFetchPlaylistMetadata = async () => {
+    if (!form.playlistUrl.trim()) return;
+    setFetchingPlaylist(true);
+    try {
+      const { data: metaData } = await fetchMetadata({ variables: { url: form.playlistUrl.trim() } });
+      if (metaData?.fetchSongMetadata) {
+        const m = metaData.fetchSongMetadata;
+        setForm((p) => ({
+          ...p,
+          title: p.title || m.title || '',
+          coverImageUrl: p.coverImageUrl || m.coverImageUrl || '',
+          curator: p.curator || m.artist || '',
+        }));
+        setFeedback({ type: 'success', text: 'Playlist details fetched from URL.' });
+      }
+    } catch (err) {
+      setFeedback({ type: 'error', text: err instanceof Error ? err.message : 'Could not fetch playlist data.' });
+    } finally {
+      setFetchingPlaylist(false);
+    }
+  };
+
   const handleCreatePlaylist = async (e: FormEvent) => {
     e.preventDefault();
-    if (!form.title.trim()) {
-      setFeedback({ type: 'error', text: 'Playlist title is required.' });
+    if (!form.playlistUrl.trim() && !form.title.trim()) {
+      setFeedback({ type: 'error', text: 'Enter a Spotify / SoundCloud URL or a title.' });
       return;
     }
     try {
       await createPlaylist({
         variables: {
           input: {
-            title: form.title.trim(),
+            title: form.title.trim() || 'Untitled Playlist',
             description: form.description.trim() || null,
             genre: form.genre.trim() || null,
             coverImageUrl: form.coverImageUrl || null,
@@ -267,11 +290,28 @@ const PlaylistsTab = () => {
       {/* Create Playlist */}
       <form className="card space-y-4" onSubmit={handleCreatePlaylist}>
         <h2 className="text-lg font-semibold">Create Playlist</h2>
+
+        {/* URL first — paste to auto-fill everything */}
+        <div className="space-y-1 text-sm font-semibold text-gray-300">
+          Spotify / SoundCloud Playlist URL
+          <div className="flex gap-2 mt-1">
+            <input type="url" className={`${inputClass} flex-1`} value={form.playlistUrl}
+              onChange={(e) => setForm((p) => ({ ...p, playlistUrl: e.target.value }))}
+              placeholder="https://open.spotify.com/playlist/..." />
+            <button type="button" className="btn-outline whitespace-nowrap"
+              disabled={!form.playlistUrl.trim() || fetchingPlaylist}
+              onClick={handleFetchPlaylistMetadata}>
+              {fetchingPlaylist ? 'Fetching…' : 'Fetch Details'}
+            </button>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <label className="space-y-1 text-sm font-semibold text-gray-300">
-            Title *
+            Title <span className="text-gray-500 font-normal">(auto-filled from URL)</span>
             <input type="text" className={inputClass} value={form.title}
-              onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} required />
+              onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
+              placeholder="Auto-filled or enter manually" />
           </label>
           <label className="space-y-1 text-sm font-semibold text-gray-300">
             Genre
@@ -279,15 +319,9 @@ const PlaylistsTab = () => {
               onChange={(e) => setForm((p) => ({ ...p, genre: e.target.value }))} placeholder="e.g. House / Tech" />
           </label>
           <label className="space-y-1 text-sm font-semibold text-gray-300">
-            Curator
+            Curator <span className="text-gray-500 font-normal">(auto-filled from URL)</span>
             <input type="text" className={inputClass} value={form.curator}
-              onChange={(e) => setForm((p) => ({ ...p, curator: e.target.value }))} placeholder="e.g. KlubN Selectors" />
-          </label>
-          <label className="space-y-1 text-sm font-semibold text-gray-300 md:col-span-2">
-            Spotify / SoundCloud Playlist URL (optional — enables in-page embed)
-            <input type="url" className={inputClass} value={form.playlistUrl}
-              onChange={(e) => setForm((p) => ({ ...p, playlistUrl: e.target.value }))}
-              placeholder="https://open.spotify.com/playlist/..." />
+              onChange={(e) => setForm((p) => ({ ...p, curator: e.target.value }))} placeholder="Auto-filled or enter manually" />
           </label>
         </div>
         <label className="space-y-1 text-sm font-semibold text-gray-300">
@@ -299,7 +333,7 @@ const PlaylistsTab = () => {
           currentImageUrl={form.coverImageUrl}
           onImageUploaded={(url) => setForm((p) => ({ ...p, coverImageUrl: url }))}
           folder="playlists"
-          label="Cover Image"
+          label="Cover Image (auto-fetched from URL)"
           aspectRatio="aspect-square"
         />
         <button type="submit" className="btn-primary" disabled={creating}>Create Playlist</button>
