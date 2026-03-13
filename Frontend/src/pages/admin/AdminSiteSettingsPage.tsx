@@ -3,6 +3,7 @@ import { useMutation } from '@apollo/client';
 import { UPDATE_SITE_SETTINGS } from '../../graphql/queries';
 import { SiteSettings, defaultSiteSettings, useSiteSettings } from '../../context/SiteSettingsContext';
 import ImageUpload from '../../components/common/ImageUpload';
+import VideoUpload from '../../components/common/VideoUpload';
 
 const AdminSiteSettingsPage = () => {
   const inputClass =
@@ -190,17 +191,12 @@ const AdminSiteSettingsPage = () => {
             label="Hero Background Image"
             aspectRatio="aspect-video"
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <label className="space-y-1 text-sm font-semibold text-gray-300">
-              Background Video
-              <input
-                type="url"
-                className={inputClass}
-                value={form.heroBackgroundVideoUrl}
-                onChange={(e) => handleChange('heroBackgroundVideoUrl', e.target.value)}
-              />
-            </label>
-          </div>
+          <VideoUpload
+            currentVideoUrl={form.heroBackgroundVideoUrl}
+            onVideoUploaded={(url) => handleChange('heroBackgroundVideoUrl', url)}
+            folder="site-settings"
+            label="Hero Background Video"
+          />
           <label className="space-y-1 text-sm font-semibold text-gray-300">
             Hero Overlay Opacity
             <input

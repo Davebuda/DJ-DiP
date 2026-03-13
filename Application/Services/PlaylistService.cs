@@ -63,6 +63,7 @@ namespace DJDiP.Application.Services
                 Genre = dto.Genre,
                 CoverImageUrl = dto.CoverImageUrl,
                 Curator = dto.Curator,
+                PlaylistUrl = dto.PlaylistUrl,
                 DJProfileId = dto.DjProfileId,
                 CreatedAt = DateTime.UtcNow
             };
@@ -83,6 +84,7 @@ namespace DJDiP.Application.Services
             playlist.Genre = dto.Genre;
             playlist.CoverImageUrl = dto.CoverImageUrl;
             playlist.Curator = dto.Curator;
+            playlist.PlaylistUrl = dto.PlaylistUrl;
 
             await _unitOfWork.Playlists.UpdateAsync(playlist);
             await _unitOfWork.SaveChangesAsync();
@@ -177,6 +179,7 @@ namespace DJDiP.Application.Services
                 Genre = playlist.Genre,
                 CoverImageUrl = playlist.CoverImageUrl,
                 Curator = playlist.Curator,
+                PlaylistUrl = playlist.PlaylistUrl,
                 DjProfileId = playlist.DJProfileId,
                 DjName = djName,
                 CreatedAt = playlist.CreatedAt,

@@ -859,6 +859,7 @@ export const GET_PLAYLISTS = gql`
       genre
       coverImageUrl
       curator
+      playlistUrl
       djProfileId
       djName
       createdAt
@@ -886,6 +887,7 @@ export const GET_PLAYLIST_BY_ID = gql`
       genre
       coverImageUrl
       curator
+      playlistUrl
       djProfileId
       djName
       createdAt
@@ -913,6 +915,7 @@ export const GET_MY_DJ_PLAYLISTS = gql`
       genre
       coverImageUrl
       curator
+      playlistUrl
       djProfileId
       djName
       createdAt

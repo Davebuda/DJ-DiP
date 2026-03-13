@@ -1416,6 +1416,7 @@ public class Mutation
             Genre = input.Genre,
             CoverImageUrl = input.CoverImageUrl,
             Curator = input.Curator,
+            PlaylistUrl = input.PlaylistUrl,
             DjProfileId = djProfileId
         };
 
@@ -1436,7 +1437,8 @@ public class Mutation
             Description = input.Description,
             Genre = input.Genre,
             CoverImageUrl = input.CoverImageUrl,
-            Curator = input.Curator
+            Curator = input.Curator,
+            PlaylistUrl = input.PlaylistUrl
         };
 
         await playlistService.UpdateAsync(id, dto);
@@ -2176,6 +2178,7 @@ public class CreatePlaylistInput
     public string? Genre { get; set; }
     public string? CoverImageUrl { get; set; }
     public string? Curator { get; set; }
+    public string? PlaylistUrl { get; set; }
     public Guid? DjProfileId { get; set; }
 }
 
@@ -2186,6 +2189,7 @@ public class UpdatePlaylistInput
     public string? Genre { get; set; }
     public string? CoverImageUrl { get; set; }
     public string? Curator { get; set; }
+    public string? PlaylistUrl { get; set; }
 }
 
 public class AddPlaylistSongInput

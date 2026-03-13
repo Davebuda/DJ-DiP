@@ -1,5 +1,6 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
+import ImageUpload from '../../components/common/ImageUpload';
 import {
   CREATE_DJ_TOP10_ENTRY,
   CREATE_PLAYLIST,
@@ -121,7 +122,7 @@ const PlaylistsTab = () => {
   const songs: SongOption[] = useMemo(() => songsData?.songs ?? [], [songsData]);
 
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [form, setForm] = useState({ title: '', description: '', genre: '', coverImageUrl: '', curator: '' });
+  const [form, setForm] = useState({ title: '', description: '', genre: '', coverImageUrl: '', curator: '', playlistUrl: '' });
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [addSongId, setAddSongId] = useState('');
 
@@ -147,13 +148,14 @@ const PlaylistsTab = () => {
             title: form.title.trim(),
             description: form.description.trim() || null,
             genre: form.genre.trim() || null,
-            coverImageUrl: form.coverImageUrl.trim() || null,
+            coverImageUrl: form.coverImageUrl || null,
             curator: form.curator.trim() || null,
+            playlistUrl: form.playlistUrl.trim() || null,
           },
         },
       });
       await refetch();
-      setForm({ title: '', description: '', genre: '', coverImageUrl: '', curator: '' });
+      setForm({ title: '', description: '', genre: '', coverImageUrl: '', curator: '', playlistUrl: '' });
       setFeedback({ type: 'success', text: 'Playlist created.' });
     } catch (err) {
       setFeedback({ type: 'error', text: err instanceof Error ? err.message : 'Failed to create playlist.' });
@@ -281,10 +283,11 @@ const PlaylistsTab = () => {
             <input type="text" className={inputClass} value={form.curator}
               onChange={(e) => setForm((p) => ({ ...p, curator: e.target.value }))} placeholder="e.g. KlubN Selectors" />
           </label>
-          <label className="space-y-1 text-sm font-semibold text-gray-300">
-            Cover Image URL
-            <input type="text" className={inputClass} value={form.coverImageUrl}
-              onChange={(e) => setForm((p) => ({ ...p, coverImageUrl: e.target.value }))} />
+          <label className="space-y-1 text-sm font-semibold text-gray-300 md:col-span-2">
+            Spotify / SoundCloud Playlist URL (optional — enables in-page embed)
+            <input type="url" className={inputClass} value={form.playlistUrl}
+              onChange={(e) => setForm((p) => ({ ...p, playlistUrl: e.target.value }))}
+              placeholder="https://open.spotify.com/playlist/..." />
           </label>
         </div>
         <label className="space-y-1 text-sm font-semibold text-gray-300">
@@ -292,6 +295,13 @@ const PlaylistsTab = () => {
           <textarea className={inputClass} rows={2} value={form.description}
             onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
         </label>
+        <ImageUpload
+          currentImageUrl={form.coverImageUrl}
+          onImageUploaded={(url) => setForm((p) => ({ ...p, coverImageUrl: url }))}
+          folder="playlists"
+          label="Cover Image"
+          aspectRatio="aspect-square"
+        />
         <button type="submit" className="btn-primary" disabled={creating}>Create Playlist</button>
       </form>
 

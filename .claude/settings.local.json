@@ -44,7 +44,8 @@
       "WebFetch(domain:developer.spotify.com)",
       "Bash(cd /c/Users/daveb/Documents/GitHub/DJ-DiP && git push origin main 2>&1)",
       "Bash(cd C:\\\\Users\\\\daveb\\\\Documents\\\\GitHub\\\\DJ-DiP:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(cd /c/Users/daveb/Documents/GitHub/DJ-DiP && git push origin main 2>&1 && ssh root@204.168.140.17 \"cd /opt/djdip && git pull origin main && docker compose up -d --build 2>&1 | tail -20\" 2>&1)"
     ],
     "deny": [],
     "ask": []

@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { UPDATE_SITE_SETTINGS } from '../../graphql/queries';
 import { useSiteSettings } from '../../context/SiteSettingsContext';
+import VideoUpload from '../../components/common/VideoUpload';
 
 type ContentTab = 'landing' | 'about' | 'faq' | 'terms';
 
@@ -168,15 +169,12 @@ const AdminContentPage = () => {
                   onChange={(e) => setLandingForm((p) => ({ ...p, heroLocation: e.target.value }))}
                 />
               </label>
-              <label className="space-y-1 text-sm font-semibold text-gray-300">
-                Gallery Hero Video URL
-                <input
-                  type="text"
-                  className={inputClass}
-                  value={landingForm.galleryVideoUrl}
-                  onChange={(e) => setLandingForm((p) => ({ ...p, galleryVideoUrl: e.target.value }))}
-                />
-              </label>
+              <VideoUpload
+                currentVideoUrl={landingForm.galleryVideoUrl}
+                onVideoUploaded={(url) => setLandingForm((p) => ({ ...p, galleryVideoUrl: url }))}
+                folder="gallery"
+                label="Gallery Hero Video"
+              />
             </div>
             <label className="space-y-1 text-sm font-semibold text-gray-300">
               Vibe Words (comma-separated)

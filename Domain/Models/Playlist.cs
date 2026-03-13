@@ -14,6 +14,8 @@ namespace DJDiP.Domain.Models
 
         public string? Curator { get; set; }
 
+        public string? PlaylistUrl { get; set; }
+
         // Nullable: null = admin-created, set = DJ-owned
         public Guid? DJProfileId { get; set; }
         public DJProfile? DJProfile { get; set; }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/client';
+import ImageUpload from '../../components/common/ImageUpload';
 import { useAuth } from '../../context/AuthContext';
 import {
   GET_DJS,
@@ -334,15 +335,12 @@ const DJPlaylistsManager = () => {
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs uppercase tracking-wider text-gray-400 mb-1">
-                Cover Image URL
-              </label>
-              <input
-                type="text"
-                value={form.coverImageUrl}
-                onChange={(e) => setForm({ ...form, coverImageUrl: e.target.value })}
-                className="w-full rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none"
-                placeholder="https://..."
+              <ImageUpload
+                currentImageUrl={form.coverImageUrl}
+                onImageUploaded={(url) => setForm({ ...form, coverImageUrl: url })}
+                folder="playlists"
+                label="Cover Image"
+                aspectRatio="aspect-square"
               />
             </div>
           </div>

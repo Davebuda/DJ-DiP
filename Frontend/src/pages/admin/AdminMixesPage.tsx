@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
 import { GET_DJ_MIXES, CREATE_DJ_MIX, UPDATE_DJ_MIX, DELETE_DJ_MIX, GET_DJS } from '../../graphql/queries';
 import { Music, Pencil, Plus, Trash2, ExternalLink } from 'lucide-react';
+import ImageUpload from '../../components/common/ImageUpload';
 
 type DJMix = {
   id: string;
@@ -168,13 +169,13 @@ const AdminMixesPage = () => {
                 placeholder="https://soundcloud.com/..."
               />
             </div>
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-gray-500 mb-1">Thumbnail URL</label>
-              <input
-                value={form.thumbnailUrl}
-                onChange={(e) => setForm({ ...form, thumbnailUrl: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl bg-black/60 border border-white/10 text-white placeholder-gray-600 focus:border-orange-500 focus:outline-none"
-                placeholder="https://..."
+            <div className="md:col-span-2">
+              <ImageUpload
+                currentImageUrl={form.thumbnailUrl}
+                onImageUploaded={(url) => setForm({ ...form, thumbnailUrl: url })}
+                folder="mixes"
+                label="Thumbnail"
+                aspectRatio="aspect-video"
               />
             </div>
             <div>
@@ -226,13 +227,6 @@ const AdminMixesPage = () => {
               placeholder="About this mix..."
             />
           </div>
-
-          {form.thumbnailUrl && (
-            <div>
-              <p className="text-xs text-gray-500 mb-1">Thumbnail preview</p>
-              <img src={form.thumbnailUrl} alt="Thumbnail" className="h-24 rounded-lg object-cover" />
-            </div>
-          )}
 
           <div className="flex gap-3">
             <button

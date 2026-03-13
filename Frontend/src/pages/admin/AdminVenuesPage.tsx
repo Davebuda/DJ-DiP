@@ -327,47 +327,44 @@ const AdminVenuesPage = () => {
           aspectRatio="aspect-video"
         />
 
-        {/* Multi-image gallery URLs */}
+        {/* Multi-image gallery */}
         <div className="space-y-3">
           <label className="text-sm font-semibold text-gray-300">
-            Gallery Images (multiple URLs for auto-scrolling carousel)
+            Gallery Images (multiple photos for auto-scrolling carousel)
           </label>
-          {form.imageUrls.map((url, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <input
-                type="text"
-                className={inputClass}
-                value={url}
-                onChange={(e) => {
-                  const updated = [...form.imageUrls];
-                  updated[index] = e.target.value;
-                  setForm((prev) => ({ ...prev, imageUrls: updated }));
-                }}
-                placeholder="https://..."
-              />
-              {url.trim() && (
-                <img src={url} alt="" className="h-10 w-10 rounded object-cover shrink-0" />
-              )}
-              <button
-                type="button"
-                onClick={() => {
-                  const updated = form.imageUrls.filter((_, i) => i !== index);
-                  setForm((prev) => ({ ...prev, imageUrls: updated }));
-                }}
-                className="text-red-400 text-xs uppercase tracking-wide hover:text-red-300 shrink-0"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {form.imageUrls.map((url, index) => (
+              <div key={index} className="relative">
+                <ImageUpload
+                  currentImageUrl={url}
+                  onImageUploaded={(newUrl) => {
+                    const updated = [...form.imageUrls];
+                    updated[index] = newUrl;
+                    setForm((prev) => ({ ...prev, imageUrls: updated }));
+                  }}
+                  folder="venues"
+                  label={`Gallery ${index + 1}`}
+                  aspectRatio="aspect-square"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const updated = form.imageUrls.filter((_, i) => i !== index);
+                    setForm((prev) => ({ ...prev, imageUrls: updated }));
+                  }}
+                  className="mt-1 w-full text-red-400 text-xs uppercase tracking-wide hover:text-red-300"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
           <button
             type="button"
-            onClick={() =>
-              setForm((prev) => ({ ...prev, imageUrls: [...prev.imageUrls, ''] }))
-            }
+            onClick={() => setForm((prev) => ({ ...prev, imageUrls: [...prev.imageUrls, ''] }))}
             className="text-xs uppercase tracking-wide text-orange-400 hover:text-orange-300"
           >
-            + Add Image URL
+            + Add Gallery Image
           </button>
         </div>
 
