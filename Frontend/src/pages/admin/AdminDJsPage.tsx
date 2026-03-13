@@ -15,6 +15,15 @@ interface SocialLinkField {
   url: string;
 }
 
+const SOCIAL_PLATFORMS = [
+  { key: 'instagram' as const, label: 'Instagram', placeholder: 'https://www.instagram.com/yourhandle' },
+  { key: 'soundCloud' as const, label: 'SoundCloud', placeholder: 'https://soundcloud.com/yourhandle' },
+  { key: 'facebook' as const, label: 'Facebook', placeholder: 'https://www.facebook.com/yourpage' },
+  { key: 'youtube' as const, label: 'YouTube', placeholder: 'https://www.youtube.com/@yourchannel' },
+] as const;
+
+type SocialPlatformKey = 'instagram' | 'soundCloud' | 'facebook' | 'youtube';
+
 interface DJFormState {
   stageName: string;
   fullName: string;
@@ -31,11 +40,12 @@ interface DJFormState {
   yearsExperience: string;
   influencedBy: string;
   equipmentUsed: string;
-  socialLinks: SocialLinkField[];
+  instagram: string;
+  soundCloud: string;
+  facebook: string;
+  youtube: string;
   topTracks: string;
 }
-
-const blankLink: SocialLinkField = { label: '', url: '' };
 
 const buildEmptyForm = (): DJFormState => ({
   stageName: '',
@@ -53,7 +63,10 @@ const buildEmptyForm = (): DJFormState => ({
   yearsExperience: '',
   influencedBy: '',
   equipmentUsed: '',
-  socialLinks: [{ ...blankLink }],
+  instagram: '',
+  soundCloud: '',
+  facebook: '',
+  youtube: '',
   topTracks: '',
 });
 
@@ -77,7 +90,7 @@ type DjDetail = DjListItem & {
   yearsExperience?: number | null;
   influencedBy?: string | null;
   equipmentUsed?: string | null;
-  socialLinks?: SocialLinkField[];
+  socialLinks?: { label: string; url: string }[];
   topTracks?: string[];
 };
 
@@ -89,31 +102,15 @@ interface DJDetailQueryData {
   dj: DjDetail | null;
 }
 
-const serializeSocialLinks = (links: SocialLinkField[]) => {
-  const cleaned = links
-    .map((link) => ({
-      label: link.label.trim(),
-      url: link.url.trim(),
-    }))
-    .filter((link) => link.label || link.url);
-
-  if (!cleaned.length) {
-    return '[]';
-  }
-
-  return JSON.stringify(cleaned);
+const serializeSocialLinks = (form: Pick<DJFormState, SocialPlatformKey>): string => {
+  const links = SOCIAL_PLATFORMS
+    .map(({ label, key }) => ({ label, url: form[key].trim() }))
+    .filter((l) => l.url);
+  return JSON.stringify(links);
 };
 
-const parseSocialLinks = (links: SocialLinkField[] | undefined) => {
-  if (!links || links.length === 0) {
-    return [{ ...blankLink }];
-  }
-
-  return links.map((link) => ({
-    label: link.label ?? '',
-    url: link.url ?? '',
-  }));
-};
+const extractSocialUrl = (links: SocialLinkField[] | undefined, label: string): string =>
+  links?.find((l) => l.label?.toLowerCase() === label.toLowerCase())?.url ?? '';
 
 const AdminDJsPage = () => {
   const inputClass =
@@ -172,7 +169,10 @@ const AdminDJsPage = () => {
         yearsExperience: detail.yearsExperience?.toString() ?? '',
         influencedBy: detail.influencedBy ?? '',
         equipmentUsed: detail.equipmentUsed ?? '',
-        socialLinks: parseSocialLinks(detail.socialLinks),
+        instagram: extractSocialUrl(detail.socialLinks, 'Instagram'),
+        soundCloud: extractSocialUrl(detail.socialLinks, 'SoundCloud'),
+        facebook: extractSocialUrl(detail.socialLinks, 'Facebook'),
+        youtube: extractSocialUrl(detail.socialLinks, 'YouTube'),
         topTracks: (detail.topTracks ?? []).join('\n'),
       });
     } catch (editError) {
@@ -208,7 +208,7 @@ const AdminDJsPage = () => {
       longBio: form.longBio.trim() || null,
       tagline: form.tagline.trim() || null,
       genre: form.genre.trim(),
-      socialLinks: serializeSocialLinks(form.socialLinks),
+      socialLinks: serializeSocialLinks(form),
       profilePictureUrl: form.profilePictureUrl.trim(),
       coverImageUrl: form.coverImageUrl.trim() || null,
       specialties: form.specialties.trim() || null,
@@ -274,29 +274,6 @@ const AdminDJsPage = () => {
     }
   };
 
-  const updateSocialLink = (index: number, key: keyof SocialLinkField, value: string) => {
-    setForm((prev) => {
-      const nextLinks = prev.socialLinks.map((link, idx) =>
-        idx === index ? { ...link, [key]: value } : link,
-      );
-      return { ...prev, socialLinks: nextLinks };
-    });
-  };
-
-  const addSocialLink = () => {
-    setForm((prev) => ({
-      ...prev,
-      socialLinks: [...prev.socialLinks, blankLink],
-    }));
-  };
-
-  const removeSocialLink = (index: number) => {
-    setForm((prev) => {
-      if (prev.socialLinks.length === 1) return prev;
-      const nextLinks = prev.socialLinks.filter((_, idx) => idx !== index);
-      return { ...prev, socialLinks: nextLinks };
-    });
-  };
 
   if (loading) {
     return <div className="text-sm text-gray-400">Loading DJ profiles…</div>;
@@ -514,47 +491,19 @@ const AdminDJsPage = () => {
         </div>
 
         <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-gray-200 tracking-wide uppercase">
-              Social Links
-            </h3>
-            <button
-              type="button"
-              className="text-xs uppercase tracking-widest text-orange-400"
-              onClick={addSocialLink}
-            >
-              + Add Link
-            </button>
-          </div>
-          <div className="space-y-3">
-            {form.socialLinks.map((link, index) => (
-              <div key={`social-link-${index}`} className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <h3 className="text-sm font-semibold text-gray-200 tracking-wide uppercase">Social Links</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {SOCIAL_PLATFORMS.map(({ key, label, placeholder }) => (
+              <label key={key} className="space-y-1 text-sm font-semibold text-gray-300">
+                {label}
                 <input
-                  type="text"
+                  type="url"
                   className={inputClass}
-                  placeholder="Label (Instagram, Mixcloud…) "
-                  value={link.label}
-                  onChange={(e) => updateSocialLink(index, 'label', e.target.value)}
+                  placeholder={placeholder}
+                  value={form[key]}
+                  onChange={(e) => setForm((prev) => ({ ...prev, [key]: e.target.value }))}
                 />
-                <div className="flex gap-3">
-                  <input
-                    type="url"
-                    className={`${inputClass} flex-1`}
-                    placeholder="https://"
-                    value={link.url}
-                    onChange={(e) => updateSocialLink(index, 'url', e.target.value)}
-                  />
-                  {form.socialLinks.length > 1 && (
-                    <button
-                      type="button"
-                      className="text-xs uppercase tracking-widest text-red-400"
-                      onClick={() => removeSocialLink(index)}
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-              </div>
+              </label>
             ))}
           </div>
         </section>

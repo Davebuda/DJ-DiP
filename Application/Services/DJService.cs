@@ -176,6 +176,22 @@ namespace DJDiP.Application.Services
                 return new List<SocialLinkDto>();
             }
 
+            // Try JSON array format: [{"label":"...","url":"..."}]
+            try
+            {
+                var opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var parsedList = JsonSerializer.Deserialize<List<SocialLinkDto>>(rawSocialLinks, opts);
+                if (parsedList != null)
+                {
+                    var validLinks = parsedList
+                        .Where(l => !string.IsNullOrWhiteSpace(l.Url))
+                        .ToList();
+                    if (validLinks.Any()) return validLinks;
+                }
+            }
+            catch { }
+
+            // Try JSON object format: {"Instagram":"url",...} (legacy)
             try
             {
                 var parsedDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(rawSocialLinks);
@@ -183,35 +199,13 @@ namespace DJDiP.Application.Services
                 {
                     return parsedDictionary
                         .Where(pair => !string.IsNullOrWhiteSpace(pair.Value))
-                        .Select(pair => new SocialLinkDto
-                        {
-                            Label = pair.Key,
-                            Url = pair.Value
-                        })
+                        .Select(pair => new SocialLinkDto { Label = pair.Key, Url = pair.Value })
                         .ToList();
                 }
-
-                var caseInsensitiveOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var parsedList = JsonSerializer.Deserialize<List<SocialLinkDto>>(rawSocialLinks, caseInsensitiveOptions);
-                if (parsedList != null)
-                {
-                    var validLinks = parsedList.Where(l => !string.IsNullOrWhiteSpace(l.Label) || !string.IsNullOrWhiteSpace(l.Url)).ToList();
-                    if (validLinks.Any()) return validLinks;
-                }
             }
-            catch
-            {
-                // ignore json errors and attempt fallback below
-            }
+            catch { }
 
-            return rawSocialLinks
-                .Split(new[] { '\n', ';', ',' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .Select((entry, index) => new SocialLinkDto
-                {
-                    Label = $"Link {index + 1}",
-                    Url = entry
-                })
-                .ToList();
+            return new List<SocialLinkDto>();
         }
 
         internal static List<string> ParseTopTracks(string? rawTopTracks)

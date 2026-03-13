@@ -4,7 +4,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import { FOLLOW_DJ, GET_DJ_BY_ID, GET_DJ_TOP10_LISTS, IS_FOLLOWING_DJ, UNFOLLOW_DJ, GET_DJ_REVIEWS, CREATE_DJ_REVIEW } from '../graphql/queries';
 import { useAuth } from '../context/AuthContext';
 import { useSiteSettings } from '../context/SiteSettingsContext';
-import { Star, Send } from 'lucide-react';
+import { Star, Send, Instagram, Youtube, Facebook, Music } from 'lucide-react';
 
 type EventSummary = {
   eventId: string;
@@ -287,18 +287,28 @@ const DJProfilePage = () => {
               </Link>
               {socialEntries.length > 0 && (
                 <div className="space-y-2 text-sm">
-                  {socialEntries.map((entry) => (
-                    <a
-                      key={entry.label}
-                      href={entry.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center justify-between rounded-full border border-white/10 bg-white/5 px-4 py-2 text-gray-200 hover:border-orange-400 transition"
-                    >
-                      <span>{entry.label}</span>
-                      <span className="text-xs uppercase tracking-[0.4em]">↗</span>
-                    </a>
-                  ))}
+                  {socialEntries.map((entry) => {
+                    const lbl = entry.label?.toLowerCase() ?? '';
+                    const platform =
+                      lbl === 'instagram' ? { Icon: Instagram, color: 'text-pink-400', border: 'hover:border-pink-400/60', bg: 'hover:bg-pink-500/10' } :
+                      lbl === 'youtube'   ? { Icon: Youtube,   color: 'text-red-400',  border: 'hover:border-red-400/60',  bg: 'hover:bg-red-500/10'  } :
+                      lbl === 'facebook'  ? { Icon: Facebook,  color: 'text-blue-400', border: 'hover:border-blue-400/60', bg: 'hover:bg-blue-500/10' } :
+                      lbl === 'soundcloud'? { Icon: Music,     color: 'text-orange-400',border:'hover:border-orange-400/60',bg:'hover:bg-orange-500/10'} :
+                                           { Icon: null,       color: 'text-gray-400', border: 'hover:border-white/30',   bg: 'hover:bg-white/5'     };
+                    return (
+                      <a
+                        key={entry.label}
+                        href={entry.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={`flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2.5 text-gray-200 transition ${platform.border} ${platform.bg}`}
+                      >
+                        {platform.Icon && <platform.Icon className={`w-4 h-4 ${platform.color}`} />}
+                        <span className="flex-1 font-medium">{entry.label}</span>
+                        <span className="text-xs text-gray-500">↗</span>
+                      </a>
+                    );
+                  })}
                 </div>
               )}
             </div>
