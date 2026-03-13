@@ -154,9 +154,6 @@ const HeroSection = ({
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col-reverse gap-8 px-6 pt-12 pb-12 sm:pb-24 lg:flex-row lg:items-center lg:gap-12 lg:px-8 lg:pt-16 lg:pb-28">
         <div className="flex-1 space-y-6">
           <div className="space-y-4">
-            {siteSettings.tagline && (
-              <p className="text-xs font-medium tracking-wider text-orange-400 uppercase">{siteSettings.tagline}</p>
-            )}
             <h1 className="font-display text-4xl sm:text-5xl md:text-7xl font-bold leading-[1.0] tracking-tight">
               {siteSettings.heroTitle ?? (
                 <>

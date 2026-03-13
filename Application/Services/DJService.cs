@@ -191,10 +191,12 @@ namespace DJDiP.Application.Services
                         .ToList();
                 }
 
-                var parsedList = JsonSerializer.Deserialize<List<SocialLinkDto>>(rawSocialLinks);
-                if (parsedList != null && parsedList.Any())
+                var caseInsensitiveOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var parsedList = JsonSerializer.Deserialize<List<SocialLinkDto>>(rawSocialLinks, caseInsensitiveOptions);
+                if (parsedList != null)
                 {
-                    return parsedList;
+                    var validLinks = parsedList.Where(l => !string.IsNullOrWhiteSpace(l.Label) || !string.IsNullOrWhiteSpace(l.Url)).ToList();
+                    if (validLinks.Any()) return validLinks;
                 }
             }
             catch

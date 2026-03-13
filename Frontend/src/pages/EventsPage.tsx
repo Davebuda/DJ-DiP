@@ -82,7 +82,9 @@ const EventsPage = () => {
     return Array.from(set).sort();
   }, [events]);
 
-  // Sort events: matching genre first (relevance), then by date — always show all events
+  const now = useMemo(() => new Date(), []);
+
+  // Sort events: upcoming first (by date asc), then past events at the end
   const sortedEvents = useMemo(() => {
     let filtered = events.filter((event) => {
       if (!searchQuery) return true;
@@ -95,16 +97,22 @@ const EventsPage = () => {
     });
 
     filtered.sort((a, b) => {
+      const aIsPast = new Date(a.date) < now;
+      const bIsPast = new Date(b.date) < now;
+      // Past events sink to bottom
+      if (aIsPast !== bIsPast) return aIsPast ? 1 : -1;
       if (selectedGenre !== 'all') {
         const aMatch = a.genres.some((g) => g.toLowerCase() === selectedGenre.toLowerCase()) ? 0 : 1;
         const bMatch = b.genres.some((g) => g.toLowerCase() === selectedGenre.toLowerCase()) ? 0 : 1;
         if (aMatch !== bMatch) return aMatch - bMatch;
       }
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
+      return aIsPast
+        ? new Date(b.date).getTime() - new Date(a.date).getTime() // past: most-recent first
+        : new Date(a.date).getTime() - new Date(b.date).getTime(); // upcoming: soonest first
     });
 
     return filtered;
-  }, [events, searchQuery, selectedGenre]);
+  }, [events, searchQuery, selectedGenre, now]);
 
   if (eventsLoading) {
     return (
@@ -209,16 +217,23 @@ const EventsPage = () => {
             {/* Featured Event — 30% left */}
             {(() => {
               const featured = sortedEvents[0];
+              const featuredIsPast = new Date(featured.date) < now;
               return (
                 <div className="w-full sm:w-[80%] sm:mx-auto lg:w-[30%] lg:min-w-[300px] flex-shrink-0 lg:sticky lg:top-24 lg:self-start">
                   <div
                     className="liquid-glass-warm rounded-[32px] overflow-hidden transition-all duration-300 group hover:scale-[1.01] relative border border-orange-400/20 bg-gradient-to-b from-orange-400/[0.10] via-white/[0.04] to-white/[0.02] backdrop-blur-xl"
                   >
-                    {/* Featured badge */}
-                    <div className="absolute top-5 left-5 z-10">
-                      <span className="px-4 py-1.5 rounded-full bg-orange-500 text-black text-[10px] font-bold uppercase tracking-[0.3em]">
-                        Headliner
-                      </span>
+                    {/* Featured / Past badge */}
+                    <div className="absolute top-5 left-5 z-10 flex gap-2">
+                      {featuredIsPast ? (
+                        <span className="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-sm text-white/70 text-[10px] font-bold uppercase tracking-[0.3em] border border-white/20">
+                          Past Event
+                        </span>
+                      ) : (
+                        <span className="px-4 py-1.5 rounded-full bg-orange-500 text-black text-[10px] font-bold uppercase tracking-[0.3em]">
+                          Headliner
+                        </span>
+                      )}
                     </div>
 
                     {/* Featured Image — landscape on mobile, portrait on desktop */}
@@ -300,9 +315,13 @@ const EventsPage = () => {
                       {/* CTA Buttons */}
                       <Link
                         to={`/events/${featured.id}`}
-                        className="block w-full px-6 py-4 rounded-full bg-gradient-to-r from-orange-400 to-[#FF6B35] text-black text-sm font-bold text-center hover:from-orange-300 hover:to-orange-400 transition-all tracking-wide mt-2"
+                        className={`block w-full px-6 py-4 rounded-full text-sm font-bold text-center transition-all tracking-wide mt-2 ${
+                          featuredIsPast
+                            ? 'bg-white/10 border border-white/20 text-white/70 hover:bg-white/15'
+                            : 'bg-gradient-to-r from-orange-400 to-[#FF6B35] text-black hover:from-orange-300 hover:to-orange-400'
+                        }`}
                       >
-                        View Event Details
+                        {featuredIsPast ? 'View Recap' : 'View Event Details'}
                       </Link>
                     </div>
                   </div>
@@ -316,11 +335,16 @@ const EventsPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   {sortedEvents.slice(1).map((event) => {
                     const isRelevant = selectedGenre === 'all' || event.genres.some((g) => g.toLowerCase() === selectedGenre.toLowerCase());
+                    const isPast = new Date(event.date) < now;
                     return (
                     <div
                       key={event.id}
-                      className={`liquid-glass rounded-[32px] border bg-gradient-to-b from-white/[0.10] to-white/[0.02] backdrop-blur-xl transition-all duration-300 group overflow-hidden hover:scale-[1.02] hover:border-orange-400/30 ${
-                        isRelevant ? 'border-white/[0.10] opacity-100' : 'border-white/[0.06] opacity-50'
+                      className={`liquid-glass rounded-[32px] border bg-gradient-to-b from-white/[0.10] to-white/[0.02] backdrop-blur-xl transition-all duration-300 group overflow-hidden hover:scale-[1.02] ${
+                        isPast
+                          ? 'border-white/[0.06] opacity-60 hover:opacity-80'
+                          : isRelevant
+                          ? 'border-white/[0.10] opacity-100 hover:border-orange-400/30'
+                          : 'border-white/[0.06] opacity-50'
                       }`}
                     >
                       {/* Event Image */}
@@ -328,15 +352,21 @@ const EventsPage = () => {
                         <img
                           src={event.imageUrl || defaultEventImage}
                           alt={event.title}
-                          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
+                          className={`h-full w-full object-cover group-hover:scale-105 transition-transform duration-700 ${isPast ? 'grayscale' : ''}`}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/15 to-transparent" />
-                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.35),transparent_60%)]" />
+                        {isPast && (
+                          <div className="absolute top-3 left-3">
+                            <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-sm text-white/60 text-[10px] font-bold uppercase tracking-wider border border-white/20">
+                              Past Event
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       {/* Event Info */}
                       <div className="p-5 space-y-2.5">
-                        <p className="text-xs uppercase tracking-[0.5em] text-gray-500">
+                        <p className={`text-xs uppercase tracking-[0.5em] ${isPast ? 'text-gray-600' : 'text-gray-500'}`}>
                           {new Date(event.date).toLocaleDateString('en-US', {
                             weekday: 'short',
                             year: 'numeric',
@@ -344,8 +374,8 @@ const EventsPage = () => {
                             day: 'numeric',
                           })}
                         </p>
-                        <h3 className="text-xl font-semibold group-hover:text-orange-200 transition">{event.title}</h3>
-                        <p className="text-gray-400 text-sm line-clamp-2">{event.description}</p>
+                        <h3 className={`text-xl font-semibold transition ${isPast ? 'text-gray-400 group-hover:text-gray-300' : 'group-hover:text-orange-200'}`}>{event.title}</h3>
+                        <p className="text-gray-500 text-sm line-clamp-2">{event.description}</p>
 
                         <div className="flex items-center justify-between pt-2 border-t border-white/10">
                           <div className="flex items-center gap-3">
@@ -358,13 +388,13 @@ const EventsPage = () => {
                             })()}
                             <div>
                               <p className="text-xs uppercase tracking-[0.3em] text-gray-500">Venue</p>
-                              <p className="text-sm text-white">{event.venue.name}</p>
-                              <p className="text-xs text-gray-500">{event.venue.city}</p>
+                              <p className={`text-sm ${isPast ? 'text-gray-500' : 'text-white'}`}>{event.venue.name}</p>
+                              <p className="text-xs text-gray-600">{event.venue.city}</p>
                             </div>
                           </div>
                           <div className="text-right">
                             <p className="text-xs uppercase tracking-[0.3em] text-gray-500">Price</p>
-                            <p className="text-2xl font-bold text-orange-400">${event.price}</p>
+                            <p className={`text-2xl font-bold ${isPast ? 'text-gray-500' : 'text-orange-400'}`}>${event.price}</p>
                           </div>
                         </div>
 
@@ -375,12 +405,14 @@ const EventsPage = () => {
                           >
                             Details
                           </Link>
-                          <Link
-                            to={`/events/${event.id}`}
-                            className="flex-1 px-4 py-3 rounded-full font-semibold text-sm tracking-wide text-center transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-orange-400 to-[#FF6B35] text-black hover:from-orange-300 hover:to-pink-400"
-                          >
-                            View Event
-                          </Link>
+                          {!isPast && (
+                            <Link
+                              to={`/events/${event.id}`}
+                              className="flex-1 px-4 py-3 rounded-full font-semibold text-sm tracking-wide text-center transition-all flex items-center justify-center gap-2 bg-gradient-to-r from-orange-400 to-[#FF6B35] text-black hover:from-orange-300 hover:to-pink-400"
+                            >
+                              View Event
+                            </Link>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -396,52 +428,6 @@ const EventsPage = () => {
             </div>
           </div>
         )}
-      </section>
-
-      {/* Portfolio / About Strip */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-10 py-16">
-        <div className="liquid-glass-warm rounded-[32px] border border-orange-400/20 bg-gradient-to-b from-orange-400/[0.08] via-white/[0.04] to-white/[0.02] backdrop-blur-xl p-10 md:p-14">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
-            <div className="space-y-5 max-w-xl">
-              <p className="text-[11px] uppercase tracking-[0.5em] text-orange-400/60">The Portfolio</p>
-              <h2 className="text-3xl md:text-4xl font-black text-white leading-tight">
-                More than events.
-                <br />
-                <span className="text-orange-400">A movement.</span>
-              </h2>
-              <p className="text-sm text-white/50 leading-relaxed">
-                From intimate basement sessions in Oslo to full-scale productions — DJ DiP brings a
-                decade of Afrobeats music culture to every set. Rooted in Afrobeats, house,
-                and dancehall, the sound is raw, the energy is real, and the nights are unforgettable.
-              </p>
-              <p className="text-sm text-white/50 leading-relaxed">
-                Whether you're looking to book a DJ for your venue, collaborate on a production, or
-                simply experience the music firsthand — this is where it starts.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3 lg:min-w-[220px]">
-              <Link
-                to="/djs"
-                className="px-8 py-4 rounded-full bg-gradient-to-r from-orange-400 to-[#FF6B35] text-black text-sm font-bold text-center hover:from-orange-300 hover:to-orange-400 transition-all tracking-wide"
-              >
-                View Artists
-              </Link>
-              <Link
-                to="/gallery"
-                className="px-8 py-4 rounded-full bg-white/[0.06] border border-white/10 text-white text-sm font-semibold text-center hover:border-orange-400/40 transition tracking-wide"
-              >
-                Browse Gallery
-              </Link>
-              <Link
-                to="/contact"
-                className="px-8 py-4 rounded-full text-orange-300/70 text-sm font-medium text-center hover:text-orange-300 transition tracking-wide"
-              >
-                Get in Touch
-              </Link>
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* Closing Statement */}
