@@ -2,8 +2,29 @@ import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/clien
 import { setContext } from '@apollo/client/link/context';
 import { onError } from '@apollo/client/link/error';
 
+// HotChocolate 13 returns HTTP 500 when data is null (GraphQL-over-HTTP spec).
+// Apollo treats non-2xx as a network error and won't parse graphQLErrors.
+// This wrapper converts 500 responses that contain a valid GraphQL error body to 200
+// so Apollo can handle them normally via the onError link.
+const graphqlFetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+  const response = await fetch(input, init);
+  if (response.status === 500) {
+    const text = await response.text();
+    try {
+      const json = JSON.parse(text);
+      if (json && Array.isArray(json.errors)) {
+        return new Response(text, { status: 200, headers: { 'Content-Type': 'application/json' } });
+      }
+    } catch {
+      return new Response(text, { status: response.status, statusText: response.statusText });
+    }
+  }
+  return response;
+};
+
 const httpLink = createHttpLink({
   uri: import.meta.env.VITE_API_URL ?? 'http://localhost:5000/graphql',
+  fetch: graphqlFetch,
 });
 
 const authLink = setContext((_, { headers }) => {

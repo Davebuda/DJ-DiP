@@ -254,23 +254,6 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Force HTTP 200 for GraphQL POST responses. HC 13 returns 500 when data is null
-// (GraphQL-over-HTTP spec), but Apollo needs 200 to read the errors array.
-// Must be placed BEFORE MapGraphQL so it wraps the entire GraphQL execution.
-app.Use(async (context, next) =>
-{
-    if (context.Request.Path.StartsWithSegments("/graphql") && context.Request.Method == "POST")
-    {
-        Console.Error.WriteLine($"[GraphQL Middleware] Before next()");
-        await next();
-        Console.Error.WriteLine($"[GraphQL Middleware] After next() - Status: {context.Response.StatusCode}, HasStarted: {context.Response.HasStarted}");
-    }
-    else
-    {
-        await next();
-    }
-});
-
 // ========== ROUTES ==========
 app.MapControllers(); // Map REST API controllers (file upload)
 
