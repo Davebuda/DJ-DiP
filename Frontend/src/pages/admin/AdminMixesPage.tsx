@@ -172,7 +172,7 @@ const AdminMixesPage = () => {
             <div className="md:col-span-2">
               <ImageUpload
                 currentImageUrl={form.thumbnailUrl}
-                onImageUploaded={(url) => setForm({ ...form, thumbnailUrl: url })}
+                onImageUploaded={(url) => setForm(prev => ({ ...prev, thumbnailUrl: url }))}
                 folder="mixes"
                 label="Thumbnail"
                 aspectRatio="aspect-video"
