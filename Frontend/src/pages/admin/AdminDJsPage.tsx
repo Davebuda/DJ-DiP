@@ -18,11 +18,13 @@ interface SocialLinkField {
 const SOCIAL_PLATFORMS = [
   { key: 'instagram' as const, label: 'Instagram', placeholder: 'https://www.instagram.com/yourhandle' },
   { key: 'soundCloud' as const, label: 'SoundCloud', placeholder: 'https://soundcloud.com/yourhandle' },
-  { key: 'facebook' as const, label: 'Facebook', placeholder: 'https://www.facebook.com/yourpage' },
+  { key: 'spotify' as const, label: 'Spotify', placeholder: 'https://open.spotify.com/artist/...' },
   { key: 'youtube' as const, label: 'YouTube', placeholder: 'https://www.youtube.com/@yourchannel' },
+  { key: 'facebook' as const, label: 'Facebook', placeholder: 'https://www.facebook.com/yourpage' },
+  { key: 'twitter' as const, label: 'Twitter', placeholder: 'https://twitter.com/yourhandle' },
 ] as const;
 
-type SocialPlatformKey = 'instagram' | 'soundCloud' | 'facebook' | 'youtube';
+type SocialPlatformKey = 'instagram' | 'soundCloud' | 'spotify' | 'youtube' | 'facebook' | 'twitter';
 
 interface DJFormState {
   stageName: string;
@@ -42,8 +44,10 @@ interface DJFormState {
   equipmentUsed: string;
   instagram: string;
   soundCloud: string;
-  facebook: string;
+  spotify: string;
   youtube: string;
+  facebook: string;
+  twitter: string;
   topTracks: string;
 }
 
@@ -65,8 +69,10 @@ const buildEmptyForm = (): DJFormState => ({
   equipmentUsed: '',
   instagram: '',
   soundCloud: '',
-  facebook: '',
+  spotify: '',
   youtube: '',
+  facebook: '',
+  twitter: '',
   topTracks: '',
 });
 
@@ -171,8 +177,10 @@ const AdminDJsPage = () => {
         equipmentUsed: detail.equipmentUsed ?? '',
         instagram: extractSocialUrl(detail.socialLinks, 'Instagram'),
         soundCloud: extractSocialUrl(detail.socialLinks, 'SoundCloud'),
-        facebook: extractSocialUrl(detail.socialLinks, 'Facebook'),
+        spotify: extractSocialUrl(detail.socialLinks, 'Spotify'),
         youtube: extractSocialUrl(detail.socialLinks, 'YouTube'),
+        facebook: extractSocialUrl(detail.socialLinks, 'Facebook'),
+        twitter: extractSocialUrl(detail.socialLinks, 'Twitter'),
         topTracks: (detail.topTracks ?? []).join('\n'),
       });
     } catch (editError) {

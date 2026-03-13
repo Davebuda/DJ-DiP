@@ -3,13 +3,34 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client';
 import { useAuth } from '../../context/AuthContext';
 import { GET_DJS, GET_DJ_BY_ID, UPDATE_DJ, UPDATE_USER_PROFILE } from '../../graphql/queries';
-import { Camera, Save, X, Plus, Music } from 'lucide-react';
+import { Camera, Save, Music } from 'lucide-react';
 import ImageUpload from '../../components/common/ImageUpload';
 
 interface SocialLink {
   label: string;
   url: string;
 }
+
+type SocialPlatformKey = 'instagram' | 'soundCloud' | 'spotify' | 'youtube' | 'facebook' | 'twitter';
+
+const SOCIAL_PLATFORMS = [
+  { key: 'instagram' as const, label: 'Instagram', placeholder: 'https://www.instagram.com/yourhandle' },
+  { key: 'soundCloud' as const, label: 'SoundCloud', placeholder: 'https://soundcloud.com/yourhandle' },
+  { key: 'spotify' as const, label: 'Spotify', placeholder: 'https://open.spotify.com/artist/...' },
+  { key: 'youtube' as const, label: 'YouTube', placeholder: 'https://www.youtube.com/@yourchannel' },
+  { key: 'facebook' as const, label: 'Facebook', placeholder: 'https://www.facebook.com/yourpage' },
+  { key: 'twitter' as const, label: 'Twitter', placeholder: 'https://twitter.com/yourhandle' },
+] as const;
+
+const extractSocialUrl = (links: SocialLink[], label: string): string =>
+  links?.find((l) => l.label?.toLowerCase() === label.toLowerCase())?.url ?? '';
+
+const serializeSocialLinks = (socials: Record<SocialPlatformKey, string>): string => {
+  const links = SOCIAL_PLATFORMS
+    .map(({ label, key }) => ({ label, url: socials[key].trim() }))
+    .filter((l) => l.url);
+  return JSON.stringify(links);
+};
 
 const DJProfileEditor = () => {
   const { user, isDJ, updateUserLocal } = useAuth();
@@ -43,7 +64,12 @@ const DJProfileEditor = () => {
     influencedBy: '',
     equipmentUsed: '',
     topTracks: [] as string[],
-    socialLinks: [] as SocialLink[],
+    instagram: '',
+    soundCloud: '',
+    spotify: '',
+    youtube: '',
+    facebook: '',
+    twitter: '',
   });
 
   useEffect(() => {
@@ -80,7 +106,12 @@ const DJProfileEditor = () => {
         influencedBy: dj.influencedBy || '',
         equipmentUsed: dj.equipmentUsed || '',
         topTracks: dj.topTracks || [],
-        socialLinks: dj.socialLinks || [],
+        instagram: extractSocialUrl(dj.socialLinks || [], 'Instagram'),
+        soundCloud: extractSocialUrl(dj.socialLinks || [], 'SoundCloud'),
+        spotify: extractSocialUrl(dj.socialLinks || [], 'Spotify'),
+        youtube: extractSocialUrl(dj.socialLinks || [], 'YouTube'),
+        facebook: extractSocialUrl(dj.socialLinks || [], 'Facebook'),
+        twitter: extractSocialUrl(dj.socialLinks || [], 'Twitter'),
       });
     }
   }, [djData]);
@@ -108,7 +139,14 @@ const DJProfileEditor = () => {
             influencedBy: formData.influencedBy,
             equipmentUsed: formData.equipmentUsed,
             topTracks: formData.topTracks.filter(t => t.trim()),
-            socialLinks: JSON.stringify(formData.socialLinks),
+            socialLinks: serializeSocialLinks({
+              instagram: formData.instagram,
+              soundCloud: formData.soundCloud,
+              spotify: formData.spotify,
+              youtube: formData.youtube,
+              facebook: formData.facebook,
+              twitter: formData.twitter,
+            }),
           },
         },
       });
@@ -141,30 +179,6 @@ const DJProfileEditor = () => {
       setSaving(false);
     }
   };
-
-  const addSocialLink = () => {
-    setFormData(prev => ({
-      ...prev,
-      socialLinks: [...prev.socialLinks, { label: '', url: '' }],
-    }));
-  };
-
-  const removeSocialLink = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      socialLinks: prev.socialLinks.filter((_, i) => i !== index),
-    }));
-  };
-
-  const updateSocialLink = (index: number, field: 'label' | 'url', value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      socialLinks: prev.socialLinks.map((link, i) =>
-        i === index ? { ...link, [field]: value } : link
-      ),
-    }));
-  };
-
 
   if (loadingDJ) {
     return (
@@ -390,49 +404,21 @@ const DJProfileEditor = () => {
 
           {/* Social Links */}
           <section className="bg-white/5 border border-white/10 rounded-lg p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-white">Social Links</h2>
-              <button
-                type="button"
-                onClick={addSocialLink}
-                className="px-3 py-1.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 text-blue-400 text-sm flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                Add Link
-              </button>
+            <h2 className="text-xl font-semibold text-white">Social Links</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {SOCIAL_PLATFORMS.map(({ key, label, placeholder }) => (
+                <label key={key} className="space-y-1 text-sm font-semibold text-gray-300">
+                  {label}
+                  <input
+                    type="url"
+                    value={formData[key]}
+                    onChange={(e) => setFormData(prev => ({ ...prev, [key]: e.target.value }))}
+                    placeholder={placeholder}
+                    className="w-full px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white placeholder-gray-600 focus:border-orange-500 focus:outline-none font-normal mt-1"
+                  />
+                </label>
+              ))}
             </div>
-
-            {formData.socialLinks.map((link, index) => (
-              <div key={index} className="flex gap-2">
-                <input
-                  type="text"
-                  value={link.label}
-                  onChange={(e) => updateSocialLink(index, 'label', e.target.value)}
-                  placeholder="Platform (e.g., SoundCloud)"
-                  className="w-1/3 px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none"
-                />
-                <input
-                  type="url"
-                  value={link.url}
-                  onChange={(e) => updateSocialLink(index, 'url', e.target.value)}
-                  placeholder="https://..."
-                  className="flex-1 px-4 py-2 rounded-lg bg-black/30 border border-white/10 text-white focus:border-orange-500 focus:outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeSocialLink(index)}
-                  className="flex-shrink-0 px-3 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-
-            {formData.socialLinks.length === 0 && (
-              <p className="text-center text-gray-500 py-4">
-                Add your social media and music platform links to expand your reach.
-              </p>
-            )}
           </section>
 
           {/* Submit */}
