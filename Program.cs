@@ -23,7 +23,6 @@ using DJDiP.Domain.Models;
 using System.Net;
 using HotChocolate;
 using HotChocolate.AspNetCore.Serialization;
-using HotChocolate.Execution;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -186,11 +185,6 @@ builder.Services.AddScoped<IFileUploadService>(sp =>
 builder.Services.AddControllers();
 
 // ========== GRAPHQL ==========
-// HotChocolate 13 follows GraphQL-over-HTTP spec and returns HTTP 500 when data is null.
-// Apollo Client treats non-200 as a network error and can't read the errors array.
-// This custom serializer always returns HTTP 200 so Apollo can handle errors properly.
-builder.Services.AddSingleton<IHttpResultSerializer, AlwaysOkResultSerializer>();
-
 builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
@@ -214,6 +208,11 @@ builder.Services
         opt.IncludeExceptionDetails = builder.Environment.IsDevelopment();
     })
     .ModifyOptions(o => o.StrictValidation = false);
+
+// HotChocolate 13 follows GraphQL-over-HTTP spec and returns HTTP 500 when data is null.
+// Apollo Client treats non-200 as a network error and can't read the errors array.
+// Registering AFTER AddGraphQLServer ensures this wins over HC's default formatter.
+builder.Services.AddHttpResponseFormatter<AlwaysOkHttpResponseFormatter>();
 
 var app = builder.Build();
 
@@ -2253,17 +2252,11 @@ public class AdminUserDto
 /// HotChocolate 13 by default returns HTTP 500 when data is null (GraphQL-over-HTTP spec),
 /// but Apollo treats any non-200 as a network error and cannot read the errors array.
 /// </summary>
-public class AlwaysOkResultSerializer : IHttpResultSerializer
+public class AlwaysOkHttpResponseFormatter : DefaultHttpResponseFormatter
 {
-    private readonly DefaultHttpResultSerializer _inner = new();
-
-    public string GetContentType(IExecutionResult result) => _inner.GetContentType(result);
-
-    public HttpStatusCode GetStatusCode(IExecutionResult result) => HttpStatusCode.OK;
-
-    public ValueTask SerializeAsync(
-        IExecutionResult result,
-        Stream responseStream,
-        CancellationToken cancellationToken = default)
-        => _inner.SerializeAsync(result, responseStream, cancellationToken);
+    protected override HttpStatusCode OnDetermineStatusCode(
+        HotChocolate.Execution.IQueryResult result,
+        DefaultHttpResponseFormatter.FormatInfo format,
+        HttpStatusCode? proposedStatusCode)
+        => HttpStatusCode.OK;
 }
