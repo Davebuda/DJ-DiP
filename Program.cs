@@ -183,14 +183,6 @@ builder.Services.AddScoped<IFileUploadService>(sp =>
 builder.Services.AddControllers();
 
 // ========== GRAPHQL ==========
-// Use legacy HTTP transport so HotChocolate returns HTTP 200 (not 500) when data is null.
-// The new GraphQL-over-HTTP spec returns 500 for null data, but Apollo Client needs 200
-// to read the errors array properly. Legacy mode restores the pre-spec-compliant behavior.
-builder.Services.AddHttpResponseFormatter(new HotChocolate.AspNetCore.Serialization.HttpResponseFormatterOptions
-{
-    HttpTransportVersion = HotChocolate.AspNetCore.HttpTransportVersion.Legacy
-});
-
 builder.Services
     .AddGraphQLServer()
     .AddQueryType<Query>()
@@ -269,6 +261,26 @@ app.MapControllers(); // Map REST API controllers (file upload)
 app.MapHealthChecks("/health");
 
 app.MapGet("/", () => "DJ-DiP API is running! Visit /graphql for GraphQL playground.");
+
+// Ensure GraphQL POST requests always return HTTP 200 even when data is null.
+// HotChocolate 13 follows GraphQL-over-HTTP spec and returns HTTP 500 for null-data responses,
+// but Apollo Client needs HTTP 200 to parse the errors array. OnStarting fires just before
+// headers are committed so the status code can still be changed at that point.
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/graphql") && context.Request.Method == "POST")
+    {
+        context.Response.OnStarting(() =>
+        {
+            if (context.Response.StatusCode is >= 500 and < 600)
+            {
+                context.Response.StatusCode = 200;
+            }
+            return Task.CompletedTask;
+        });
+    }
+    await next();
+});
 
 // GraphQL endpoint
 app.MapGraphQL("/graphql").WithOptions(new HotChocolate.AspNetCore.GraphQLServerOptions
