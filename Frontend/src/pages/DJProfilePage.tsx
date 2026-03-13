@@ -498,41 +498,66 @@ const DJProfilePage = () => {
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <p className="text-xs uppercase tracking-[0.5em] text-orange-400">Upcoming Sets</p>
-              <Link to="/events" className="text-xs uppercase tracking-[0.3em] text-gray-400 hover:text-white">
-                View all
+          {(() => {
+            const now = new Date();
+            const upcomingSets = dj.upcomingEvents.filter((e) => new Date(e.date) >= now);
+            const pastSets = dj.upcomingEvents.filter((e) => new Date(e.date) < now);
+
+            const EventCard = ({ event, past }: { event: EventSummary; past?: boolean }) => (
+              <Link
+                key={event.eventId}
+                to={`/events/${event.eventId}`}
+                className={`flex gap-4 items-center rounded-[20px] border p-4 transition ${
+                  past
+                    ? 'border-white/5 opacity-60 hover:opacity-80'
+                    : 'border-white/10 hover:border-orange-400'
+                }`}
+              >
+                <img
+                  src={event.imageUrl ?? defaultEventImage}
+                  alt={event.title}
+                  className={`h-16 w-16 rounded-[16px] object-cover border border-white/10 ${past ? 'grayscale' : ''}`}
+                />
+                <div className="flex-1">
+                  <p className={`font-semibold ${past ? 'text-gray-400' : 'text-white'}`}>{event.title}</p>
+                  <p className="text-sm text-gray-500">
+                    {new Date(event.date).toLocaleDateString()} · {event.venueName}
+                    {event.city ? `, ${event.city}` : ''}
+                  </p>
+                  {!past && <p className="text-sm text-gray-300">{event.price ? `$${event.price}` : 'Free entry'}</p>}
+                </div>
               </Link>
-            </div>
-            {dj.upcomingEvents.length === 0 ? (
-              <p className="text-gray-500">No scheduled performances yet.</p>
-            ) : (
-              <div className="space-y-4">
-                {dj.upcomingEvents.map((event) => (
-                  <Link
-                    key={event.eventId}
-                    to={`/events/${event.eventId}`}
-                    className="flex gap-4 items-center rounded-[20px] border border-white/10 p-4 hover:border-orange-400 transition"
-                  >
-                    <img
-                      src={event.imageUrl ?? defaultEventImage}
-                      alt={event.title}
-                      className="h-16 w-16 rounded-[16px] object-cover border border-white/10"
-                    />
-                    <div className="flex-1">
-                      <p className="text-white font-semibold">{event.title}</p>
-                      <p className="text-sm text-gray-400">
-                        {new Date(event.date).toLocaleDateString()} · {event.venueName}
-                        {event.city ? `, ${event.city}` : ''}
-                      </p>
-                      <p className="text-sm text-gray-300">{event.price ? `$${event.price}` : 'Free entry'}</p>
+            );
+
+            return (
+              <>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs uppercase tracking-[0.5em] text-orange-400">Upcoming Sets</p>
+                    <Link to="/events" className="text-xs uppercase tracking-[0.3em] text-gray-400 hover:text-white">
+                      View all
+                    </Link>
+                  </div>
+                  {upcomingSets.length === 0 ? (
+                    <p className="text-gray-500">No scheduled performances yet.</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {upcomingSets.map((event) => <EventCard key={event.eventId} event={event} />)}
                     </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
+                  )}
+                </div>
+
+                {pastSets.length > 0 && (
+                  <div className="space-y-4 pt-4 border-t border-white/5">
+                    <p className="text-xs uppercase tracking-[0.5em] text-gray-600">Past Performances</p>
+                    <div className="space-y-3">
+                      {pastSets.map((event) => <EventCard key={event.eventId} event={event} past />)}
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
       </section>
     </div>
