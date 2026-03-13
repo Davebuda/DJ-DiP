@@ -263,23 +263,36 @@ app.MapHealthChecks("/health");
 app.MapGet("/", () => "DJ-DiP API is running! Visit /graphql for GraphQL playground.");
 
 // Ensure GraphQL POST requests always return HTTP 200 even when data is null.
-// HotChocolate 13 follows GraphQL-over-HTTP spec and returns HTTP 500 for null-data responses,
-// but Apollo Client needs HTTP 200 to parse the errors array. OnStarting fires just before
-// headers are committed so the status code can still be changed at that point.
+// HotChocolate 13 returns HTTP 500 for null-data responses per GraphQL-over-HTTP spec,
+// but Apollo Client needs HTTP 200 to read the errors array. Buffer the response body
+// so we can change the status code before headers are committed to the client.
 app.Use(async (context, next) =>
 {
     if (context.Request.Path.StartsWithSegments("/graphql") && context.Request.Method == "POST")
     {
-        context.Response.OnStarting(() =>
+        var originalBody = context.Response.Body;
+        using var buffer = new System.IO.MemoryStream();
+        context.Response.Body = buffer;
+        try
         {
+            await next();
+        }
+        finally
+        {
+            // Downgrade any 5xx to 200 so Apollo can parse GraphQL errors
             if (context.Response.StatusCode is >= 500 and < 600)
             {
                 context.Response.StatusCode = 200;
             }
-            return Task.CompletedTask;
-        });
+            buffer.Seek(0, System.IO.SeekOrigin.Begin);
+            context.Response.Body = originalBody;
+            await buffer.CopyToAsync(originalBody);
+        }
     }
-    await next();
+    else
+    {
+        await next();
+    }
 });
 
 // GraphQL endpoint
