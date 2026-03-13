@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
-import { GET_LANDING_DATA, HAS_PENDING_DJ_APPLICATION, GET_DJ_MIXES } from '../graphql/queries';
+import { GET_LANDING_DATA, HAS_PENDING_DJ_APPLICATION, GET_DJ_MIXES, GET_GENRES } from '../graphql/queries';
 import { useAuth } from '../context/AuthContext';
 import NewsletterSignup from '../components/common/NewsletterSignup';
 import GallerySlideshow from '../components/gallery/GallerySlideshow';
@@ -166,7 +166,7 @@ const HeroSection = ({
             </h1>
             <p className="text-lg text-gray-300 max-w-xl leading-relaxed">
               {siteSettings.heroSubtitle ??
-                'Book tickets to exclusive DJ events, discover new artists, and be part of the underground electronic music scene.'}
+                'Book tickets to exclusive DJ events, discover new artists, and be part of the Afrobeats music scene.'}
             </p>
           </div>
 
@@ -317,6 +317,7 @@ const LandingPage = () => {
     skip: !user || isDJ,
   });
   const { data: mixesData } = useQuery(GET_DJ_MIXES);
+  const { data: genresData } = useQuery(GET_GENRES);
   const featuredImageFallback =
     siteSettings.heroBackgroundImageUrl ?? '/media/sections/hero/KlubN12.07 screen (1) copy.png';
 
@@ -340,11 +341,14 @@ const LandingPage = () => {
   const marqueeGenreWords = useMemo(() => {
     const stored = localStorage.getItem('cms_marqueeGenreWords');
     if (stored) return stored.split(',').map(w => w.trim()).filter(Boolean);
+    // Use live genres from DB
+    const liveGenres = genresData?.genres as { id: string; name: string }[] | undefined;
+    if (liveGenres && liveGenres.length > 0) return liveGenres.map(g => g.name.toUpperCase());
     // Fall back to heroGenres from settings
-    const genres = siteSettings.heroGenres;
-    if (genres) return genres.split(',').map((g: string) => g.trim().toUpperCase()).filter(Boolean);
+    const heroGenres = siteSettings.heroGenres;
+    if (heroGenres) return heroGenres.split(',').map((g: string) => g.trim().toUpperCase()).filter(Boolean);
     return undefined;
-  }, [siteSettings.heroGenres]);
+  }, [genresData, siteSettings.heroGenres]);
 
   const trendingDj = djs[0];
   const heroShowcaseItems = useMemo(() => {
@@ -747,7 +751,7 @@ const LandingPage = () => {
         ) : (
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" staggerDelay={0.12}>
             {[
-              { name: 'DJ Phantom', genre: 'Techno', bio: 'Dark, driving techno sets that push the boundaries of the underground.' },
+              { name: 'DJ Phantom', genre: 'Afrobeats', bio: 'Dark, driving Afrobeats sets that push the boundaries of the genre.' },
               { name: 'Luna Bass', genre: 'House', bio: 'Deep house grooves with soulful vocals and hypnotic basslines.' },
               { name: 'Neon Pulse', genre: 'Electro', bio: 'High-energy electro and breaks, blending analog synths with digital precision.' },
               { name: 'Echo Chamber', genre: 'Ambient', bio: 'Atmospheric soundscapes and downtempo beats for late-night listening.' },

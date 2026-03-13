@@ -411,8 +411,8 @@ const EventsPage = () => {
               </h2>
               <p className="text-sm text-white/50 leading-relaxed">
                 From intimate basement sessions in Oslo to full-scale productions — DJ DiP brings a
-                decade of underground electronic music culture to every set. Rooted in techno, house,
-                and trance, the sound is raw, the energy is real, and the nights are unforgettable.
+                decade of Afrobeats music culture to every set. Rooted in Afrobeats, house,
+                and dancehall, the sound is raw, the energy is real, and the nights are unforgettable.
               </p>
               <p className="text-sm text-white/50 leading-relaxed">
                 Whether you're looking to book a DJ for your venue, collaborate on a production, or
