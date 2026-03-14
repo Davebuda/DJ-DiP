@@ -679,13 +679,6 @@ public class Query
     {
         return await djMixService.GetByIdAsync(id);
     }
-
-    // DJ Top 10 Lists
-    public async Task<IEnumerable<DJTop10ListDto>> DjTop10Lists(
-        [Service] IDJTop10Service djTop10Service)
-    {
-        return await djTop10Service.GetAllAsync();
-    }
 }
 
 public class SongMetadataResult
