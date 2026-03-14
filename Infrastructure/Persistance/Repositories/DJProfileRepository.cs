@@ -14,6 +14,9 @@ namespace DJDiP.Infrastructure.Persistance.Repositories
         {
             return await _dbSet
                 .Include(dj => dj.Genres)
+                .Include(dj => dj.EventDJs)
+                    .ThenInclude(ed => ed.Event)
+                        .ThenInclude(e => e!.Venue)
                 .ToListAsync();
         }
 

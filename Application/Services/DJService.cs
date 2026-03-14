@@ -23,9 +23,26 @@ namespace DJDiP.Application.Services
                 .GroupBy(r => r.DJId)
                 .ToDictionary(g => g.Key, g => g.ToList());
 
+            var now = DateTime.UtcNow;
             return djs.Select(dj =>
             {
                 var hasReviews = reviewsByDj.TryGetValue(dj.Id, out var reviews) && reviews.Count > 0;
+                var upcomingEvents = (dj.EventDJs ?? Enumerable.Empty<EventDJ>())
+                    .Where(ed => ed.Event != null && ed.Event.Date >= now)
+                    .OrderBy(ed => ed.Event!.Date)
+                    .Take(5)
+                    .Select(ed => new DJProfileEventSummaryDto
+                    {
+                        EventId = ed.Event!.Id,
+                        Title = ed.Event.Title,
+                        Date = DateTime.SpecifyKind(ed.Event.Date, DateTimeKind.Utc),
+                        VenueName = ed.Event.Venue?.Name ?? "TBA",
+                        City = ed.Event.Venue?.City,
+                        Price = ed.Event.Price,
+                        ImageUrl = ed.Event.ImageUrl
+                    })
+                    .ToList();
+
                 return new DJProfileListItemDto
                 {
                     Id = dj.Id,
@@ -43,7 +60,8 @@ namespace DJDiP.Application.Services
                     Specialties = dj.Specialties,
                     Achievements = dj.Achievements,
                     YearsExperience = dj.YearsExperience,
-                    InfluencedBy = dj.InfluencedBy
+                    InfluencedBy = dj.InfluencedBy,
+                    UpcomingEvents = upcomingEvents
                 };
             });
         }

@@ -18,5 +18,6 @@ namespace DJDiP.Application.DTO.DJProfileDTO
         public string? Achievements { get; set; }
         public int? YearsExperience { get; set; }
         public string? InfluencedBy { get; set; }
+        public List<DJProfileEventSummaryDto> UpcomingEvents { get; set; } = new();
     }
 }
