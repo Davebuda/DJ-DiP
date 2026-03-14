@@ -162,7 +162,7 @@ const HeroSection = ({
               )}
             </h1>
             <p className="text-lg text-gray-300 max-w-xl leading-relaxed">
-              {siteSettings.heroSubtitle ??
+              {siteSettings.heroSubtitle ||
                 'Book tickets to exclusive DJ events, discover new artists, and be part of the Afrobeats music scene.'}
             </p>
           </div>

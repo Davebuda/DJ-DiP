@@ -85,6 +85,7 @@ namespace DJDiP.Application.Services
             playlist.CoverImageUrl = dto.CoverImageUrl;
             playlist.Curator = dto.Curator;
             playlist.PlaylistUrl = dto.PlaylistUrl;
+            playlist.CreatedAt = DateTime.SpecifyKind(playlist.CreatedAt, DateTimeKind.Utc);
 
             await _unitOfWork.Playlists.UpdateAsync(playlist);
             await _unitOfWork.SaveChangesAsync();

@@ -60,6 +60,8 @@ namespace DJDiP.Application.Services
             mix.Genre = dto.Genre;
             mix.MixType = dto.MixType;
             mix.DJProfileId = dto.DjProfileId;
+            // Ensure CreatedAt has UTC kind — columns created with TIMESTAMP (no tz) come back as Unspecified
+            mix.CreatedAt = DateTime.SpecifyKind(mix.CreatedAt, DateTimeKind.Utc);
 
             await _unitOfWork.DJMixes.UpdateAsync(mix);
             await _unitOfWork.SaveChangesAsync();
