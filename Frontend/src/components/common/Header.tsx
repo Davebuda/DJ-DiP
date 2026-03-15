@@ -181,45 +181,20 @@ const Header = () => {
 
         {/* ── Mobile menu ── */}
         {mobileOpen && (
-          <div className="sm:hidden border-t border-white/[0.06] pb-4 pt-3 space-y-1">
-            {/* Role badge */}
-            {(isAdmin || isDJ) && (
-              <div className="mb-3">
-                {isAdmin && (
-                  <Link
-                    to="/admin"
-                    onClick={closeMobile}
-                    className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-500/10 to-[#FF6B35]/10 border border-orange-500/30 text-orange-400 text-[0.7rem] uppercase tracking-[0.3em] font-semibold"
-                  >
-                    <span>Admin Panel</span>
-                    <span className="text-orange-500/60">→</span>
-                  </Link>
-                )}
-                {isDJ && !isAdmin && (
-                  <Link
-                    to="/dj-dashboard"
-                    onClick={closeMobile}
-                    className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-500/10 to-[#FF6B35]/10 border border-orange-500/30 text-orange-400 text-[0.7rem] uppercase tracking-[0.3em] font-semibold"
-                  >
-                    <span>DJ Portal</span>
-                    <span className="text-orange-500/60">→</span>
-                  </Link>
-                )}
-              </div>
-            )}
+          <div className="sm:hidden border-t border-white/[0.06] pb-5 pt-4 space-y-3">
 
-            {/* Nav links grid */}
-            <div className="grid grid-cols-2 gap-1">
+            {/* Nav links grid — comes first */}
+            <div className="grid grid-cols-2 gap-1.5">
               {navLinks.map(({ label, to }) => (
                 <NavLink
                   key={to}
                   to={to}
                   onClick={closeMobile}
                   className={({ isActive }) =>
-                    `px-3 py-2 rounded-xl text-[0.65rem] uppercase tracking-[0.25em] text-center transition-colors ${
+                    `relative px-3 py-2.5 rounded-xl text-[0.62rem] uppercase tracking-[0.28em] text-center font-medium transition-all duration-200 overflow-hidden ${
                       isActive
-                        ? 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold'
-                        : 'bg-white/[0.04] border border-white/[0.08] text-gray-300 hover:text-white hover:border-orange-400/30'
+                        ? 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold shadow-[0_4px_14px_rgba(255,107,53,0.35)]'
+                        : 'bg-white/[0.06] border border-white/[0.10] text-gray-300 hover:text-white hover:bg-white/[0.10] hover:border-orange-400/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
                     }`
                   }
                 >
@@ -228,8 +203,36 @@ const Header = () => {
               ))}
             </div>
 
+            <div className="border-t border-white/[0.06]" />
+
+            {/* Portal / Admin pill */}
+            {(isAdmin || isDJ) && (
+              <>
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    onClick={closeMobile}
+                    className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-gradient-to-r from-orange-500/[0.12] to-[#FF6B35]/[0.08] border border-orange-500/30 text-orange-400 text-[0.68rem] uppercase tracking-[0.3em] font-semibold shadow-[inset_0_1px_0_rgba(255,107,53,0.15)] hover:border-orange-400/60 hover:from-orange-500/[0.18] transition-all"
+                  >
+                    <span>Admin Panel</span>
+                    <span className="text-lg leading-none text-orange-500/70">→</span>
+                  </Link>
+                )}
+                {isDJ && !isAdmin && (
+                  <Link
+                    to="/dj-dashboard"
+                    onClick={closeMobile}
+                    className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-gradient-to-r from-orange-500/[0.12] to-[#FF6B35]/[0.08] border border-orange-500/30 text-orange-400 text-[0.68rem] uppercase tracking-[0.3em] font-semibold shadow-[inset_0_1px_0_rgba(255,107,53,0.15)] hover:border-orange-400/60 hover:from-orange-500/[0.18] transition-all"
+                  >
+                    <span>DJ Portal</span>
+                    <span className="text-lg leading-none text-orange-500/70">→</span>
+                  </Link>
+                )}
+              </>
+            )}
+
             {/* Auth row */}
-            <div className="pt-2 flex gap-2">
+            <div className="flex gap-2">
               {isAuthenticated ? (
                 <>
                   {isAdmin && (
@@ -237,10 +240,10 @@ const Header = () => {
                       to="/dashboard"
                       onClick={closeMobile}
                       className={({ isActive }) =>
-                        `flex-1 px-3 py-2 rounded-xl text-[0.65rem] uppercase tracking-[0.25em] text-center transition-colors ${
+                        `flex-1 px-3 py-2.5 rounded-xl text-[0.62rem] uppercase tracking-[0.28em] text-center font-medium transition-all ${
                           isActive
                             ? 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold'
-                            : 'bg-white/[0.04] border border-white/[0.08] text-gray-300 hover:text-white'
+                            : 'bg-white/[0.06] border border-white/[0.10] text-gray-300 hover:text-white hover:border-orange-400/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
                         }`
                       }
                     >
@@ -249,7 +252,7 @@ const Header = () => {
                   )}
                   <button
                     onClick={() => { logout(); closeMobile(); }}
-                    className="flex-1 px-3 py-2 rounded-xl bg-white text-black text-[0.65rem] font-semibold uppercase tracking-[0.25em] hover:bg-gradient-to-r hover:from-orange-500 hover:to-[#FF6B35] hover:text-black transition"
+                    className="flex-1 px-3 py-2.5 rounded-xl bg-gradient-to-r from-white to-gray-100 text-black text-[0.62rem] font-bold uppercase tracking-[0.28em] hover:from-orange-500 hover:to-[#FF6B35] hover:text-black transition-all shadow-[0_2px_8px_rgba(0,0,0,0.3)]"
                   >
                     Logout
                   </button>
@@ -258,12 +261,13 @@ const Header = () => {
                 <Link
                   to="/login"
                   onClick={closeMobile}
-                  className="flex-1 px-3 py-2 rounded-xl border border-white/20 text-[0.65rem] uppercase tracking-[0.25em] text-center text-gray-300 hover:text-white"
+                  className="flex-1 px-3 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.10] text-[0.62rem] uppercase tracking-[0.28em] text-center text-gray-300 hover:text-white hover:border-orange-400/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-all"
                 >
                   Login
                 </Link>
               )}
             </div>
+
           </div>
         )}
       </div>
