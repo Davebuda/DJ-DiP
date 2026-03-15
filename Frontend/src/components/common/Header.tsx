@@ -74,28 +74,28 @@ const Header = () => {
               </Link>
             )}
 
-            {/* Desktop: Dashboard + Logout / Login */}
+            {/* Desktop: Dashboard (admin only) + Logout / Login */}
+            {isAdmin && (
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) =>
+                  `hidden lg:inline-flex rounded-full px-2.5 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] transition-colors whitespace-nowrap ${
+                    isActive
+                      ? 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold'
+                      : 'border border-white/20 text-gray-300 hover:text-white hover:border-orange-400'
+                  }`
+                }
+              >
+                Dashboard
+              </NavLink>
+            )}
             {isAuthenticated ? (
-              <>
-                <NavLink
-                  to="/dashboard"
-                  className={({ isActive }) =>
-                    `hidden lg:inline-flex rounded-full px-2.5 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] transition-colors whitespace-nowrap ${
-                      isActive
-                        ? 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold'
-                        : 'border border-white/20 text-gray-300 hover:text-white hover:border-orange-400'
-                    }`
-                  }
-                >
-                  Dashboard
-                </NavLink>
-                <button
-                  onClick={logout}
-                  className="hidden lg:inline-flex rounded-full bg-white text-black px-4 py-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.3em] hover:bg-gradient-to-r hover:from-orange-500 hover:to-[#FF6B35] hover:text-black transition whitespace-nowrap"
-                >
-                  Logout
-                </button>
-              </>
+              <button
+                onClick={logout}
+                className="hidden lg:inline-flex rounded-full bg-white text-black px-4 py-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.3em] hover:bg-gradient-to-r hover:from-orange-500 hover:to-[#FF6B35] hover:text-black transition whitespace-nowrap"
+              >
+                Logout
+              </button>
             ) : (
               <Link
                 to="/login"
@@ -122,27 +122,27 @@ const Header = () => {
                 DJ Portal
               </Link>
             )}
+            {isAdmin && (
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) =>
+                  `hidden sm:inline-flex lg:hidden rounded-full px-2.5 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] transition-colors whitespace-nowrap ${
+                    isActive
+                      ? 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold'
+                      : 'border border-white/20 text-gray-300 hover:text-white hover:border-orange-400'
+                  }`
+                }
+              >
+                Dashboard
+              </NavLink>
+            )}
             {isAuthenticated ? (
-              <>
-                <NavLink
-                  to="/dashboard"
-                  className={({ isActive }) =>
-                    `hidden sm:inline-flex lg:hidden rounded-full px-2.5 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] transition-colors whitespace-nowrap ${
-                      isActive
-                        ? 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold'
-                        : 'border border-white/20 text-gray-300 hover:text-white hover:border-orange-400'
-                    }`
-                  }
-                >
-                  Dashboard
-                </NavLink>
-                <button
-                  onClick={logout}
-                  className="hidden sm:inline-flex lg:hidden rounded-full bg-white text-black px-4 py-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.3em] hover:bg-gradient-to-r hover:from-orange-500 hover:to-[#FF6B35] hover:text-black transition whitespace-nowrap"
-                >
-                  Logout
-                </button>
-              </>
+              <button
+                onClick={logout}
+                className="hidden sm:inline-flex lg:hidden rounded-full bg-white text-black px-4 py-1.5 text-[0.6rem] font-semibold uppercase tracking-[0.3em] hover:bg-gradient-to-r hover:from-orange-500 hover:to-[#FF6B35] hover:text-black transition whitespace-nowrap"
+              >
+                Logout
+              </button>
             ) : (
               <Link
                 to="/login"
@@ -232,19 +232,21 @@ const Header = () => {
             <div className="pt-2 flex gap-2">
               {isAuthenticated ? (
                 <>
-                  <NavLink
-                    to="/dashboard"
-                    onClick={closeMobile}
-                    className={({ isActive }) =>
-                      `flex-1 px-3 py-2 rounded-xl text-[0.65rem] uppercase tracking-[0.25em] text-center transition-colors ${
-                        isActive
-                          ? 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold'
-                          : 'bg-white/[0.04] border border-white/[0.08] text-gray-300 hover:text-white'
-                      }`
-                    }
-                  >
-                    Dashboard
-                  </NavLink>
+                  {isAdmin && (
+                    <NavLink
+                      to="/dashboard"
+                      onClick={closeMobile}
+                      className={({ isActive }) =>
+                        `flex-1 px-3 py-2 rounded-xl text-[0.65rem] uppercase tracking-[0.25em] text-center transition-colors ${
+                          isActive
+                            ? 'bg-gradient-to-r from-orange-500 to-[#FF6B35] text-black font-semibold'
+                            : 'bg-white/[0.04] border border-white/[0.08] text-gray-300 hover:text-white'
+                        }`
+                      }
+                    >
+                      Dashboard
+                    </NavLink>
+                  )}
                   <button
                     onClick={() => { logout(); closeMobile(); }}
                     className="flex-1 px-3 py-2 rounded-xl bg-white text-black text-[0.65rem] font-semibold uppercase tracking-[0.25em] hover:bg-gradient-to-r hover:from-orange-500 hover:to-[#FF6B35] hover:text-black transition"
