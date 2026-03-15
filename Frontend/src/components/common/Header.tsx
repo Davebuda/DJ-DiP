@@ -27,6 +27,15 @@ const Header = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* ── Main row ── */}
         <div className="py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-3">
+          {/* Mobile hamburger — left side on mobile only */}
+          <button
+            className="sm:hidden flex items-center justify-center w-8 h-8 rounded-lg border border-white/20 text-gray-300 hover:text-white hover:border-orange-400 transition-colors flex-shrink-0"
+            onClick={() => setMobileOpen((o) => !o)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X size={16} /> : <Menu size={16} />}
+          </button>
+
           <Link to="/" className="flex items-center gap-3 flex-shrink-0" onClick={closeMobile}>
             <img
               src={siteSettings.logoUrl || '/icons/lets-go-klubn-320.png'}
@@ -168,14 +177,6 @@ const Header = () => {
               </select>
             </div>
 
-            {/* Mobile hamburger (sm:hidden) */}
-            <button
-              className="sm:hidden flex items-center justify-center w-8 h-8 rounded-lg border border-white/20 text-gray-300 hover:text-white hover:border-orange-400 transition-colors flex-shrink-0"
-              onClick={() => setMobileOpen((o) => !o)}
-              aria-label="Toggle menu"
-            >
-              {mobileOpen ? <X size={16} /> : <Menu size={16} />}
-            </button>
           </div>
         </div>
 
