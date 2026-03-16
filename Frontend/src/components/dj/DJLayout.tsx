@@ -53,12 +53,31 @@ const DJLayout = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1">
+        <main className="flex-1 pb-20 md:pb-0">
           <ErrorBoundary>
             <Outlet />
           </ErrorBoundary>
         </main>
       </div>
+
+      {/* Mobile bottom nav */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-20 flex bg-black/95 border-t border-white/10 backdrop-blur-md">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.end}
+            className={({ isActive }) =>
+              `flex-1 flex flex-col items-center gap-0.5 py-3 text-[0.55rem] uppercase tracking-wider transition-colors ${
+                isActive ? 'text-orange-400' : 'text-gray-500 hover:text-gray-300'
+              }`
+            }
+          >
+            {item.icon}
+            <span>{item.label}</span>
+          </NavLink>
+        ))}
+      </nav>
     </div>
   );
 };
