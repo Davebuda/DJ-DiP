@@ -1372,7 +1372,7 @@ public class Mutation
     {
         var userId = RequireAuthentication(httpContextAccessor);
         var existing = await db.EventOrganizerApplications
-            .Where(a => a.UserId == input.UserId && a.Status == ApplicationStatus.Pending)
+            .Where(a => a.UserId == userId && a.Status == ApplicationStatus.Pending)
             .FirstOrDefaultAsync();
         if (existing != null)
             throw new GraphQLException("You already have a pending organizer application.");
@@ -1380,7 +1380,7 @@ public class Mutation
         var app = new EventOrganizerApplication
         {
             Id = Guid.NewGuid(),
-            UserId = input.UserId,
+            UserId = userId,
             OrganizationName = input.OrganizationName,
             Description = input.Description,
             Website = input.Website,

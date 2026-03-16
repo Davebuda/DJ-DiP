@@ -162,6 +162,7 @@ namespace DJDiP.Application.Services
         {
             2 => "Admin",
             1 => "DJ",
+            3 => "EventOrganizer",
             _ => "User"
         };
     }
