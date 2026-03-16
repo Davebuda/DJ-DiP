@@ -2,11 +2,11 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_USER_TICKETS, UPDATE_USER_PROFILE, HAS_PENDING_DJ_APPLICATION } from '../graphql/queries';
-import { Ticket, Calendar, TrendingUp, Upload, Award, Music, Users, Camera, Disc3, Clock } from 'lucide-react';
+import { Ticket, Calendar, TrendingUp, Upload, Award, Music, Users, Camera, Disc3, Clock, Building2 } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 
 const DashboardPage = () => {
-  const { user, isAuthenticated, isDJ, updateUserLocal } = useAuth();
+  const { user, isAuthenticated, isDJ, isOrganizer, updateUserLocal } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
 
@@ -212,7 +212,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {stats.map((stat, index) => {
             const Icon = stat.icon;
             return (
@@ -328,6 +328,33 @@ const DashboardPage = () => {
                 </div>
               </Link>
             )}
+          </section>
+        )}
+
+        {/* Become an Organizer */}
+        {!isOrganizer && !isDJ && (
+          <section>
+            <Link
+              to="/organizer-apply"
+              className="group block rounded-2xl border border-violet-500/20 bg-gradient-to-r from-violet-950/20 via-purple-950/10 to-transparent p-6 hover:border-violet-500/40 transition-all"
+            >
+              <div className="flex items-center gap-5">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center flex-shrink-0 group-hover:shadow-[0_0_25px_rgba(139,92,246,0.4)] transition-shadow">
+                  <Building2 className="w-7 h-7 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-white group-hover:text-violet-300 transition-colors">
+                    Host Your Own Events
+                  </h3>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Apply as an event organizer to list your shows and sell tickets on the platform.
+                  </p>
+                </div>
+                <span className="hidden md:block text-violet-400 text-sm font-semibold group-hover:translate-x-1 transition-transform">
+                  Apply →
+                </span>
+              </div>
+            </Link>
           </section>
         )}
 
