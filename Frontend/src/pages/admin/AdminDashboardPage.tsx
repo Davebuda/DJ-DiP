@@ -8,6 +8,8 @@ import {
   GET_GENRES,
   GET_PENDING_DJ_APPLICATIONS,
   GET_GALLERY_MEDIA,
+  GET_ORGANIZER_APPLICATIONS,
+  GET_PENDING_EVENTS,
 } from '../../graphql/queries';
 
 const modules = [
@@ -66,6 +68,18 @@ const modules = [
     accent: 'from-cyan-600/30 to-cyan-900/40',
   },
   {
+    title: 'Organizer Apps',
+    description: 'Approve or reject event organizer applications.',
+    to: '/admin/organizer-applications',
+    accent: 'from-violet-600/30 to-violet-900/40',
+  },
+  {
+    title: 'Pending Events',
+    description: 'Review and approve organizer-submitted events.',
+    to: '/admin/pending-events',
+    accent: 'from-pink-600/30 to-pink-900/40',
+  },
+  {
     title: 'Newsletter',
     description: 'View subscribers and manage newsletter.',
     to: '/admin/newsletter',
@@ -92,9 +106,12 @@ const AdminDashboardPage = () => {
   const { data: genresData } = useQuery(GET_GENRES);
   const { data: applicationsData } = useQuery(GET_PENDING_DJ_APPLICATIONS);
   const { data: galleryData } = useQuery(GET_GALLERY_MEDIA, { variables: { approvedOnly: false } });
+  const { data: organizerAppsData } = useQuery(GET_ORGANIZER_APPLICATIONS);
+  const { data: pendingEventsData } = useQuery(GET_PENDING_EVENTS);
 
   const stats = useMemo(() => {
     const gallery = galleryData?.galleryMedia ?? [];
+    const organizerApps = organizerAppsData?.organizerApplications ?? [];
     return {
       djs: djsData?.dJs?.length ?? 0,
       events: eventsData?.events?.length ?? 0,
@@ -103,16 +120,20 @@ const AdminDashboardPage = () => {
       pendingApps: applicationsData?.pendingDjApplications?.length ?? 0,
       totalMedia: gallery.length,
       pendingMedia: gallery.filter((m: { isApproved: boolean }) => !m.isApproved).length,
+      pendingOrganizerApps: organizerApps.filter((a: any) => a.status === 'Pending').length,
+      pendingEvents: pendingEventsData?.pendingEvents?.length ?? 0,
     };
-  }, [djsData, eventsData, venuesData, genresData, applicationsData, galleryData]);
+  }, [djsData, eventsData, venuesData, genresData, applicationsData, galleryData, organizerAppsData, pendingEventsData]);
 
   const statCards = [
     { label: 'DJs', value: stats.djs, color: 'text-orange-400' },
     { label: 'Events', value: stats.events, color: 'text-orange-400' },
     { label: 'Venues', value: stats.venues, color: 'text-orange-400' },
     { label: 'Genres', value: stats.genres, color: 'text-orange-400' },
-    { label: 'Pending Apps', value: stats.pendingApps, color: stats.pendingApps > 0 ? 'text-yellow-400' : 'text-gray-400' },
+    { label: 'Pending DJ Apps', value: stats.pendingApps, color: stats.pendingApps > 0 ? 'text-yellow-400' : 'text-gray-400' },
     { label: 'Pending Media', value: stats.pendingMedia, color: stats.pendingMedia > 0 ? 'text-yellow-400' : 'text-gray-400' },
+    { label: 'Org. Apps', value: stats.pendingOrganizerApps, color: stats.pendingOrganizerApps > 0 ? 'text-violet-400' : 'text-gray-400' },
+    { label: 'Pending Events', value: stats.pendingEvents, color: stats.pendingEvents > 0 ? 'text-pink-400' : 'text-gray-400' },
   ];
 
   return (
@@ -126,7 +147,7 @@ const AdminDashboardPage = () => {
       </header>
 
       {/* Stats overview */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
         {statCards.map((s) => (
           <div
             key={s.label}
@@ -139,7 +160,7 @@ const AdminDashboardPage = () => {
       </div>
 
       {/* Action alerts */}
-      {(stats.pendingApps > 0 || stats.pendingMedia > 0) && (
+      {(stats.pendingApps > 0 || stats.pendingMedia > 0 || stats.pendingOrganizerApps > 0 || stats.pendingEvents > 0) && (
         <div className="space-y-2">
           {stats.pendingApps > 0 && (
             <Link
@@ -150,6 +171,28 @@ const AdminDashboardPage = () => {
                 {stats.pendingApps} DJ application{stats.pendingApps !== 1 ? 's' : ''} awaiting review
               </span>
               <span className="text-xs uppercase tracking-[0.3em] text-yellow-400">Review →</span>
+            </Link>
+          )}
+          {stats.pendingOrganizerApps > 0 && (
+            <Link
+              to="/admin/organizer-applications"
+              className="flex items-center justify-between rounded-xl border border-violet-500/20 bg-violet-500/5 px-4 py-3 transition hover:bg-violet-500/10"
+            >
+              <span className="text-sm text-violet-200">
+                {stats.pendingOrganizerApps} organizer application{stats.pendingOrganizerApps !== 1 ? 's' : ''} awaiting review
+              </span>
+              <span className="text-xs uppercase tracking-[0.3em] text-violet-400">Review →</span>
+            </Link>
+          )}
+          {stats.pendingEvents > 0 && (
+            <Link
+              to="/admin/pending-events"
+              className="flex items-center justify-between rounded-xl border border-pink-500/20 bg-pink-500/5 px-4 py-3 transition hover:bg-pink-500/10"
+            >
+              <span className="text-sm text-pink-200">
+                {stats.pendingEvents} event{stats.pendingEvents !== 1 ? 's' : ''} pending approval
+              </span>
+              <span className="text-xs uppercase tracking-[0.3em] text-pink-400">Review →</span>
             </Link>
           )}
           {stats.pendingMedia > 0 && (
