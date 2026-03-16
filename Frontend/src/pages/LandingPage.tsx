@@ -200,16 +200,6 @@ const HeroSection = ({
               </>
             )}
           </div>
-          {highlight && (
-            <div className="space-y-2 border-l-4 border-orange-500 pl-4 py-2 bg-gradient-to-r from-orange-950/40 via-[#5D1725]/20 to-transparent rounded-r">
-              <p className="text-[0.65rem] font-semibold tracking-wide text-orange-400 uppercase">Next Event</p>
-              <p className="text-base font-semibold text-white">{highlight.title}</p>
-              <p className="text-xs text-gray-400 line-clamp-2">{highlight.description}</p>
-              <p className="text-[0.65rem] text-orange-300/70">
-                {new Date(highlight.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} · {highlight.venue?.name ?? 'Venue TBA'}
-              </p>
-            </div>
-          )}
         </div>
 
         <div className="w-full max-w-sm space-y-4 lg:max-w-md">
