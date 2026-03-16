@@ -23,7 +23,9 @@ const OrganizerApplyPage = () => {
     skip: !user?.id,
   });
 
-  const [submitApplication, { loading }] = useMutation(SUBMIT_ORGANIZER_APPLICATION);
+  const [submitApplication, { loading }] = useMutation(SUBMIT_ORGANIZER_APPLICATION, {
+    refetchQueries: [{ query: GET_ORGANIZER_APPLICATION_BY_USER, variables: { userId: user?.id } }],
+  });
 
   if (authLoading) return null;
   if (!isAuthenticated) return <Navigate to="/login" replace />;

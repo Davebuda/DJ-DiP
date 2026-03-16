@@ -4,11 +4,13 @@ import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
 import {
   CREATE_EVENT_AS_ORGANIZER,
   UPDATE_EVENT_AS_ORGANIZER,
+  GET_MY_ORGANIZER_EVENTS,
   GET_VENUES,
   GET_GENRES,
   GET_DJS,
   GET_EVENT_BY_ID,
 } from '../../graphql/queries';
+import { useAuth } from '../../context/AuthContext';
 import ImageUpload from '../../components/common/ImageUpload';
 
 interface FormState {
@@ -44,6 +46,7 @@ const OrganizerEventForm = () => {
   const { id } = useParams<{ id: string }>();
   const isEditing = Boolean(id);
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [form, setForm] = useState<FormState>(empty);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -52,8 +55,9 @@ const OrganizerEventForm = () => {
   const { data: djsData } = useQuery(GET_DJS);
   const [fetchEvent] = useLazyQuery(GET_EVENT_BY_ID);
 
-  const [createEvent, { loading: creating }] = useMutation(CREATE_EVENT_AS_ORGANIZER);
-  const [updateEvent, { loading: saving }] = useMutation(UPDATE_EVENT_AS_ORGANIZER);
+  const refetchEvents = [{ query: GET_MY_ORGANIZER_EVENTS, variables: { userId: user?.id } }];
+  const [createEvent, { loading: creating }] = useMutation(CREATE_EVENT_AS_ORGANIZER, { refetchQueries: refetchEvents });
+  const [updateEvent, { loading: saving }] = useMutation(UPDATE_EVENT_AS_ORGANIZER, { refetchQueries: refetchEvents });
 
   const venues = venuesData?.venues ?? [];
   const genres = genresData?.genres ?? [];
