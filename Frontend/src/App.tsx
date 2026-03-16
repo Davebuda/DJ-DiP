@@ -34,7 +34,7 @@ import AdminGenresPage from './pages/admin/AdminGenresPage';
 import AdminUsersPage from './pages/admin/AdminUsersPage';
 import AdminNewsletterPage from './pages/admin/AdminNewsletterPage';
 import AdminContentPage from './pages/admin/AdminContentPage';
-import AdminDJApplicationsPage from './pages/AdminDJApplicationsPage';
+import AdminDJApplicationsPage from './pages/admin/AdminDJApplicationsPage';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminOrganizerApplicationsPage from './pages/admin/AdminOrganizerApplicationsPage';
 import AdminPendingEventsPage from './pages/admin/AdminPendingEventsPage';
