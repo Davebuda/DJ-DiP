@@ -27,15 +27,6 @@ const Header = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* ── Main row ── */}
         <div className="py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-3">
-          {/* Mobile hamburger — left side on mobile only */}
-          <button
-            className="sm:hidden flex items-center justify-center w-8 h-8 rounded-lg border border-white/20 text-gray-300 hover:text-white hover:border-orange-400 transition-colors flex-shrink-0"
-            onClick={() => setMobileOpen((o) => !o)}
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? <X size={16} /> : <Menu size={16} />}
-          </button>
-
           <Link to="/" className="flex items-center gap-3 flex-shrink-0" onClick={closeMobile}>
             <img
               src={siteSettings.logoUrl || '/icons/lets-go-klubn-320.png'}
@@ -47,6 +38,40 @@ const Header = () => {
           </Link>
 
           <div className="flex flex-1 items-center justify-end gap-1.5 sm:gap-2 lg:gap-3 min-w-0 overflow-hidden">
+            {/* Mobile: portal/login pill + hamburger on right */}
+            {isAdmin ? (
+              <Link
+                to="/admin"
+                onClick={closeMobile}
+                className="sm:hidden rounded-full border border-white/20 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-orange-400 hover:text-white whitespace-nowrap"
+              >
+                Admin
+              </Link>
+            ) : isDJ ? (
+              <Link
+                to="/dj-dashboard"
+                onClick={closeMobile}
+                className="sm:hidden rounded-full border border-orange-500/40 bg-gradient-to-r from-[#FF6B35]/10 to-orange-500/10 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-orange-400 hover:text-white whitespace-nowrap"
+              >
+                DJ Portal
+              </Link>
+            ) : !isAuthenticated ? (
+              <Link
+                to="/login"
+                onClick={closeMobile}
+                className="sm:hidden rounded-full border border-white/20 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-gray-300 hover:text-white whitespace-nowrap"
+              >
+                Login
+              </Link>
+            ) : null}
+            <button
+              className="sm:hidden flex items-center justify-center w-8 h-8 rounded-lg border border-white/20 text-gray-300 hover:text-white hover:border-orange-400 transition-colors flex-shrink-0"
+              onClick={() => setMobileOpen((o) => !o)}
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? <X size={16} /> : <Menu size={16} />}
+            </button>
+
             {/* Desktop nav */}
             <nav className="hidden lg:flex items-center gap-1 rounded-full border border-white/10 bg-black/40 px-2 py-1 text-[0.65rem] uppercase tracking-[0.3em]">
               {navLinks.map(({ label, to }) => (
