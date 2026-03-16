@@ -186,7 +186,7 @@ const EventDetailPage = () => {
               </a>
             ) : !isPast ? (
               <Link
-                to="/checkout"
+                to={`/checkout?eventId=${event.id}`}
                 className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-white font-bold text-sm tracking-wide hover:shadow-[0_0_30px_rgba(255,107,53,0.5)] hover:scale-[1.02] transition-all"
               >
                 Get Tickets — €{event.price}
@@ -377,7 +377,7 @@ const EventDetailPage = () => {
                   </a>
                 ) : !isPast ? (
                   <Link
-                    to="/checkout"
+                    to={`/checkout?eventId=${event.id}`}
                     className="block w-full px-6 py-4 rounded-full bg-gradient-to-r from-orange-400 to-[#FF6B35] text-black text-sm font-bold text-center hover:from-orange-300 hover:to-orange-400 transition-all tracking-wide"
                   >
                     Get Tickets
