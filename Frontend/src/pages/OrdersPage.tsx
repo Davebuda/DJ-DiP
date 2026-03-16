@@ -156,7 +156,7 @@ const OrdersPage = () => {
                 <CreditCard className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-3xl font-bold">${totalSpent.toFixed(0)}</p>
+                <p className="text-3xl font-bold">€{totalSpent.toFixed(0)}</p>
                 <p className="text-sm text-gray-400">Total Spent</p>
               </div>
             </div>
