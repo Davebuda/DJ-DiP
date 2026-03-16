@@ -236,12 +236,12 @@ const EventsPage = () => {
                       )}
                     </div>
 
-                    {/* Featured Image — landscape on mobile, portrait on desktop */}
-                    <div className="relative overflow-hidden aspect-[4/3] sm:aspect-[3/4] min-h-[200px] sm:min-h-[320px]">
+                    {/* Featured Image */}
+                    <div className="relative overflow-hidden aspect-[3/4] bg-[#0a0a0a] min-h-[220px]">
                       <img
                         src={featured.imageUrl || defaultEventImage}
                         alt={featured.title}
-                        className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        className="absolute inset-0 h-full w-full object-contain group-hover:scale-[1.03] group-hover:brightness-110 transition-all duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#1a1008] via-[#1a1008]/60 to-transparent" />
                     </div>
@@ -348,11 +348,11 @@ const EventsPage = () => {
                       }`}
                     >
                       {/* Event Image */}
-                      <div className="relative overflow-hidden aspect-[16/9] sm:aspect-[3/2] min-h-[160px] sm:min-h-[180px]">
+                      <div className="relative overflow-hidden aspect-[3/4] bg-[#0a0a0a]">
                         <img
                           src={event.imageUrl || defaultEventImage}
                           alt={event.title}
-                          className={`h-full w-full object-cover group-hover:scale-105 transition-transform duration-700 ${isPast ? 'grayscale' : ''}`}
+                          className={`absolute inset-0 h-full w-full object-contain group-hover:scale-[1.03] group-hover:brightness-110 transition-all duration-500 ${isPast ? 'grayscale' : ''}`}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/15 to-transparent" />
                         {isPast && (
