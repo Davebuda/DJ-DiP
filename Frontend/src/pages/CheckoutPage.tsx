@@ -177,7 +177,7 @@ const CheckoutForm = () => {
           <div className="text-sm text-gray-300">
             <p className="font-semibold text-white">{selectedEvent.title}</p>
             <p>{new Date(selectedEvent.date).toLocaleString()}</p>
-            <p className="text-orange-300 font-semibold mt-1">Total: ${selectedEvent.price.toFixed(2)}</p>
+            <p className="text-orange-300 font-semibold mt-1">Total: €{selectedEvent.price.toFixed(2)}</p>
           </div>
         )}
 
