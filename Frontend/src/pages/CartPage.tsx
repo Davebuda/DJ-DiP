@@ -13,8 +13,8 @@ const CartPage = () => {
 
   const handleCheckout = () => {
     if (items.length > 0) {
-      const eventIds = items.map(item => item.eventId).join(',');
-      navigate(`/checkout?eventIds=${eventIds}`);
+      // Checkout handles one event at a time; pre-select the first item
+      navigate(`/checkout?eventId=${items[0].eventId}`);
     }
   };
 
