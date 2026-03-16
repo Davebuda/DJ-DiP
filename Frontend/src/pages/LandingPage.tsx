@@ -446,158 +446,142 @@ const LandingPage = () => {
       {/* ─── Marquee ─── */}
       <MarqueeStrip words={marqueeWords} variant="mixed" speed={28} />
 
-      {/* ─── Events Section — 30/70 Split ─── */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-8 pb-20 space-y-8">
+      {/* ─── Events Section ─── */}
+      <section className="max-w-7xl mx-auto px-6 lg:px-8 pb-20 space-y-6">
         <ScrollReveal>
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <div className="space-y-2">
+            <div className="space-y-1">
               <p className="text-xs font-semibold uppercase tracking-wider text-orange-500">{siteSettings.eventsHeading || "What's Coming"}</p>
-              <h2 className="text-3xl lg:text-4xl font-bold">Upcoming Events</h2>
+              <h2 className="text-3xl lg:text-5xl font-black tracking-tight">Upcoming Events</h2>
             </div>
             <Link
               to="/events"
-              className="inline-flex items-center gap-2 text-sm text-orange-400 font-semibold hover:text-orange-300 transition-colors"
+              className="inline-flex items-center gap-2 text-sm text-orange-400 font-semibold hover:text-orange-300 transition-colors whitespace-nowrap"
             >
-              View All Events →
+              See All Events →
             </Link>
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[40%_1fr] gap-5">
-          {/* Featured Headliner — Full Poster */}
+        <div className="grid grid-cols-1 lg:grid-cols-[38%_1fr] gap-4">
+          {/* ── Featured Poster ── */}
           <ScrollReveal direction="left">
             {highlightEvent ? (
-              <TiltCard intensity={6} className="h-full">
-              <Link
-                to={`/events/${highlightEvent.id}`}
-                className="group relative block h-full min-h-[400px] sm:min-h-[500px] rounded-3xl overflow-hidden bg-black shadow-[0_8px_40px_rgba(0,0,0,0.6),_0_0_80px_rgba(255,107,53,0.08)] hover:shadow-[0_12px_50px_rgba(0,0,0,0.7),_0_0_100px_rgba(255,107,53,0.15)] ring-1 ring-orange-400/25 hover:ring-orange-400/40 transition-all duration-500"
-              >
-                {/* Full poster image */}
-                <img
-                  src={highlightEvent.imageUrl ?? defaultEventImage}
-                  alt={highlightEvent.title}
-                  className="absolute inset-0 w-full h-full object-contain group-hover:scale-[1.03] transition-transform duration-700"
-                />
+              <TiltCard intensity={5} className="h-full">
+                <Link
+                  to={`/events/${highlightEvent.id}`}
+                  className="group relative flex h-full min-h-[480px] sm:min-h-[560px] rounded-3xl overflow-hidden shadow-[0_16px_48px_rgba(0,0,0,0.7)] ring-1 ring-white/10 hover:ring-orange-400/50 transition-all duration-500"
+                >
+                  {/* Blurred ambient backdrop — fills dead space */}
+                  <div
+                    className="absolute inset-0 scale-110 blur-2xl brightness-50 saturate-150"
+                    style={{ backgroundImage: `url(${highlightEvent.imageUrl ?? defaultEventImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-black/10" />
 
-                {/* Headliner badge */}
-                <span className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-white text-[0.6rem] font-bold uppercase tracking-widest shadow-lg shadow-orange-600/40 z-10">
-                  Headliner
-                </span>
+                  {/* Crisp centred poster */}
+                  <img
+                    src={highlightEvent.imageUrl ?? defaultEventImage}
+                    alt={highlightEvent.title}
+                    className="absolute inset-0 w-full h-full object-contain group-hover:scale-[1.04] transition-transform duration-700 drop-shadow-[0_8px_32px_rgba(0,0,0,0.8)]"
+                  />
 
-                {/* Small gradient info strip at bottom */}
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/85 to-transparent pt-16 pb-5 px-5">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <span className="px-2.5 py-1 rounded-md bg-white/10 text-[0.65rem] font-semibold text-orange-300 uppercase tracking-wide">
-                        {new Date(highlightEvent.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                      </span>
-                      <span className="text-[0.65rem] text-gray-400 uppercase tracking-wide">
-                        {highlightEvent.venue?.name ?? 'TBA'}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-bold text-white leading-tight group-hover:text-orange-300 transition-colors">
-                      {highlightEvent.title}
-                    </h3>
-                    <div className="flex items-center justify-between">
-                      <p className="text-lg font-bold bg-gradient-to-br from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">
-                        €{highlightEvent.price}
-                      </p>
-                      <span className="px-5 py-2 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-white text-xs font-semibold uppercase tracking-wider shadow-lg shadow-orange-600/30 group-hover:from-orange-400 group-hover:to-orange-500 transition-all">
-                        Get Tickets →
-                      </span>
+                  {/* Headliner badge */}
+                  <span className="absolute top-4 left-4 z-10 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-white text-[0.6rem] font-bold uppercase tracking-widest shadow-lg shadow-orange-600/50">
+                    Headliner
+                  </span>
+
+                  {/* Info overlay */}
+                  <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black via-black/80 to-transparent pt-20 pb-6 px-6">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="px-2.5 py-1 rounded-md bg-orange-500/20 border border-orange-500/30 text-[0.65rem] font-bold text-orange-300 uppercase tracking-wide">
+                          {new Date(highlightEvent.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                        </span>
+                        {highlightEvent.venue?.name && (
+                          <span className="text-[0.65rem] text-gray-400 uppercase tracking-wide truncate">
+                            {highlightEvent.venue.name}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-2xl font-black text-white leading-tight group-hover:text-orange-200 transition-colors">
+                        {highlightEvent.title}
+                      </h3>
+                      <div className="flex items-center justify-between pt-1">
+                        <p className="text-xl font-black bg-gradient-to-r from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">
+                          €{highlightEvent.price}
+                        </p>
+                        <span className="px-5 py-2.5 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-white text-xs font-bold uppercase tracking-wider shadow-lg shadow-orange-600/40 group-hover:scale-105 transition-transform">
+                          Get Tickets →
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
               </TiltCard>
             ) : (
-              <div className="relative h-full min-h-[400px] sm:min-h-[500px] rounded-3xl overflow-hidden ring-1 ring-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.5)]">
-                <div className="absolute inset-0 bg-gradient-to-b from-orange-500/[0.04] to-[#09090b] flex items-center justify-center">
-                  <p className="text-orange-400/30 text-sm font-medium uppercase tracking-widest">Coming Soon</p>
-                </div>
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/85 to-transparent pt-16 pb-5 px-5">
-                  <div className="space-y-3">
-                    <span className="px-2.5 py-1 rounded-md bg-white/10 text-[0.65rem] font-semibold text-orange-300/50 uppercase tracking-wide">
-                      Date TBA
-                    </span>
-                    <h3 className="text-xl font-bold text-white/60 leading-tight">Next Headliner</h3>
-                    <div className="flex items-center justify-between">
-                      <p className="text-lg font-bold text-orange-400/30">TBA</p>
-                      <span className="px-5 py-2 rounded-full border border-orange-600/30 text-orange-400/40 text-xs font-semibold uppercase tracking-wider">
-                        Notify Me
-                      </span>
-                    </div>
-                  </div>
-                </div>
+              <div className="relative h-full min-h-[480px] rounded-3xl overflow-hidden ring-1 ring-white/10 bg-[#0a0a0a] flex items-center justify-center">
+                <p className="text-orange-400/20 text-sm font-medium uppercase tracking-widest">Coming Soon</p>
               </div>
             )}
           </ScrollReveal>
 
-          {/* Events Grid — portrait poster tiles */}
-          <StaggerContainer className="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-2 md:overflow-visible snap-x snap-mandatory md:snap-none scrollbar-none">
-            {gridEvents.length > 0 ? (
-              gridEvents.map((event: any) => (
-                <StaggerItem key={event.id} className="flex-shrink-0 w-[68vw] sm:w-[48vw] md:w-auto snap-start">
-                <TiltCard intensity={8}>
-                <Link
-                  to={`/events/${event.id}`}
-                  className="group relative block w-full rounded-2xl overflow-hidden bg-[#0a0a0a] ring-1 ring-white/10 hover:ring-orange-400/50 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:shadow-[0_8px_40px_rgba(255,107,53,0.18)] transition-all duration-300"
-                >
-                  <div className="relative aspect-[3/4]">
-                    <img
-                      src={event.imageUrl ?? defaultEventImage}
-                      alt={event.title}
-                      loading="lazy"
-                      className="absolute inset-0 w-full h-full object-contain group-hover:scale-[1.03] group-hover:brightness-110 transition-all duration-500"
-                    />
-                    {/* Bottom gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+          {/* ── 2×2 Grid ── */}
+          <StaggerContainer className="grid grid-cols-2 gap-3">
+            {(gridEvents.length > 0 ? gridEvents : ['', '', '', ''] as any[]).map((event: any, i: number) => (
+              <StaggerItem key={event?.id ?? i}>
+                <TiltCard intensity={10}>
+                  {event?.id ? (
+                    <Link
+                      to={`/events/${event.id}`}
+                      className="group relative block rounded-2xl overflow-hidden aspect-[3/4] shadow-[0_8px_32px_rgba(0,0,0,0.6)] ring-1 ring-white/10 hover:ring-orange-400/50 transition-all duration-300"
+                    >
+                      {/* Blurred ambient backdrop */}
+                      <div
+                        className="absolute inset-0 scale-110 blur-xl brightness-50 saturate-150"
+                        style={{ backgroundImage: `url(${event.imageUrl ?? defaultEventImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
-                    {/* Date badge top-left */}
-                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-orange-500 text-white text-[0.58rem] font-bold uppercase tracking-wide shadow-lg shadow-orange-600/40">
-                      {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    </div>
+                      {/* Poster */}
+                      <img
+                        src={event.imageUrl ?? defaultEventImage}
+                        alt={event.title}
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-contain group-hover:scale-[1.05] group-hover:brightness-110 transition-all duration-500 drop-shadow-[0_4px_16px_rgba(0,0,0,0.7)]"
+                      />
 
-                    {/* Genre chip top-right */}
-                    {event.genres?.[0] && (
-                      <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/60 border border-white/20 text-[0.55rem] text-gray-300 uppercase tracking-wide backdrop-blur-sm">
-                        {event.genres[0]}
+                      {/* Date badge */}
+                      <div className="absolute top-2.5 left-2.5 z-10 px-2 py-1 rounded-md bg-orange-500 text-white text-[0.55rem] font-bold uppercase tracking-wide shadow-md">
+                        {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </div>
-                    )}
 
-                    {/* Bottom info */}
-                    <div className="absolute inset-x-0 bottom-0 p-4 space-y-0.5">
-                      <h3 className="text-sm font-bold text-white leading-tight line-clamp-2 group-hover:text-orange-300 transition-colors">
-                        {event.title}
-                      </h3>
-                      <p className="text-[0.6rem] text-gray-400 line-clamp-1">{event.venue?.name ?? 'TBA'}</p>
-                      <p className="text-sm font-bold bg-gradient-to-br from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">
-                        €{event.price}
-                      </p>
+                      {/* Genre */}
+                      {event.genres?.[0] && (
+                        <div className="absolute top-2.5 right-2.5 z-10 px-2 py-1 rounded-full bg-black/70 border border-white/15 text-[0.5rem] text-gray-300 uppercase tracking-wide backdrop-blur-sm">
+                          {event.genres[0]}
+                        </div>
+                      )}
+
+                      {/* Info */}
+                      <div className="absolute inset-x-0 bottom-0 z-10 p-3.5 space-y-0.5">
+                        <h3 className="text-xs font-bold text-white leading-tight line-clamp-2 group-hover:text-orange-300 transition-colors">
+                          {event.title}
+                        </h3>
+                        <p className="text-[0.55rem] text-gray-400 truncate">{event.venue?.name ?? 'TBA'}</p>
+                        <p className="text-xs font-black bg-gradient-to-r from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">
+                          €{event.price}
+                        </p>
+                      </div>
+                    </Link>
+                  ) : (
+                    <div className="relative block rounded-2xl overflow-hidden aspect-[3/4] bg-white/[0.03] ring-1 ring-white/5 flex items-center justify-center">
+                      <p className="text-orange-400/20 text-[0.6rem] uppercase tracking-widest">Coming Soon</p>
                     </div>
-                  </div>
-                </Link>
+                  )}
                 </TiltCard>
-                </StaggerItem>
-              ))
-            ) : (
-              ['Underground Sessions', 'Warehouse Rave', 'Rooftop Sunset', 'Late Night Special'].map((name) => (
-                <div
-                  key={name}
-                  className="flex-shrink-0 w-[68vw] sm:w-[48vw] md:w-auto snap-start rounded-2xl overflow-hidden bg-[#0a0a0a] ring-1 ring-white/10"
-                >
-                  <div className="relative aspect-[3/4] flex items-center justify-center">
-                    <p className="text-orange-400/30 text-xs uppercase tracking-widest">Coming Soon</p>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 p-4 space-y-0.5">
-                      <h3 className="text-sm font-bold text-white/40">{name}</h3>
-                      <p className="text-[0.6rem] text-gray-600">Venue TBA</p>
-                      <p className="text-sm font-bold text-orange-400/30">TBA</p>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
+              </StaggerItem>
+            ))}
           </StaggerContainer>
         </div>
       </section>
