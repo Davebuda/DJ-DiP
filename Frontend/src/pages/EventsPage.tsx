@@ -308,7 +308,7 @@ const EventsPage = () => {
                         </div>
                         <div className="text-right">
                           <p className="text-[10px] uppercase tracking-[0.4em] text-orange-200/40">From</p>
-                          <p className="text-3xl font-black text-orange-400">${featured.price}</p>
+                          <p className="text-3xl font-black text-orange-400">€{featured.price}</p>
                         </div>
                       </div>
 
@@ -394,7 +394,7 @@ const EventsPage = () => {
                           </div>
                           <div className="text-right">
                             <p className="text-xs uppercase tracking-[0.3em] text-gray-500">Price</p>
-                            <p className={`text-2xl font-bold ${isPast ? 'text-gray-500' : 'text-orange-400'}`}>${event.price}</p>
+                            <p className={`text-2xl font-bold ${isPast ? 'text-gray-500' : 'text-orange-400'}`}>€{event.price}</p>
                           </div>
                         </div>
 
