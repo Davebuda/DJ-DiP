@@ -20,6 +20,7 @@ const roleLabel = (role: number) => {
   switch (role) {
     case 2: return 'Admin';
     case 1: return 'DJ';
+    case 3: return 'Organizer';
     default: return 'User';
   }
 };
@@ -28,6 +29,7 @@ const roleBadgeClass = (role: number) => {
   switch (role) {
     case 2: return 'bg-red-500/20 text-red-300 border-red-500/30';
     case 1: return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
+    case 3: return 'bg-violet-500/20 text-violet-300 border-violet-500/30';
     default: return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
   }
 };
@@ -87,7 +89,7 @@ const AdminUsersPage = () => {
           onChange={(e) => setSearch(e.target.value)}
         />
         <div className="flex gap-1 rounded-lg bg-white/5 p-1">
-          {([['all', 'All'], [0, 'Users'], [1, 'DJs'], [2, 'Admins']] as const).map(([val, label]) => (
+          {([['all', 'All'], [0, 'Users'], [1, 'DJs'], [2, 'Admins'], [3, 'Organizers']] as const).map(([val, label]) => (
             <button
               key={String(val)}
               type="button"
