@@ -36,6 +36,8 @@ import AdminNewsletterPage from './pages/admin/AdminNewsletterPage';
 import AdminContentPage from './pages/admin/AdminContentPage';
 import AdminDJApplicationsPage from './pages/AdminDJApplicationsPage';
 import AdminLayout from './components/admin/AdminLayout';
+import AdminOrganizerApplicationsPage from './pages/admin/AdminOrganizerApplicationsPage';
+import AdminPendingEventsPage from './pages/admin/AdminPendingEventsPage';
 import DJRoute from './components/auth/DJRoute';
 import DJLayout from './components/dj/DJLayout';
 import DJDashboard from './pages/dj/DJDashboard';
@@ -46,6 +48,11 @@ import DJAnalytics from './pages/dj/DJAnalytics';
 import DJPlaylistsManager from './pages/dj/DJPlaylistsManager';
 import MixesPage from './pages/MixesPage';
 import AdminMixesPage from './pages/admin/AdminMixesPage';
+import OrganizerLayout from './components/layouts/OrganizerLayout';
+import OrganizerApplyPage from './pages/organizer/OrganizerApplyPage';
+import OrganizerDashboard from './pages/organizer/OrganizerDashboard';
+import OrganizerEventsList from './pages/organizer/OrganizerEventsList';
+import OrganizerEventForm from './pages/organizer/OrganizerEventForm';
 
 const App = () => (
   <Routes>
@@ -112,7 +119,22 @@ const App = () => (
       <Route path="register" element={<RegisterPage />} />
       <Route path="forgot-password" element={<ForgotPasswordPage />} />
       <Route path="reset-password" element={<ResetPasswordPage />} />
+      <Route
+        path="organizer-apply"
+        element={
+          <ProtectedRoute>
+            <OrganizerApplyPage />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<NotFoundPage />} />
+    </Route>
+
+    <Route path="/organizer-dashboard" element={<OrganizerLayout />}>
+      <Route index element={<OrganizerDashboard />} />
+      <Route path="events" element={<OrganizerEventsList />} />
+      <Route path="events/new" element={<OrganizerEventForm />} />
+      <Route path="events/:id/edit" element={<OrganizerEventForm />} />
     </Route>
 
     <Route
@@ -153,6 +175,8 @@ const App = () => (
       <Route path="newsletter" element={<AdminNewsletterPage />} />
       <Route path="content" element={<AdminContentPage />} />
       <Route path="site-settings" element={<AdminSiteSettingsPage />} />
+      <Route path="organizer-applications" element={<AdminOrganizerApplicationsPage />} />
+      <Route path="pending-events" element={<AdminPendingEventsPage />} />
     </Route>
   </Routes>
 );

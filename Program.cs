@@ -679,6 +679,91 @@ public class Query
     {
         return await djMixService.GetByIdAsync(id);
     }
+
+    // Event Organizer Applications
+    public async Task<OrganizerApplicationDto?> OrganizerApplicationByUser(
+        string userId,
+        [Service] AppDbContext db)
+    {
+        var app = await db.EventOrganizerApplications
+            .Where(a => a.UserId == userId)
+            .OrderByDescending(a => a.SubmittedAt)
+            .FirstOrDefaultAsync();
+        if (app == null) return null;
+        return OrganizerApplicationDto.From(app);
+    }
+
+    public async Task<IEnumerable<OrganizerApplicationDto>> OrganizerApplications(
+        [Service] AppDbContext db,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        var role = httpContextAccessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+        if (role != "Admin") throw new GraphQLException("Access denied.");
+        var apps = await db.EventOrganizerApplications.OrderByDescending(a => a.SubmittedAt).ToListAsync();
+        return apps.Select(OrganizerApplicationDto.From);
+    }
+
+    // Pending events (organizer-submitted, awaiting admin approval)
+    public async Task<IEnumerable<EventListDto>> PendingEvents(
+        [Service] AppDbContext db,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        var role = httpContextAccessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+        if (role != "Admin") throw new GraphQLException("Access denied.");
+        return await db.Events
+            .Include(e => e.Venue)
+            .Include(e => e.Genres)
+            .Where(e => e.Status == "PendingApproval")
+            .OrderByDescending(e => e.Date)
+            .Select(e => new EventListDto
+            {
+                Id = e.Id,
+                Title = e.Title,
+                Description = e.Description,
+                Date = e.Date,
+                Price = e.Price,
+                ImageUrl = e.ImageUrl,
+                TicketingUrl = e.TicketingUrl,
+                Status = e.Status,
+                OrganizerId = e.OrganizerId,
+                Genres = e.Genres.Select(g => g.Name).ToList(),
+                Venue = new EventVenueDto { Id = e.Venue.Id, Name = e.Venue.Name, City = e.Venue.City }
+            })
+            .ToListAsync();
+    }
+
+    // Organizer's own events (all statuses)
+    public async Task<IEnumerable<EventListDto>> MyOrganizerEvents(
+        string userId,
+        [Service] AppDbContext db,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        var role = httpContextAccessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+        var callerUserId = httpContextAccessor.HttpContext?.User.FindFirst("userId")?.Value;
+        if (string.IsNullOrEmpty(callerUserId)) throw new GraphQLException("Authentication required.");
+        if (role != "Admin" && callerUserId != userId) throw new GraphQLException("Access denied.");
+        return await db.Events
+            .Include(e => e.Venue)
+            .Include(e => e.Genres)
+            .Where(e => e.OrganizerId == userId)
+            .OrderByDescending(e => e.Date)
+            .Select(e => new EventListDto
+            {
+                Id = e.Id,
+                Title = e.Title,
+                Description = e.Description,
+                Date = e.Date,
+                Price = e.Price,
+                ImageUrl = e.ImageUrl,
+                TicketingUrl = e.TicketingUrl,
+                Status = e.Status,
+                StatusReason = e.StatusReason,
+                OrganizerId = e.OrganizerId,
+                Genres = e.Genres.Select(g => g.Name).ToList(),
+                Venue = new EventVenueDto { Id = e.Venue.Id, Name = e.Venue.Name, City = e.Venue.City }
+            })
+            .ToListAsync();
+    }
 }
 
 public class SongMetadataResult
@@ -722,6 +807,15 @@ public class Mutation
         var role = accessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
         if (role == null || !roles.Contains(role))
             throw new GraphQLException($"Access denied. Required role: {string.Join(" or ", roles)}.");
+        return userId;
+    }
+
+    private static string RequireOrganizer(IHttpContextAccessor accessor)
+    {
+        var userId = RequireAuthentication(accessor);
+        var role = accessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+        if (role != "EventOrganizer" && role != "Admin")
+            throw new GraphQLException("Access denied. Event Organizer role required.");
         return userId;
     }
 
@@ -907,6 +1001,128 @@ public class Mutation
     {
         RequireAdmin(httpContextAccessor);
         await events.DeleteAsync(id);
+        return true;
+    }
+
+    // ORGANIZER EVENT MUTATIONS
+    public async Task<Guid> CreateEventAsOrganizer(
+        CreateEventInput input,
+        [Service] AppDbContext db,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        var userId = RequireOrganizer(httpContextAccessor);
+        if (string.IsNullOrWhiteSpace(input.Title))
+            throw new GraphQLException("Event title is required.");
+
+        var ev = new Event
+        {
+            Id = Guid.NewGuid(),
+            Title = input.Title,
+            Date = input.Date,
+            VenueId = input.VenueId,
+            Price = input.Price,
+            Description = input.Description,
+            ImageUrl = input.ImageUrl,
+            VideoUrl = input.VideoUrl,
+            TicketingUrl = input.TicketingUrl,
+            OrganizerId = userId,
+            Status = "PendingApproval"
+        };
+
+        if (input.GenreIds?.Any() == true)
+        {
+            var genres = await db.Genres.Where(g => input.GenreIds.Contains(g.Id)).ToListAsync();
+            ev.Genres = genres;
+        }
+        if (input.DjIds?.Any() == true)
+        {
+            ev.EventDJs = input.DjIds.Select(djId => new EventDJ { EventId = ev.Id, DJId = djId }).ToList();
+        }
+
+        db.Events.Add(ev);
+        await db.SaveChangesAsync();
+        return ev.Id;
+    }
+
+    public async Task<bool> UpdateEventAsOrganizer(
+        Guid id,
+        UpdateEventInput input,
+        [Service] AppDbContext db,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        var userId = RequireOrganizer(httpContextAccessor);
+        var role = httpContextAccessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+
+        var ev = await db.Events.Include(e => e.Genres).Include(e => e.EventDJs)
+            .FirstOrDefaultAsync(e => e.Id == id);
+        if (ev == null) throw new GraphQLException("Event not found.");
+        if (role != "Admin" && ev.OrganizerId != userId)
+            throw new GraphQLException("Access denied. You can only edit your own events.");
+
+        ev.Title = input.Title;
+        ev.Date = input.Date;
+        ev.VenueId = input.VenueId;
+        ev.Price = input.Price;
+        ev.Description = input.Description;
+        ev.ImageUrl = input.ImageUrl;
+        ev.VideoUrl = input.VideoUrl;
+        ev.TicketingUrl = input.TicketingUrl;
+        ev.Status = "PendingApproval"; // re-submit for approval on edit
+
+        ev.Genres.Clear();
+        if (input.GenreIds?.Any() == true)
+            ev.Genres = await db.Genres.Where(g => input.GenreIds.Contains(g.Id)).ToListAsync();
+
+        ev.EventDJs.Clear();
+        if (input.DjIds?.Any() == true)
+            ev.EventDJs = input.DjIds.Select(djId => new EventDJ { EventId = ev.Id, DJId = djId }).ToList();
+
+        await db.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> DeleteEventAsOrganizer(
+        Guid id,
+        [Service] AppDbContext db,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        var userId = RequireOrganizer(httpContextAccessor);
+        var role = httpContextAccessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+        var ev = await db.Events.FirstOrDefaultAsync(e => e.Id == id);
+        if (ev == null) throw new GraphQLException("Event not found.");
+        if (role != "Admin" && ev.OrganizerId != userId)
+            throw new GraphQLException("Access denied.");
+        db.Events.Remove(ev);
+        await db.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> ApproveEvent(
+        Guid id,
+        [Service] AppDbContext db,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        RequireAdmin(httpContextAccessor);
+        var ev = await db.Events.FirstOrDefaultAsync(e => e.Id == id);
+        if (ev == null) throw new GraphQLException("Event not found.");
+        ev.Status = "Published";
+        ev.StatusReason = null;
+        await db.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> RejectEvent(
+        Guid id,
+        string reason,
+        [Service] AppDbContext db,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        RequireAdmin(httpContextAccessor);
+        var ev = await db.Events.FirstOrDefaultAsync(e => e.Id == id);
+        if (ev == null) throw new GraphQLException("Event not found.");
+        ev.Status = "Rejected";
+        ev.StatusReason = reason;
+        await db.SaveChangesAsync();
         return true;
     }
 
@@ -1146,6 +1362,75 @@ public class Mutation
             Log.Error(ex, "Error rejecting DJ application {ApplicationId}", applicationId);
             throw new GraphQLException("An error occurred processing the application.");
         }
+    }
+
+    // ORGANIZER APPLICATION MUTATIONS
+    public async Task<OrganizerApplicationDto> SubmitOrganizerApplication(
+        CreateOrganizerApplicationInput input,
+        [Service] AppDbContext db,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        var userId = RequireAuthentication(httpContextAccessor);
+        var existing = await db.EventOrganizerApplications
+            .Where(a => a.UserId == input.UserId && a.Status == ApplicationStatus.Pending)
+            .FirstOrDefaultAsync();
+        if (existing != null)
+            throw new GraphQLException("You already have a pending organizer application.");
+
+        var app = new EventOrganizerApplication
+        {
+            Id = Guid.NewGuid(),
+            UserId = input.UserId,
+            OrganizationName = input.OrganizationName,
+            Description = input.Description,
+            Website = input.Website,
+            SocialLinks = input.SocialLinks,
+            Status = ApplicationStatus.Pending,
+            SubmittedAt = DateTime.UtcNow
+        };
+        db.EventOrganizerApplications.Add(app);
+        await db.SaveChangesAsync();
+        return OrganizerApplicationDto.From(app);
+    }
+
+    public async Task<OrganizerApplicationDto> ApproveOrganizerApplication(
+        Guid applicationId,
+        [Service] AppDbContext db,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        var adminId = RequireAdmin(httpContextAccessor);
+        var app = await db.EventOrganizerApplications.FirstOrDefaultAsync(a => a.Id == applicationId);
+        if (app == null) throw new GraphQLException("Application not found.");
+
+        app.Status = ApplicationStatus.Approved;
+        app.ReviewedAt = DateTime.UtcNow;
+        app.ReviewedByAdminId = adminId;
+
+        // Promote user to EventOrganizer role (3)
+        var user = await db.ApplicationUsers.FirstOrDefaultAsync(u => u.Id == app.UserId);
+        if (user != null) user.Role = 3;
+
+        await db.SaveChangesAsync();
+        return OrganizerApplicationDto.From(app);
+    }
+
+    public async Task<OrganizerApplicationDto> RejectOrganizerApplication(
+        Guid applicationId,
+        string? rejectionReason,
+        [Service] AppDbContext db,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        var adminId = RequireAdmin(httpContextAccessor);
+        var app = await db.EventOrganizerApplications.FirstOrDefaultAsync(a => a.Id == applicationId);
+        if (app == null) throw new GraphQLException("Application not found.");
+
+        app.Status = ApplicationStatus.Rejected;
+        app.ReviewedAt = DateTime.UtcNow;
+        app.ReviewedByAdminId = adminId;
+        app.RejectionReason = rejectionReason;
+
+        await db.SaveChangesAsync();
+        return OrganizerApplicationDto.From(app);
     }
 
     // GENRE MUTATIONS
@@ -2239,5 +2524,44 @@ public class AdminUserDto
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public DateTime? LastLoginAt { get; set; }
+}
+
+public class CreateOrganizerApplicationInput
+{
+    public string UserId { get; set; } = string.Empty;
+    public string OrganizationName { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string? Website { get; set; }
+    public string? SocialLinks { get; set; }
+}
+
+public class OrganizerApplicationDto
+{
+    public Guid Id { get; set; }
+    public string UserId { get; set; } = string.Empty;
+    public string OrganizationName { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string? Website { get; set; }
+    public string? SocialLinks { get; set; }
+    public string Status { get; set; } = "Pending";
+    public DateTime SubmittedAt { get; set; }
+    public DateTime? ReviewedAt { get; set; }
+    public string? ReviewedByAdminId { get; set; }
+    public string? RejectionReason { get; set; }
+
+    public static OrganizerApplicationDto From(DJDiP.Domain.Models.EventOrganizerApplication app) => new()
+    {
+        Id = app.Id,
+        UserId = app.UserId,
+        OrganizationName = app.OrganizationName,
+        Description = app.Description,
+        Website = app.Website,
+        SocialLinks = app.SocialLinks,
+        Status = app.Status.ToString(),
+        SubmittedAt = app.SubmittedAt,
+        ReviewedAt = app.ReviewedAt,
+        ReviewedByAdminId = app.ReviewedByAdminId,
+        RejectionReason = app.RejectionReason
+    };
 }
 

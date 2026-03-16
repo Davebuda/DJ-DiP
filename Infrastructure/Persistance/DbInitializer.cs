@@ -58,6 +58,22 @@ namespace DJDiP.Infrastructure.Persistance
                         ""MixType"" TEXT,
                         ""DJProfileId"" UUID REFERENCES ""DJProfiles""(""Id"") ON DELETE SET NULL,
                         ""CreatedAt"" TIMESTAMP NOT NULL DEFAULT NOW()
+                      );
+                      ALTER TABLE ""Events"" ADD COLUMN IF NOT EXISTS ""OrganizerId"" TEXT REFERENCES ""ApplicationUsers""(""Id"") ON DELETE SET NULL;
+                      ALTER TABLE ""Events"" ADD COLUMN IF NOT EXISTS ""Status"" TEXT NOT NULL DEFAULT 'Published';
+                      ALTER TABLE ""Events"" ADD COLUMN IF NOT EXISTS ""StatusReason"" TEXT;
+                      CREATE TABLE IF NOT EXISTS ""EventOrganizerApplications"" (
+                        ""Id"" UUID PRIMARY KEY,
+                        ""UserId"" TEXT NOT NULL REFERENCES ""ApplicationUsers""(""Id"") ON DELETE CASCADE,
+                        ""OrganizationName"" TEXT NOT NULL DEFAULT '',
+                        ""Description"" TEXT NOT NULL DEFAULT '',
+                        ""Website"" TEXT,
+                        ""SocialLinks"" TEXT,
+                        ""Status"" INTEGER NOT NULL DEFAULT 0,
+                        ""SubmittedAt"" TIMESTAMP NOT NULL DEFAULT NOW(),
+                        ""ReviewedAt"" TIMESTAMP,
+                        ""ReviewedByAdminId"" TEXT,
+                        ""RejectionReason"" TEXT
                       );");
             }
             catch { /* columns already exist or table doesn't exist yet (handled by EnsureCreated) */ }

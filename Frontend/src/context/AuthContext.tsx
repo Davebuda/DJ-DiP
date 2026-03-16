@@ -24,6 +24,7 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   isAdmin: boolean;
   isDJ: boolean;
+  isOrganizer: boolean;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, fullName: string) => Promise<void>;
@@ -147,6 +148,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         !!user &&
         (user.role === 'Admin' || user.email?.toLowerCase() === 'letsgoklubn@gmail.com'),
       isDJ: !!user && user.role === 'DJ',
+      isOrganizer: !!user && user.role === 'EventOrganizer',
     }),
     [user, token, loading, login, register, logout, updateUserLocal],
   );

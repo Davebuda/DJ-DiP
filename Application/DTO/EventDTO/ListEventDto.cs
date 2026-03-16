@@ -11,6 +11,9 @@ namespace DJDiP.Application.DTO.EventDTO
         public string? TicketingUrl { get; set; }
         public EventVenueDto Venue { get; set; } = null!;
         public List<string> Genres { get; set; } = new();
+        public string Status { get; set; } = "Published";
+        public string? StatusReason { get; set; }
+        public string? OrganizerId { get; set; }
     }
 
     public class EventVenueDto

@@ -463,20 +463,20 @@ const LandingPage = () => {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[37.5%_1fr] gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-[40%_1fr] gap-5">
           {/* Featured Headliner — Full Poster */}
           <ScrollReveal direction="left">
             {highlightEvent ? (
               <TiltCard intensity={6} className="h-full">
               <Link
                 to={`/events/${highlightEvent.id}`}
-                className="group relative block h-full min-h-[400px] sm:min-h-[500px] rounded-3xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.6),_0_0_80px_rgba(255,107,53,0.08)] hover:shadow-[0_12px_50px_rgba(0,0,0,0.7),_0_0_100px_rgba(255,107,53,0.15)] ring-1 ring-orange-400/25 hover:ring-orange-400/40 transition-all duration-500"
+                className="group relative block h-full min-h-[400px] sm:min-h-[500px] rounded-3xl overflow-hidden bg-black shadow-[0_8px_40px_rgba(0,0,0,0.6),_0_0_80px_rgba(255,107,53,0.08)] hover:shadow-[0_12px_50px_rgba(0,0,0,0.7),_0_0_100px_rgba(255,107,53,0.15)] ring-1 ring-orange-400/25 hover:ring-orange-400/40 transition-all duration-500"
               >
                 {/* Full poster image */}
                 <img
                   src={highlightEvent.imageUrl ?? defaultEventImage}
                   alt={highlightEvent.title}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700"
+                  className="absolute inset-0 w-full h-full object-contain group-hover:scale-[1.03] transition-transform duration-700"
                 />
 
                 {/* Headliner badge */}
@@ -533,36 +533,46 @@ const LandingPage = () => {
             )}
           </ScrollReveal>
 
-          {/* Events Grid — 5/8 */}
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4 content-start">
+          {/* Events Grid — portrait poster tiles */}
+          <StaggerContainer className="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-2 md:overflow-visible snap-x snap-mandatory md:snap-none scrollbar-none">
             {gridEvents.length > 0 ? (
               gridEvents.map((event: any) => (
-                <StaggerItem key={event.id}>
-                <TiltCard intensity={10}>
+                <StaggerItem key={event.id} className="flex-shrink-0 w-[68vw] sm:w-[48vw] md:w-auto snap-start">
+                <TiltCard intensity={8}>
                 <Link
                   to={`/events/${event.id}`}
-                  className="liquid-glass group block rounded-3xl border border-white/[0.10] bg-gradient-to-b from-white/[0.12] to-white/[0.03] shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_8px_32px_rgba(0,0,0,0.4)] overflow-hidden hover:from-white/[0.16] hover:to-white/[0.05] hover:border-white/[0.18] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),_0_8px_32px_rgba(0,0,0,0.5)] transition-all duration-300"
+                  className="group relative block w-full rounded-2xl overflow-hidden bg-[#0a0a0a] ring-1 ring-white/10 hover:ring-orange-400/50 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:shadow-[0_8px_40px_rgba(255,107,53,0.18)] transition-all duration-300"
                 >
-                  <div className="relative overflow-hidden aspect-[16/10]">
+                  <div className="relative aspect-[3/4]">
                     <img
                       src={event.imageUrl ?? defaultEventImage}
                       alt={event.title}
                       loading="lazy"
-                      className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      className="absolute inset-0 w-full h-full object-contain group-hover:scale-[1.03] group-hover:brightness-110 transition-all duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  </div>
-                  <div className="p-4 space-y-2">
-                    <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-orange-400/80">
+                    {/* Bottom gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+
+                    {/* Date badge top-left */}
+                    <div className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-orange-500 text-white text-[0.58rem] font-bold uppercase tracking-wide shadow-lg shadow-orange-600/40">
                       {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    </p>
-                    <h3 className="text-base font-bold text-white group-hover:text-orange-400 transition-colors line-clamp-1">
-                      {event.title}
-                    </h3>
-                    <div className="flex items-center justify-between pt-1">
-                      <p className="text-xs text-gray-400 line-clamp-1">{event.venue?.name ?? 'TBA'}</p>
+                    </div>
+
+                    {/* Genre chip top-right */}
+                    {event.genres?.[0] && (
+                      <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-black/60 border border-white/20 text-[0.55rem] text-gray-300 uppercase tracking-wide backdrop-blur-sm">
+                        {event.genres[0]}
+                      </div>
+                    )}
+
+                    {/* Bottom info */}
+                    <div className="absolute inset-x-0 bottom-0 p-4 space-y-0.5">
+                      <h3 className="text-sm font-bold text-white leading-tight line-clamp-2 group-hover:text-orange-300 transition-colors">
+                        {event.title}
+                      </h3>
+                      <p className="text-[0.6rem] text-gray-400 line-clamp-1">{event.venue?.name ?? 'TBA'}</p>
                       <p className="text-sm font-bold bg-gradient-to-br from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">
-                        ${event.price}
+                        €{event.price}
                       </p>
                     </div>
                   </div>
@@ -574,17 +584,15 @@ const LandingPage = () => {
               ['Underground Sessions', 'Warehouse Rave', 'Rooftop Sunset', 'Late Night Special'].map((name) => (
                 <div
                   key={name}
-                  className="liquid-glass rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.09] to-white/[0.02] shadow-[inset_0_1px_0_rgba(255,255,255,0.10),_0_8px_32px_rgba(0,0,0,0.3)] overflow-hidden"
+                  className="flex-shrink-0 w-[68vw] sm:w-[48vw] md:w-auto snap-start rounded-2xl overflow-hidden bg-[#0a0a0a] ring-1 ring-white/10"
                 >
-                  <div className="aspect-[16/10] bg-white/[0.02] flex items-center justify-center">
-                    <p className="text-orange-400/30 text-xs">Coming Soon</p>
-                  </div>
-                  <div className="p-4 space-y-2">
-                    <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-orange-400/40">TBA</p>
-                    <h3 className="text-base font-bold text-white/60">{name}</h3>
-                    <div className="flex items-center justify-between pt-1">
-                      <p className="text-xs text-gray-600">Venue TBA</p>
-                      <p className="text-sm font-bold text-orange-400/40">TBA</p>
+                  <div className="relative aspect-[3/4] flex items-center justify-center">
+                    <p className="text-orange-400/30 text-xs uppercase tracking-widest">Coming Soon</p>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-4 space-y-0.5">
+                      <h3 className="text-sm font-bold text-white/40">{name}</h3>
+                      <p className="text-[0.6rem] text-gray-600">Venue TBA</p>
+                      <p className="text-sm font-bold text-orange-400/30">TBA</p>
                     </div>
                   </div>
                 </div>

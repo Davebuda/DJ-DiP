@@ -15,6 +15,7 @@ namespace DJDiP.Infrastructure.Persistance
         public DbSet<ContactMessage> ContactMessages => Set<ContactMessage>();
         public DbSet<DJProfile> DJProfiles => Set<DJProfile>();
         public DbSet<DJApplication> DJApplications => Set<DJApplication>();
+        public DbSet<EventOrganizerApplication> EventOrganizerApplications => Set<EventOrganizerApplication>();
         public DbSet<DJTop10> DJTop10s => Set<DJTop10>();
         public DbSet<Event> Events => Set<Event>();
         public DbSet<Genre> Genres => Set<Genre>();

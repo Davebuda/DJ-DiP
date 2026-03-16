@@ -1007,3 +1007,139 @@ export const DELETE_DJ_MIX = gql`
     deleteDjMix(id: $id)
   }
 `;
+
+// ─── Event Organizer ───────────────────────────────────────────────────────
+
+export const GET_ORGANIZER_APPLICATION_BY_USER = gql`
+  query GetOrganizerApplicationByUser($userId: String!) {
+    organizerApplicationByUser(userId: $userId) {
+      id
+      userId
+      organizationName
+      description
+      website
+      socialLinks
+      status
+      submittedAt
+      reviewedAt
+      rejectionReason
+    }
+  }
+`;
+
+export const GET_ORGANIZER_APPLICATIONS = gql`
+  query GetOrganizerApplications {
+    organizerApplications {
+      id
+      userId
+      organizationName
+      description
+      website
+      status
+      submittedAt
+      reviewedAt
+      rejectionReason
+    }
+  }
+`;
+
+export const GET_MY_ORGANIZER_EVENTS = gql`
+  query GetMyOrganizerEvents($userId: String!) {
+    myOrganizerEvents(userId: $userId) {
+      id
+      title
+      description
+      date
+      price
+      imageUrl
+      status
+      statusReason
+      organizerId
+      genres
+      venue {
+        id
+        name
+        city
+      }
+    }
+  }
+`;
+
+export const GET_PENDING_EVENTS = gql`
+  query GetPendingEvents {
+    pendingEvents {
+      id
+      title
+      description
+      date
+      price
+      imageUrl
+      status
+      organizerId
+      genres
+      venue {
+        id
+        name
+        city
+      }
+    }
+  }
+`;
+
+export const SUBMIT_ORGANIZER_APPLICATION = gql`
+  mutation SubmitOrganizerApplication($input: CreateOrganizerApplicationInput!) {
+    submitOrganizerApplication(input: $input) {
+      id
+      status
+      submittedAt
+    }
+  }
+`;
+
+export const APPROVE_ORGANIZER_APPLICATION = gql`
+  mutation ApproveOrganizerApplication($applicationId: UUID!) {
+    approveOrganizerApplication(applicationId: $applicationId) {
+      id
+      status
+    }
+  }
+`;
+
+export const REJECT_ORGANIZER_APPLICATION = gql`
+  mutation RejectOrganizerApplication($applicationId: UUID!, $rejectionReason: String) {
+    rejectOrganizerApplication(applicationId: $applicationId, rejectionReason: $rejectionReason) {
+      id
+      status
+    }
+  }
+`;
+
+export const CREATE_EVENT_AS_ORGANIZER = gql`
+  mutation CreateEventAsOrganizer($input: CreateEventInput!) {
+    createEventAsOrganizer(input: $input)
+  }
+`;
+
+export const UPDATE_EVENT_AS_ORGANIZER = gql`
+  mutation UpdateEventAsOrganizer($id: UUID!, $input: UpdateEventInput!) {
+    updateEventAsOrganizer(id: $id, input: $input)
+  }
+`;
+
+export const DELETE_EVENT_AS_ORGANIZER = gql`
+  mutation DeleteEventAsOrganizer($id: UUID!) {
+    deleteEventAsOrganizer(id: $id)
+  }
+`;
+
+export const APPROVE_EVENT = gql`
+  mutation ApproveEvent($id: UUID!) {
+    approveEvent(id: $id)
+  }
+`;
+
+export const REJECT_EVENT = gql`
+  mutation RejectEvent($id: UUID!, $reason: String!) {
+    rejectEvent(id: $id, reason: $reason)
+  }
+`;

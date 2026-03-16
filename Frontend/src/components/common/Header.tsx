@@ -5,7 +5,7 @@ import { useSiteSettings } from '../../context/SiteSettingsContext';
 import { Menu, X } from 'lucide-react';
 
 const Header = () => {
-  const { isAuthenticated, isAdmin, isDJ, logout } = useAuth();
+  const { isAuthenticated, isAdmin, isDJ, isOrganizer, logout } = useAuth();
   const { siteSettings } = useSiteSettings();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -54,6 +54,14 @@ const Header = () => {
                 className="sm:hidden rounded-full border border-orange-500/40 bg-gradient-to-r from-[#FF6B35]/10 to-orange-500/10 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-orange-400 hover:text-white whitespace-nowrap"
               >
                 DJ Portal
+              </Link>
+            ) : isOrganizer ? (
+              <Link
+                to="/organizer-dashboard"
+                onClick={closeMobile}
+                className="sm:hidden rounded-full border border-orange-500/40 bg-gradient-to-r from-[#FF6B35]/10 to-orange-500/10 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-orange-400 hover:text-white whitespace-nowrap"
+              >
+                Organizer
               </Link>
             ) : !isAuthenticated ? (
               <Link
@@ -107,6 +115,14 @@ const Header = () => {
                 DJ Portal
               </Link>
             )}
+            {isOrganizer && !isDJ && !isAdmin && (
+              <Link
+                to="/organizer-dashboard"
+                className="hidden lg:inline-flex rounded-full border border-orange-500/40 bg-gradient-to-r from-[#FF6B35]/10 to-orange-500/10 px-2.5 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-orange-400 hover:text-white hover:border-orange-400 whitespace-nowrap"
+              >
+                Organizer
+              </Link>
+            )}
 
             {/* Desktop: Dashboard (admin only) + Logout / Login */}
             {isAdmin && (
@@ -154,6 +170,14 @@ const Header = () => {
                 className="hidden sm:inline-flex lg:hidden rounded-full border border-orange-500/40 bg-gradient-to-r from-[#FF6B35]/10 to-orange-500/10 px-2.5 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-orange-400 hover:text-white hover:border-orange-400 whitespace-nowrap"
               >
                 DJ Portal
+              </Link>
+            )}
+            {isOrganizer && !isDJ && !isAdmin && (
+              <Link
+                to="/organizer-dashboard"
+                className="hidden sm:inline-flex lg:hidden rounded-full border border-orange-500/40 bg-gradient-to-r from-[#FF6B35]/10 to-orange-500/10 px-2.5 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-orange-400 hover:text-white hover:border-orange-400 whitespace-nowrap"
+              >
+                Organizer
               </Link>
             )}
             {isAdmin && (
@@ -232,7 +256,7 @@ const Header = () => {
             <div className="border-t border-white/[0.06]" />
 
             {/* Portal / Admin pill */}
-            {(isAdmin || isDJ) && (
+            {(isAdmin || isDJ || isOrganizer) && (
               <>
                 {isAdmin && (
                   <Link
@@ -251,6 +275,16 @@ const Header = () => {
                     className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-gradient-to-r from-orange-500/[0.12] to-[#FF6B35]/[0.08] border border-orange-500/30 text-orange-400 text-[0.68rem] uppercase tracking-[0.3em] font-semibold shadow-[inset_0_1px_0_rgba(255,107,53,0.15)] hover:border-orange-400/60 hover:from-orange-500/[0.18] transition-all"
                   >
                     <span>DJ Portal</span>
+                    <span className="text-lg leading-none text-orange-500/70">→</span>
+                  </Link>
+                )}
+                {isOrganizer && !isDJ && !isAdmin && (
+                  <Link
+                    to="/organizer-dashboard"
+                    onClick={closeMobile}
+                    className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-gradient-to-r from-orange-500/[0.12] to-[#FF6B35]/[0.08] border border-orange-500/30 text-orange-400 text-[0.68rem] uppercase tracking-[0.3em] font-semibold shadow-[inset_0_1px_0_rgba(255,107,53,0.15)] hover:border-orange-400/60 hover:from-orange-500/[0.18] transition-all"
+                  >
+                    <span>Organizer Portal</span>
                     <span className="text-lg leading-none text-orange-500/70">→</span>
                   </Link>
                 )}

@@ -17,5 +17,10 @@ namespace DJDiP.Domain.Models
         public string? ImageUrl { get; set; }
         public string? VideoUrl { get; set; }
         public string? TicketingUrl { get; set; }
+
+        // Organizer ownership & approval
+        public string? OrganizerId { get; set; }
+        public string Status { get; set; } = "Published";
+        public string? StatusReason { get; set; }
     }
 }

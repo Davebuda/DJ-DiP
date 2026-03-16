@@ -17,7 +17,9 @@ namespace DJDiP.Application.Services
         public async Task<IEnumerable<EventListDto>> GetAllAsync()
         {
             var events = await _unitOfWork.Events.GetAllAsync();
-            return events.Select(e => new EventListDto
+            return events
+                .Where(e => e.Status == "Published")
+                .Select(e => new EventListDto
             {
                 Id = e.Id,
                 Title = e.Title,
@@ -26,6 +28,8 @@ namespace DJDiP.Application.Services
                 Price = e.Price,
                 ImageUrl = e.ImageUrl,
                 TicketingUrl = e.TicketingUrl,
+                Status = e.Status,
+                OrganizerId = e.OrganizerId,
                 Genres = e.Genres.Select(g => g.Name).ToList(),
                 Venue = new EventVenueDto
                 {

@@ -7,6 +7,8 @@ const adminNav = [
   { label: 'Overview', path: '/admin' },
   { label: 'DJs', path: '/admin/djs' },
   { label: 'DJ Applications', path: '/admin/dj-applications' },
+  { label: 'Organizer Apps', path: '/admin/organizer-applications' },
+  { label: 'Pending Events', path: '/admin/pending-events' },
   { label: 'Events', path: '/admin/events' },
   { label: 'Venues', path: '/admin/venues' },
   { label: 'Genres', path: '/admin/genres' },
