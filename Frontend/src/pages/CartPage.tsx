@@ -131,9 +131,9 @@ const CartPage = () => {
 
                       <div className="flex items-center gap-4">
                         <div className="text-right">
-                          <p className="text-xs text-gray-500">${item.price} each</p>
+                          <p className="text-xs text-gray-500">€{item.price} each</p>
                           <p className="text-2xl font-bold text-orange-400">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            €{(item.price * item.quantity).toFixed(2)}
                           </p>
                         </div>
                         <button

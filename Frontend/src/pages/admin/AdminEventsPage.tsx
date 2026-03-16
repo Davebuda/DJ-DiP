@@ -329,7 +329,7 @@ const AdminEventsPage = () => {
                   {new Date(event.date).toLocaleString()}
                 </td>
                 <td className="py-3 text-gray-400">{event.venue?.name}</td>
-                <td className="py-3 text-gray-400">${event.price}</td>
+                <td className="py-3 text-gray-400">€{event.price}</td>
                 <td className="py-3 text-right space-x-2">
                   <button
                     type="button"
