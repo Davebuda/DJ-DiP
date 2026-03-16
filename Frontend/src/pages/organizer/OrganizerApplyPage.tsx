@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { useMutation, useQuery } from '@apollo/client';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -13,7 +13,7 @@ const inputClass =
   'w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500';
 
 const OrganizerApplyPage = () => {
-  const { user, isAuthenticated, isOrganizer, isAdmin } = useAuth();
+  const { user, isAuthenticated, isOrganizer, isAdmin, loading: authLoading, logout } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ organizationName: '', description: '', website: '', socialLinks: '' });
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -25,24 +25,9 @@ const OrganizerApplyPage = () => {
 
   const [submitApplication, { loading }] = useMutation(SUBMIT_ORGANIZER_APPLICATION);
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-[#0a0500] to-black">
-        <Header />
-        <div className="max-w-lg mx-auto px-4 py-24 text-center space-y-4">
-          <p className="text-gray-400">You need to be logged in to apply.</p>
-          <Link to="/login" className="inline-flex rounded-full bg-orange-500 px-6 py-2 text-sm font-semibold text-black">
-            Login
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (isOrganizer || isAdmin) {
-    navigate('/organizer-dashboard');
-    return null;
-  }
+  if (authLoading) return null;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (isOrganizer || isAdmin) return <Navigate to="/organizer-dashboard" replace />;
 
   const existingApp = appData?.organizerApplicationByUser;
 
@@ -96,7 +81,7 @@ const OrganizerApplyPage = () => {
         </div>
 
         {existingApp ? (
-          <div className={`rounded-2xl border p-6 space-y-2 ${
+          <div className={`rounded-2xl border p-6 space-y-3 ${
             existingApp.status === 'Pending'
               ? 'border-orange-500/30 bg-orange-500/10'
               : existingApp.status === 'Rejected'
@@ -118,6 +103,19 @@ const OrganizerApplyPage = () => {
             </p>
             {existingApp.rejectionReason && (
               <p className="text-sm text-red-300">Reason: {existingApp.rejectionReason}</p>
+            )}
+            {existingApp.status === 'Approved' && (
+              <div className="pt-2 border-t border-green-500/20 space-y-2">
+                <p className="text-sm text-green-200">
+                  Your application is approved! Log out and back in to activate your organizer access.
+                </p>
+                <button
+                  onClick={() => { logout(); navigate('/login'); }}
+                  className="rounded-full bg-green-500 text-black px-5 py-2 text-xs font-bold uppercase tracking-wide hover:bg-green-400 transition"
+                >
+                  Log out &amp; Re-login →
+                </button>
+              </div>
             )}
           </div>
         ) : (
