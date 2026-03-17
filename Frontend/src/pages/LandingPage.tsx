@@ -117,8 +117,8 @@ const HeroSection = ({
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_right,_rgba(255,87,34,0.25),_transparent_55%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent via-black/40 to-black" />
 
-      {/* Genre & vibe strip — sits in the bottom fade zone (hidden on mobile to prevent overlap with Next Event) */}
-      <div className="hidden sm:block absolute inset-x-0 bottom-0 z-10 pb-7 pointer-events-none">
+      {/* Genre & vibe strip — only shown on large screens to avoid overlap with hero CTA buttons */}
+      <div className="hidden lg:block absolute inset-x-0 bottom-0 z-10 pb-7 pointer-events-none">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col gap-4">
           <div className="flex items-center gap-3 flex-wrap pointer-events-auto">
             {(siteSettings.heroGenres || 'Techno, House, Afro House, Minimal, Deep House, Amapiano, Drum & Bass')
@@ -552,24 +552,24 @@ const LandingPage = () => {
                       />
 
                       {/* Date badge */}
-                      <div className="absolute top-2.5 left-2.5 z-10 px-2 py-1 rounded-md bg-orange-500 text-white text-[0.55rem] font-bold uppercase tracking-wide shadow-md">
+                      <div className="absolute top-2.5 left-2.5 z-10 px-2.5 py-1 rounded-md bg-orange-500 text-white text-[0.65rem] font-bold uppercase tracking-wide shadow-md">
                         {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </div>
 
                       {/* Genre */}
                       {event.genres?.[0] && (
-                        <div className="absolute top-2.5 right-2.5 z-10 px-2 py-1 rounded-full bg-black/70 border border-white/15 text-[0.5rem] text-gray-300 uppercase tracking-wide backdrop-blur-sm">
+                        <div className="absolute top-2.5 right-2.5 z-10 px-2.5 py-1 rounded-full bg-black/70 border border-white/15 text-[0.6rem] text-gray-300 uppercase tracking-wide backdrop-blur-sm">
                           {event.genres[0]}
                         </div>
                       )}
 
                       {/* Info */}
-                      <div className="absolute inset-x-0 bottom-0 z-10 p-3.5 space-y-0.5">
-                        <h3 className="text-xs font-bold text-white leading-tight line-clamp-2 group-hover:text-orange-300 transition-colors">
+                      <div className="absolute inset-x-0 bottom-0 z-10 p-3.5 space-y-1">
+                        <h3 className="text-sm font-bold text-white leading-tight line-clamp-2 group-hover:text-orange-300 transition-colors">
                           {event.title}
                         </h3>
-                        <p className="text-[0.55rem] text-gray-400 truncate">{event.venue?.name ?? 'TBA'}</p>
-                        <p className="text-xs font-black bg-gradient-to-r from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">
+                        <p className="text-xs text-gray-400 truncate">{event.venue?.name ?? 'TBA'}</p>
+                        <p className="text-sm font-black bg-gradient-to-r from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">
                           €{event.price}
                         </p>
                       </div>

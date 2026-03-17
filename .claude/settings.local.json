@@ -48,7 +48,14 @@
       "Bash(cd /c/Users/daveb/Documents/GitHub/DJ-DiP && git push origin main 2>&1 && ssh root@204.168.140.17 \"cd /opt/djdip && git pull origin main && docker compose up -d --build 2>&1 | tail -20\" 2>&1)",
       "Bash(cd \"C:\\\\Users\\\\daveb\\\\Documents\\\\GitHub\\\\DJ-DiP\" && git log --oneline -5 && git push origin main 2>&1)",
       "Bash(cd \"C:/Users/daveb/Documents/GitHub/DJ-DiP\" && git push origin main 2>&1)",
-      "Bash(tail:*)"
+      "Bash(tail:*)",
+      "Bash(playwright-mcp:*)",
+      "Bash(echo npx playwright-mcp not available:*)",
+      "Bash(gh --version 2>&1 && gh auth status 2>&1)",
+      "Bash(npm show:*)",
+      "Bash(cmd.exe:*)",
+      "Bash(python -m json.tool)",
+      "Bash(claude mcp:*)"
     ],
     "deny": [],
     "ask": []
