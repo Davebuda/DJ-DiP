@@ -84,9 +84,10 @@ services:
       - traefik-public
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.djdip-api.rule=Host(`api.klubn.no`)"
+      - "traefik.http.routers.djdip-api.rule=Host(`klubn.no`) && (PathPrefix(`/graphql`) || PathPrefix(`/api`) || PathPrefix(`/health`))"
       - "traefik.http.routers.djdip-api.entrypoints=websecure"
       - "traefik.http.routers.djdip-api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.djdip-api.priority=10"
       - "traefik.http.services.djdip-api.loadbalancer.server.port=5000"
     healthcheck:
       test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/127.0.0.1/5000' 2>/dev/null"]
