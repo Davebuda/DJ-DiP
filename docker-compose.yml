@@ -1,6 +1,30 @@
 version: '3.8'
 
 services:
+  # Reverse Proxy + SSL
+  traefik:
+    image: traefik:v3.3
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "letsencrypt:/letsencrypt"
+    networks:
+      - traefik-public
+
   # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
@@ -10,8 +34,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-djdip_db}
       POSTGRES_USER: ${POSTGRES_USER:-djdip_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./backups:/backups
@@ -51,8 +73,6 @@ services:
       Email__Password: ${EMAIL_PASSWORD:-}
       Email__FromAddress: ${EMAIL_FROM_ADDRESS:-noreply@klubn.com}
       Email__FromName: ${EMAIL_FROM_NAME:-KlubN}
-    ports:
-      - "${BACKEND_PORT:-5000}:5000"
     volumes:
       - uploads:/app/wwwroot/uploads
     depends_on:
@@ -60,6 +80,13 @@ services:
         condition: service_healthy
     networks:
       - djdip-network
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.djdip-api.rule=Host(`api.klubn.com`)"
+      - "traefik.http.routers.djdip-api.entrypoints=websecure"
+      - "traefik.http.routers.djdip-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.djdip-api.loadbalancer.server.port=5000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
       interval: 30s
@@ -73,17 +100,22 @@ services:
       context: ./Frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000/graphql}
-        VITE_WS_URL: ${VITE_WS_URL:-ws://localhost:5000/graphql}
-        VITE_UPLOAD_API_URL: ${VITE_UPLOAD_API_URL:-http://localhost:5000/api/upload}
+        VITE_API_URL: ${VITE_API_URL:-https://api.klubn.com/graphql}
+        VITE_WS_URL: ${VITE_WS_URL:-wss://api.klubn.com/graphql}
+        VITE_UPLOAD_API_URL: ${VITE_UPLOAD_API_URL:-https://api.klubn.com/api/upload}
     container_name: djdip-frontend
     restart: unless-stopped
-    ports:
-      - "${FRONTEND_PORT:-80}:80"
     depends_on:
       - backend
     networks:
       - djdip-network
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.djdip-frontend.rule=Host(`klubn.com`) || Host(`www.klubn.com`)"
+      - "traefik.http.routers.djdip-frontend.entrypoints=websecure"
+      - "traefik.http.routers.djdip-frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.djdip-frontend.loadbalancer.server.port=80"
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
       interval: 30s
@@ -91,31 +123,16 @@ services:
       retries: 3
       start_period: 10s
 
-  # Redis Cache (optional, for scaling)
-  # redis:
-  #   image: redis:7-alpine
-  #   container_name: djdip-redis
-  #   restart: unless-stopped
-  #   ports:
-  #     - "6379:6379"
-  #   volumes:
-  #     - redis_data:/data
-  #   networks:
-  #     - djdip-network
-  #   healthcheck:
-  #     test: ["CMD", "redis-cli", "ping"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-
 networks:
   djdip-network:
     driver: bridge
+  traefik-public:
+    external: true
 
 volumes:
   postgres_data:
     driver: local
   uploads:
     driver: local
-  # redis_data:
-  #   driver: local
+  letsencrypt:
+    driver: local
