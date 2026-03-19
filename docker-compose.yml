@@ -83,7 +83,7 @@ services:
       - traefik-public
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.djdip-api.rule=Host(`api.klubn.com`)"
+      - "traefik.http.routers.djdip-api.rule=Host(`api.klubn.no`)"
       - "traefik.http.routers.djdip-api.entrypoints=websecure"
       - "traefik.http.routers.djdip-api.tls.certresolver=letsencrypt"
       - "traefik.http.services.djdip-api.loadbalancer.server.port=5000"
@@ -112,7 +112,7 @@ services:
       - traefik-public
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.djdip-frontend.rule=Host(`klubn.com`) || Host(`www.klubn.com`)"
+      - "traefik.http.routers.djdip-frontend.rule=Host(`klubn.no`) || Host(`www.klubn.no`)"
       - "traefik.http.routers.djdip-frontend.entrypoints=websecure"
       - "traefik.http.routers.djdip-frontend.tls.certresolver=letsencrypt"
       - "traefik.http.services.djdip-frontend.loadbalancer.server.port=80"
