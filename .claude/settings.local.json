@@ -55,7 +55,13 @@
       "Bash(npm show:*)",
       "Bash(cmd.exe:*)",
       "Bash(python -m json.tool)",
-      "Bash(claude mcp:*)"
+      "Bash(claude mcp:*)",
+      "mcp__github__create_repository",
+      "Bash(cd \"C:/Users/daveb/Documents/GitHub/dj-dip-portfolio\" && git remote add origin https://github.com/Davebuda/dj-dip-portfolio.git && git branch -M main && git push -u origin main 2>&1)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_run_code",
+      "Bash(scp:*2)"
     ],
     "deny": [],
     "ask": []
