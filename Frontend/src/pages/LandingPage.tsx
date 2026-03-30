@@ -117,6 +117,25 @@ const HeroSection = ({
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_right,_rgba(255,87,34,0.25),_transparent_55%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-b from-transparent via-black/40 to-black" />
 
+      {/* DJ DiP portrait — editorial right-side accent */}
+      <div
+        className="absolute right-0 inset-y-0 w-1/2 lg:w-[45%] xl:w-[40%] overflow-hidden pointer-events-none hidden md:block"
+        style={{ zIndex: 2 }}
+      >
+        <img
+          src="/media/sections/hero/dj-dip.png"
+          alt="DJ DiP"
+          className="absolute bottom-0 right-0 h-[108%] w-auto max-w-none object-contain"
+          style={{
+            filter: 'drop-shadow(0 0 80px rgba(255,87,34,0.55)) saturate(1.15)',
+            maskImage: 'linear-gradient(to right, transparent 0%, black 22%)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 22%)',
+          }}
+        />
+        {/* Bottom edge fade */}
+        <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-black to-transparent" />
+      </div>
+
       {/* Genre & vibe strip — only shown on large screens to avoid overlap with hero CTA buttons */}
       <div className="hidden lg:block absolute inset-x-0 bottom-0 z-10 pb-7 pointer-events-none">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col gap-4">
