@@ -1,0 +1,30 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="48" x2="448" y2="464" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#161616" />
+      <stop offset="1" stop-color="#050505" />
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(256 220) rotate(90) scale(188)">
+      <stop stop-color="#CF2029" stop-opacity="0.28" />
+      <stop offset="1" stop-color="#CF2029" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect x="24" y="24" width="464" height="464" rx="44" fill="url(#bg)" />
+  <rect x="56" y="56" width="84" height="144" fill="#CF2029" />
+  <circle cx="272" cy="248" r="156" fill="url(#glow)" />
+  <circle cx="272" cy="248" r="132" stroke="#FFFFFF" stroke-opacity="0.14" />
+  <circle cx="272" cy="248" r="168" stroke="#FFFFFF" stroke-opacity="0.18" stroke-dasharray="6 10" />
+
+  <text x="270" y="222" fill="#F0EBE2" font-family="Arial, sans-serif" font-size="92" font-weight="700" letter-spacing="-8" text-anchor="middle">
+    DJ
+  </text>
+  <text x="272" y="308" fill="#F0EBE2" font-family="Arial, sans-serif" font-size="88" font-weight="700" letter-spacing="-7" text-anchor="middle">
+    DiP
+  </text>
+
+  <rect x="316" y="360" width="128" height="24" fill="#CF2029" />
+  <rect x="76" y="388" width="122" height="12" fill="#F0EBE2" fill-opacity="0.68" />
+  <rect x="76" y="414" width="86" height="12" fill="#F0EBE2" fill-opacity="0.36" />
+  <circle cx="410" cy="96" r="12" fill="#CF2029" />
+</svg>
