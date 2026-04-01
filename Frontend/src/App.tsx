@@ -56,9 +56,12 @@ import OrganizerApplyPage from './pages/organizer/OrganizerApplyPage';
 import OrganizerDashboard from './pages/organizer/OrganizerDashboard';
 import OrganizerEventsList from './pages/organizer/OrganizerEventsList';
 import OrganizerEventForm from './pages/organizer/OrganizerEventForm';
+import DJDipPortfolioPage from './pages/DJDipPortfolioPage';
 
 const App = () => (
   <Routes>
+    <Route path="/djdip" element={<DJDipPortfolioPage />} />
+
     <Route element={<Layout />}>
       <Route index element={<LandingPage />} />
       <Route path="events" element={<EventsPage />} />
