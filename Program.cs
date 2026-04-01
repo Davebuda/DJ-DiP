@@ -801,6 +801,15 @@ public class Mutation
         return userId;
     }
 
+    private static string RequireCoAdmin(IHttpContextAccessor accessor)
+    {
+        var userId = RequireAuthentication(accessor);
+        var role = accessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+        if (role != "Admin" && role != "CoAdmin")
+            throw new GraphQLException("Access denied. Admin or CoAdmin role required.");
+        return userId;
+    }
+
     private static string RequireRole(IHttpContextAccessor accessor, params string[] roles)
     {
         var userId = RequireAuthentication(accessor);
@@ -940,7 +949,7 @@ public class Mutation
         [Service] IEventService events,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         if (string.IsNullOrWhiteSpace(input.Title))
             throw new GraphQLException("Event title is required.");
 
@@ -974,7 +983,7 @@ public class Mutation
         [Service] IEventService events,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         var dto = new UpdateEventDto
         {
             Id = id,
@@ -999,7 +1008,7 @@ public class Mutation
         [Service] IEventService events,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         await events.DeleteAsync(id);
         return true;
     }
@@ -1102,7 +1111,7 @@ public class Mutation
         [Service] AppDbContext db,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         var ev = await db.Events.FirstOrDefaultAsync(e => e.Id == id);
         if (ev == null) throw new GraphQLException("Event not found.");
         ev.Status = "Published";
@@ -1117,7 +1126,7 @@ public class Mutation
         [Service] AppDbContext db,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         var ev = await db.Events.FirstOrDefaultAsync(e => e.Id == id);
         if (ev == null) throw new GraphQLException("Event not found.");
         ev.Status = "Rejected";
@@ -1132,7 +1141,7 @@ public class Mutation
         [Service] IDJService djs,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        var adminUserId = RequireAdmin(httpContextAccessor);
+        var adminUserId = RequireCoAdmin(httpContextAccessor);
 
         // Validate required fields
         var errors = new List<string>();
@@ -1185,7 +1194,7 @@ public class Mutation
         [Service] IDJService djs,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireRole(httpContextAccessor, "DJ", "Admin");
+        RequireRole(httpContextAccessor, "DJ", "Admin", "CoAdmin");
         var dto = new UpdateDJProfileDto
         {
             Id = id,
@@ -1226,7 +1235,7 @@ public class Mutation
         [Service] IDJService djs,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         await djs.DeleteAsync(id);
         return true;
     }
@@ -1288,7 +1297,7 @@ public class Mutation
         [Service] IEmailService emailService,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         try
         {
             var dto = new UpdateApplicationStatusDto
@@ -1330,7 +1339,7 @@ public class Mutation
         [Service] IEmailService emailService,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         try
         {
             var dto = new UpdateApplicationStatusDto
@@ -1657,7 +1666,7 @@ public class Mutation
     {
         var userId = RequireAuthentication(accessor);
         var role = accessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-        if (role == "Admin") return;
+        if (role == "Admin" || role == "CoAdmin") return;
 
         var playlist = await playlistService.GetByIdAsync(playlistId);
         if (playlist == null) throw new GraphQLException("Playlist not found.");
@@ -1685,8 +1694,8 @@ public class Mutation
 
         Guid? djProfileId = input.DjProfileId;
 
-        // If DJ (not admin), verify they own the DJ profile
-        if (role != "Admin")
+        // If DJ (not admin/coadmin), verify they own the DJ profile
+        if (role != "Admin" && role != "CoAdmin")
         {
             if (djProfileId == null)
                 throw new GraphQLException("DJs must associate playlists with their profile.");
@@ -1789,9 +1798,9 @@ public class Mutation
         if (string.IsNullOrWhiteSpace(input.MixUrl))
             throw new GraphQLException("Mix URL is required.");
 
-        // Verify DJ owns the profile (unless admin)
+        // Verify DJ owns the profile (unless admin/coadmin)
         var role = httpContextAccessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-        if (role != "Admin" && input.DjProfileId.HasValue)
+        if (role != "Admin" && role != "CoAdmin" && input.DjProfileId.HasValue)
         {
             var djProfiles = await unitOfWork.DJProfiles.GetAllAsync();
             var djProfile = djProfiles.FirstOrDefault(d => d.Id == input.DjProfileId.Value);
@@ -1822,7 +1831,7 @@ public class Mutation
     {
         var userId = RequireAuthentication(httpContextAccessor);
         var role = httpContextAccessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-        if (role != "Admin" && input.DjProfileId.HasValue)
+        if (role != "Admin" && role != "CoAdmin" && input.DjProfileId.HasValue)
         {
             var djProfiles = await unitOfWork.DJProfiles.GetAllAsync();
             var djProfile = djProfiles.FirstOrDefault(d => d.Id == input.DjProfileId.Value);
@@ -1962,7 +1971,7 @@ public class Mutation
         [Service] IGalleryMediaService galleryMediaService,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         var dto = new UpdateGalleryMediaDto
         {
             Title = input.Title,
@@ -1980,7 +1989,7 @@ public class Mutation
         [Service] IGalleryMediaService galleryMediaService,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         return await galleryMediaService.DeleteAsync(id);
     }
 
@@ -2055,7 +2064,7 @@ public class Mutation
         [Service] ITicketService ticketService,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireRole(httpContextAccessor, "Admin", "DJ");
+        RequireRole(httpContextAccessor, "Admin", "CoAdmin", "DJ");
         return await ticketService.CheckInTicketAsync(ticketId);
     }
 
@@ -2078,7 +2087,7 @@ public class Mutation
         [Service] ITicketService ticketService,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         var dto = new RefundTicketDto
         {
             TicketId = input.TicketId,
@@ -2107,7 +2116,7 @@ public class Mutation
         [Service] ITicketService ticketService,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         return await ticketService.InvalidateTicketAsync(ticketId);
     }
 
@@ -2116,7 +2125,7 @@ public class Mutation
         [Service] ITicketService ticketService,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         await ticketService.DeleteAsync(ticketId);
         return true;
     }
@@ -2164,6 +2173,36 @@ public class Mutation
             ProfilePictureUrl = input.ProfilePictureUrl
         };
         await userService.UpdateUserAsync(dto);
+        return true;
+    }
+
+    public async Task<bool> UpdateUserRole(
+        string userId,
+        int role,
+        [Service] AppDbContext db,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        RequireAdmin(httpContextAccessor);
+        if (role < 0 || role > 4)
+            throw new GraphQLException("Invalid role value.");
+        var user = await db.ApplicationUsers.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null) throw new GraphQLException("User not found.");
+        user.Role = role;
+        user.UpdatedAt = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> DeleteUser(
+        string userId,
+        [Service] AppDbContext db,
+        [Service] IHttpContextAccessor httpContextAccessor)
+    {
+        RequireAdmin(httpContextAccessor);
+        var user = await db.ApplicationUsers.FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null) throw new GraphQLException("User not found.");
+        db.ApplicationUsers.Remove(user);
+        await db.SaveChangesAsync();
         return true;
     }
 }

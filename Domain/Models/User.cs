@@ -6,7 +6,7 @@ namespace DJDiP.Domain.Models
         public required string FullName { get; set; }
         public required string Email { get; set; }
         public string PasswordHash { get; set; } = string.Empty;
-        public int Role { get; set; } = 0; // 0=User, 1=DJ, 2=Admin
+        public int Role { get; set; } = 0; // 0=User, 1=DJ, 2=Admin, 3=EventOrganizer, 4=CoAdmin
         public bool IsEmailVerified { get; set; } = false;
         public string? EmailVerificationToken { get; set; }
         public string? PasswordResetToken { get; set; }

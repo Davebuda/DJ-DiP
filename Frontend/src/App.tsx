@@ -22,6 +22,9 @@ import EditDJProfilePage from './pages/EditDJProfilePage';
 import DJEnrollPage from './pages/DJEnrollPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import AdminRoute from './components/auth/AdminRoute';
+import PortalRoute from './components/auth/PortalRoute';
+import PortalLayout from './components/admin/PortalLayout';
+import PortalDashboardPage from './pages/portal/PortalDashboardPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminEventsPage from './pages/admin/AdminEventsPage';
 import AdminVenuesPage from './pages/admin/AdminVenuesPage';
@@ -177,6 +180,25 @@ const App = () => (
       <Route path="site-settings" element={<AdminSiteSettingsPage />} />
       <Route path="organizer-applications" element={<AdminOrganizerApplicationsPage />} />
       <Route path="pending-events" element={<AdminPendingEventsPage />} />
+    </Route>
+
+    <Route
+      path="/portal"
+      element={
+        <PortalRoute>
+          <PortalLayout />
+        </PortalRoute>
+      }
+    >
+      <Route index element={<PortalDashboardPage />} />
+      <Route path="djs" element={<AdminDJsPage />} />
+      <Route path="dj-applications" element={<AdminDJApplicationsPage />} />
+      <Route path="events" element={<AdminEventsPage />} />
+      <Route path="pending-events" element={<AdminPendingEventsPage />} />
+      <Route path="tickets" element={<AdminTicketsPage />} />
+      <Route path="mixes" element={<AdminMixesPage />} />
+      <Route path="playlists" element={<AdminPlaylistsPage />} />
+      <Route path="gallery" element={<AdminGalleryPage />} />
     </Route>
   </Routes>
 );

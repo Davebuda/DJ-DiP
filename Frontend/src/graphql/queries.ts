@@ -857,6 +857,18 @@ export const GET_USERS = gql`
   }
 `;
 
+export const UPDATE_USER_ROLE = gql`
+  mutation UpdateUserRole($userId: String!, $role: Int!) {
+    updateUserRole(userId: $userId, role: $role)
+  }
+`;
+
+export const DELETE_USER = gql`
+  mutation DeleteUser($userId: String!) {
+    deleteUser(userId: $userId)
+  }
+`;
+
 // PLAYLIST QUERIES & MUTATIONS
 export const GET_PLAYLISTS = gql`
   query GetPlaylists {

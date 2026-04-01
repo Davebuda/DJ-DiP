@@ -23,6 +23,7 @@ interface AuthContextValue {
   token: string | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  isCoAdmin: boolean;
   isDJ: boolean;
   isOrganizer: boolean;
   loading: boolean;
@@ -147,6 +148,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isAdmin:
         !!user &&
         (user.role === 'Admin' || user.email?.toLowerCase() === 'letsgoklubn@gmail.com'),
+      isCoAdmin: !!user && user.role === 'CoAdmin',
       isDJ: !!user && user.role === 'DJ',
       isOrganizer: !!user && user.role === 'EventOrganizer',
     }),

@@ -5,7 +5,7 @@ import { useSiteSettings } from '../../context/SiteSettingsContext';
 import { Menu, X } from 'lucide-react';
 
 const Header = () => {
-  const { isAuthenticated, isAdmin, isDJ, isOrganizer, logout } = useAuth();
+  const { isAuthenticated, isAdmin, isCoAdmin, isDJ, isOrganizer, logout } = useAuth();
   const { siteSettings } = useSiteSettings();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -46,6 +46,14 @@ const Header = () => {
                 className="sm:hidden rounded-full border border-white/20 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-orange-400 hover:text-white whitespace-nowrap"
               >
                 Admin
+              </Link>
+            ) : isCoAdmin ? (
+              <Link
+                to="/portal"
+                onClick={closeMobile}
+                className="sm:hidden rounded-full border border-orange-500/40 bg-gradient-to-r from-[#FF6B35]/10 to-orange-500/10 px-3 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-orange-400 hover:text-white whitespace-nowrap"
+              >
+                Portal
               </Link>
             ) : isDJ ? (
               <Link
@@ -98,7 +106,7 @@ const Header = () => {
               ))}
             </nav>
 
-            {/* Desktop: Admin / DJ Portal */}
+            {/* Desktop: Admin / CoAdmin Portal / DJ Portal */}
             {isAdmin && (
               <Link
                 to="/admin"
@@ -107,7 +115,15 @@ const Header = () => {
                 Admin
               </Link>
             )}
-            {isDJ && !isAdmin && (
+            {isCoAdmin && !isAdmin && (
+              <Link
+                to="/portal"
+                className="hidden lg:inline-flex rounded-full border border-orange-500/40 bg-gradient-to-r from-[#FF6B35]/10 to-orange-500/10 px-2.5 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-orange-400 hover:text-white hover:border-orange-400 whitespace-nowrap"
+              >
+                Portal
+              </Link>
+            )}
+            {isDJ && !isAdmin && !isCoAdmin && (
               <Link
                 to="/dj-dashboard"
                 className="hidden lg:inline-flex rounded-full border border-orange-500/40 bg-gradient-to-r from-[#FF6B35]/10 to-orange-500/10 px-2.5 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-orange-400 hover:text-white hover:border-orange-400 whitespace-nowrap"
@@ -164,7 +180,15 @@ const Header = () => {
                 Admin
               </Link>
             )}
-            {isDJ && !isAdmin && (
+            {isCoAdmin && !isAdmin && (
+              <Link
+                to="/portal"
+                className="hidden sm:inline-flex lg:hidden rounded-full border border-orange-500/40 bg-gradient-to-r from-[#FF6B35]/10 to-orange-500/10 px-2.5 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-orange-400 hover:text-white hover:border-orange-400 whitespace-nowrap"
+              >
+                Portal
+              </Link>
+            )}
+            {isDJ && !isAdmin && !isCoAdmin && (
               <Link
                 to="/dj-dashboard"
                 className="hidden sm:inline-flex lg:hidden rounded-full border border-orange-500/40 bg-gradient-to-r from-[#FF6B35]/10 to-orange-500/10 px-2.5 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-orange-400 hover:text-white hover:border-orange-400 whitespace-nowrap"
@@ -172,7 +196,7 @@ const Header = () => {
                 DJ Portal
               </Link>
             )}
-            {isOrganizer && !isDJ && !isAdmin && (
+            {isOrganizer && !isDJ && !isAdmin && !isCoAdmin && (
               <Link
                 to="/organizer-dashboard"
                 className="hidden sm:inline-flex lg:hidden rounded-full border border-orange-500/40 bg-gradient-to-r from-[#FF6B35]/10 to-orange-500/10 px-2.5 py-1.5 text-[0.6rem] uppercase tracking-[0.3em] text-orange-400 hover:text-white hover:border-orange-400 whitespace-nowrap"
@@ -256,7 +280,7 @@ const Header = () => {
             <div className="border-t border-white/[0.06]" />
 
             {/* Portal / Admin pill */}
-            {(isAdmin || isDJ || isOrganizer) && (
+            {(isAdmin || isCoAdmin || isDJ || isOrganizer) && (
               <>
                 {isAdmin && (
                   <Link
@@ -268,7 +292,17 @@ const Header = () => {
                     <span className="text-lg leading-none text-orange-500/70">→</span>
                   </Link>
                 )}
-                {isDJ && !isAdmin && (
+                {isCoAdmin && !isAdmin && (
+                  <Link
+                    to="/portal"
+                    onClick={closeMobile}
+                    className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-gradient-to-r from-orange-500/[0.12] to-[#FF6B35]/[0.08] border border-orange-500/30 text-orange-400 text-[0.68rem] uppercase tracking-[0.3em] font-semibold shadow-[inset_0_1px_0_rgba(255,107,53,0.15)] hover:border-orange-400/60 hover:from-orange-500/[0.18] transition-all"
+                  >
+                    <span>KlubN Portal</span>
+                    <span className="text-lg leading-none text-orange-500/70">→</span>
+                  </Link>
+                )}
+                {isDJ && !isAdmin && !isCoAdmin && (
                   <Link
                     to="/dj-dashboard"
                     onClick={closeMobile}
@@ -278,7 +312,7 @@ const Header = () => {
                     <span className="text-lg leading-none text-orange-500/70">→</span>
                   </Link>
                 )}
-                {isOrganizer && !isDJ && !isAdmin && (
+                {isOrganizer && !isDJ && !isAdmin && !isCoAdmin && (
                   <Link
                     to="/organizer-dashboard"
                     onClick={closeMobile}
