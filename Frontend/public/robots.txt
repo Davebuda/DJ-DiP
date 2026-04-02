@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Block private/admin routes
+Disallow: /admin
+Disallow: /portal
+Disallow: /dashboard
+Disallow: /dj-dashboard
+Disallow: /organizer-dashboard
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /tickets
+Disallow: /orders
+Disallow: /upload
+
+Sitemap: https://klubn.no/sitemap.xml

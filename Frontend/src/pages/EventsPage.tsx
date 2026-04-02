@@ -3,6 +3,7 @@ import { useQuery } from '@apollo/client';
 import { Link } from 'react-router-dom';
 import { GET_EVENTS, GET_GENRES } from '../graphql/queries';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import PageSeo from '../components/common/PageSeo';
 
 type Event = {
   id: string;
@@ -133,6 +134,11 @@ const EventsPage = () => {
 
   return (
     <div className="min-h-screen text-white">
+      <PageSeo
+        title="Events — Oslo Club Nights & DJ Sets"
+        description={siteSettings.eventsTagline || 'Discover upcoming club nights, DJ sets, and events in Oslo. Book tickets for KlubN events.'}
+        canonical="/events"
+      />
       {/* Hero */}
       <section className="max-w-7xl mx-auto px-6 lg:px-10 pt-16 pb-6 space-y-3">
         <p className="text-xs font-semibold uppercase tracking-[0.5em] text-orange-500">Discover</p>

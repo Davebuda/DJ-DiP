@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { ExternalLink, MapPin, Clock, Calendar, Users, Music, ChevronLeft } from 'lucide-react';
 import { GET_EVENT_BY_ID, GET_EVENTS, GET_GENRES, GET_DJS } from '../graphql/queries';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import PageSeo from '../components/common/PageSeo';
 import { ScrollReveal } from '../components/effects/ScrollReveal';
 import { TiltCard } from '../components/effects/TiltCard';
 
@@ -121,8 +122,55 @@ const EventDetailPage = () => {
   const isPast = eventDate < new Date();
   const heroImage = event.imageUrl || defaultImage;
 
+  const eventJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: event.title,
+    description: event.description ?? '',
+    startDate: event.date,
+    image: heroImage,
+    url: `https://klubn.no/events/${event.id}`,
+    eventStatus: isPast ? 'https://schema.org/EventScheduled' : 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: event.venue ? {
+      '@type': 'Place',
+      name: event.venue.name,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: event.venue.city ?? 'Oslo',
+        addressCountry: 'NO',
+      },
+    } : { '@type': 'Place', name: 'Oslo, Norway' },
+    organizer: {
+      '@type': 'Organization',
+      name: 'KlubN',
+      url: 'https://klubn.no',
+    },
+    ...(event.price != null && {
+      offers: {
+        '@type': 'Offer',
+        price: event.price,
+        priceCurrency: 'NOK',
+        availability: isPast ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
+        url: `https://klubn.no/events/${event.id}`,
+      },
+    }),
+    performer: eventDJs.map((dj) => ({
+      '@type': 'Person',
+      name: dj.stageName || dj.id,
+    })),
+  };
+
   return (
     <div className="min-h-screen text-white">
+      <PageSeo
+        title={`${event.title} — KlubN Event`}
+        description={event.description ? `${event.description.slice(0, 155)}` : `${event.title} at ${event.venue?.name ?? 'Oslo'}. Tickets and info on KlubN.`}
+        canonical={`/events/${event.id}`}
+        image={heroImage}
+        type="article"
+        jsonLd={eventJsonLd}
+      />
       {/* ═══ Hero ═══ */}
       <section className="relative isolate overflow-hidden">
         {/* Background image */}

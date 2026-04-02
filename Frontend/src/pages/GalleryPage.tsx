@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_GALLERY_MEDIA, CREATE_GALLERY_MEDIA, LIKE_GALLERY_MEDIA } from '../graphql/queries';
 import { useAuth } from '../context/AuthContext';
+import PageSeo from '../components/common/PageSeo';
 import { useSiteSettings } from '../context/SiteSettingsContext';
 import { Heart, Eye, Upload, Play } from 'lucide-react';
 
@@ -48,6 +49,11 @@ const GalleryPage = () => {
 
   return (
     <div className="min-h-screen text-white">
+      <PageSeo
+        title="Gallery — KlubN Nights in Photos & Video"
+        description="Browse photos and videos from KlubN events in Oslo. See the energy, the crowd, and the DJs that make the nights unforgettable."
+        canonical="/gallery"
+      />
       {/* Hero Section with Video */}
       <section className="relative min-h-[50vh] sm:min-h-[60vh] overflow-hidden">
         <video

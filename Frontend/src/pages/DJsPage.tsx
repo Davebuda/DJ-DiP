@@ -5,6 +5,7 @@ import { FOLLOW_DJ, GET_DJS, GET_FOLLOWED_DJS, UNFOLLOW_DJ, GET_DJ_APPLICATION_B
 import { useAuth } from '../context/AuthContext';
 import DJApplicationForm from '../components/DJApplicationForm';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import PageSeo from '../components/common/PageSeo';
 import { Star, Music, CalendarDays } from 'lucide-react';
 
 type DJ = {
@@ -238,6 +239,11 @@ const DJsPage = () => {
 
   return (
     <div className="min-h-screen text-white">
+      <PageSeo
+        title="DJs — Oslo's Best Club Artists"
+        description="Discover Oslo's top DJs. Browse profiles, genres, upcoming sets, and book your favourite artists through KlubN."
+        canonical="/djs"
+      />
       {/* Hero with orange-burgundy gradient */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#5D1725]/30 via-transparent to-orange-950/20" />

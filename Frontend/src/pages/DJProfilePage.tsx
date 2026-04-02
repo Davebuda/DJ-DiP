@@ -4,6 +4,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import { FOLLOW_DJ, GET_DJ_BY_ID, GET_DJ_TOP10_LISTS, IS_FOLLOWING_DJ, UNFOLLOW_DJ, GET_DJ_REVIEWS, CREATE_DJ_REVIEW } from '../graphql/queries';
 import { useAuth } from '../context/AuthContext';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import PageSeo from '../components/common/PageSeo';
 import { Star, Send, Instagram, Youtube, Facebook, CalendarDays } from 'lucide-react';
 
 const SoundCloudIcon = ({ className }: { className?: string }) => (
@@ -262,8 +263,30 @@ const DJProfilePage = () => {
     .filter((e) => new Date(e.date) < now)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
+  const djJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: dj.stageName || dj.name,
+    description: dj.bio ?? '',
+    image: dj.profilePictureUrl ?? heroBackground,
+    url: `https://klubn.no/djs/${dj.id}`,
+    jobTitle: 'DJ',
+    knowsAbout: genreTags,
+    ...(socialEntries.length > 0 && {
+      sameAs: socialEntries.map((s) => s.url),
+    }),
+  };
+
   return (
     <div className="text-white min-h-screen">
+      <PageSeo
+        title={`${dj.stageName || dj.name} — DJ Profile`}
+        description={dj.bio ? `${dj.bio.slice(0, 155)}` : `${dj.stageName || dj.name} is a DJ on KlubN. ${genreTags.join(', ')}.`}
+        canonical={`/djs/${dj.id}`}
+        image={dj.profilePictureUrl ?? heroBackground}
+        type="profile"
+        jsonLd={djJsonLd}
+      />
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroBackground} alt={dj.stageName} className="h-[540px] w-full object-cover opacity-60" />

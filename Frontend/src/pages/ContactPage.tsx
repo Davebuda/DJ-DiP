@@ -5,6 +5,7 @@ import ContactForm from '../components/contact/ContactForm';
 import { CREATE_CONTACT_MESSAGE } from '../graphql/queries';
 import { useAuth } from '../context/AuthContext';
 import { useSiteSettings } from '../context/SiteSettingsContext';
+import PageSeo from '../components/common/PageSeo';
 import { ScrollReveal } from '../components/effects/ScrollReveal';
 
 const ContactPage = () => {
@@ -39,6 +40,11 @@ const ContactPage = () => {
 
   return (
     <div className="min-h-screen text-white">
+      <PageSeo
+        title="Contact — Book KlubN & Get In Touch"
+        description="Contact KlubN for bookings, DJ inquiries, venue partnerships, and general questions. Oslo's home for club culture."
+        canonical="/contact"
+      />
       {/* ═══ Hero ═══ */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#5D1725]/20 via-transparent to-orange-950/15" />

@@ -13,6 +13,7 @@ import { LineReveal } from '../components/effects/TextReveal';
 import { MagneticButton } from '../components/effects/MagneticButton';
 import { EqualizerDivider, SoundWaveDivider, MarqueeStrip, BeatPulseLine, VinylSpinner, FrequencySpectrum } from '../components/effects/MusicVisuals';
 import { useCountUp } from '../hooks/useCountUp';
+import PageSeo from '../components/common/PageSeo';
 
 type ShowcaseItem = {
   label: string;
@@ -403,8 +404,29 @@ const LandingPage = () => {
     console.error('[LandingPage] GraphQL error:', error.message);
   }
 
+  const orgJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: siteSettings.siteName || 'KlubN',
+    url: 'https://klubn.no',
+    logo: 'https://klubn.no/icons/lets-go-klubn-320.png',
+    description: siteSettings.heroSubtitle || 'Oslo\'s home for high-energy club culture.',
+    sameAs: [
+      siteSettings.instagramUrl,
+      siteSettings.facebookUrl,
+      siteSettings.youTubeUrl,
+      siteSettings.twitterUrl,
+    ].filter(Boolean),
+  };
+
   return (
     <div className="relative min-h-screen w-full max-w-full text-white">
+      <PageSeo
+        title="Lets Go KlubN — Oslo Nightlife, Events & DJs"
+        description={siteSettings.heroSubtitle || "KlubN is Oslo's home for high-energy club culture. Discover events, DJs, and the sound that moves the city."}
+        canonical="/"
+        jsonLd={orgJsonLd}
+      />
       <div className="relative">
       <HeroSection
         highlight={highlightEvent}

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_DJ_MIXES } from '../graphql/queries';
+import PageSeo from '../components/common/PageSeo';
 import { ExternalLink, Music, Play } from 'lucide-react';
 
 type DJMix = {
@@ -68,6 +69,11 @@ const MixesPage = () => {
 
   return (
     <div className="min-h-screen text-white">
+      <PageSeo
+        title="Mixes — DJ Sets & Recorded Sessions"
+        description="Listen to DJ mixes and recorded sets from KlubN Oslo. Stream the latest sessions from our resident and guest DJs."
+        canonical="/mixes"
+      />
       {/* Hero */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#5D1725]/30 via-transparent to-orange-950/20" />

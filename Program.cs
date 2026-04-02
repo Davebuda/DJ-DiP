@@ -268,6 +268,54 @@ app.MapGraphQL("/graphql").WithOptions(new HotChocolate.AspNetCore.GraphQLServer
     Tool = { Enable = app.Environment.IsDevelopment() }
 });
 
+// Dynamic sitemap
+app.MapGet("/sitemap.xml", async (AppDbContext db, HttpContext ctx) =>
+{
+    var baseUrl = "https://klubn.no";
+    var now = DateTime.UtcNow.ToString("yyyy-MM-dd");
+
+    var eventIds = await db.Events
+        .Where(e => e.Status == "Published")
+        .Select(e => e.Id)
+        .ToListAsync();
+
+    var djIds = await db.DJProfiles
+        .Select(dj => dj.Id)
+        .ToListAsync();
+
+    var sb = new StringBuilder();
+    sb.AppendLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    sb.AppendLine("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
+
+    // Static pages
+    foreach (var (loc, freq, pri) in new[]
+    {
+        ($"{baseUrl}/", "daily", "1.0"),
+        ($"{baseUrl}/events", "daily", "0.9"),
+        ($"{baseUrl}/djs", "weekly", "0.8"),
+        ($"{baseUrl}/gallery", "weekly", "0.7"),
+        ($"{baseUrl}/mixes", "weekly", "0.7"),
+        ($"{baseUrl}/playlists", "weekly", "0.6"),
+        ($"{baseUrl}/contact", "monthly", "0.5"),
+    })
+    {
+        sb.AppendLine($"  <url><loc>{loc}</loc><lastmod>{now}</lastmod><changefreq>{freq}</changefreq><priority>{pri}</priority></url>");
+    }
+
+    // Dynamic event pages
+    foreach (var id in eventIds)
+        sb.AppendLine($"  <url><loc>{baseUrl}/events/{id}</loc><lastmod>{now}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>");
+
+    // Dynamic DJ profile pages
+    foreach (var id in djIds)
+        sb.AppendLine($"  <url><loc>{baseUrl}/djs/{id}</loc><lastmod>{now}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>");
+
+    sb.AppendLine("</urlset>");
+
+    ctx.Response.ContentType = "application/xml; charset=utf-8";
+    await ctx.Response.WriteAsync(sb.ToString());
+});
+
 Log.Information("DJ-DiP application started successfully");
 app.Run();
 

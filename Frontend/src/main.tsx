@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { ApolloProvider } from '@apollo/client';
+import { HelmetProvider } from 'react-helmet-async';
 import App from './App.tsx';
 import './index.css';
 import './App.css';
@@ -15,15 +16,17 @@ import ErrorBoundary from './components/common/ErrorBoundary.tsx';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
-      <ApolloProvider client={apolloClient}>
-        <BrowserRouter>
-          <SiteSettingsProvider>
-            <AuthProvider>
-              <App />
-            </AuthProvider>
-          </SiteSettingsProvider>
-        </BrowserRouter>
-      </ApolloProvider>
+      <HelmetProvider>
+        <ApolloProvider client={apolloClient}>
+          <BrowserRouter>
+            <SiteSettingsProvider>
+              <AuthProvider>
+                <App />
+              </AuthProvider>
+            </SiteSettingsProvider>
+          </BrowserRouter>
+        </ApolloProvider>
+      </HelmetProvider>
     </ErrorBoundary>
   </StrictMode>,
 );
