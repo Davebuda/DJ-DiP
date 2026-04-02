@@ -542,9 +542,13 @@ appsettings.Production.json.user
 *.dump
 *.sql
 
-# Screenshots and output folders
-*.png
-*.jpg
-*.jpeg
+# Screenshots and output folders (root-level only, not project assets)
+/*.png
+/*.jpg
+/*.jpeg
 output/
+# Also ignore screenshots in Frontend root
+Frontend/*.png
+Frontend/*.jpg
+Frontend/*.jpeg
 .claude/settings.local.json

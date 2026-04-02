@@ -31,7 +31,7 @@ const Header = () => {
             <img
               src={siteSettings.logoUrl || '/icons/lets-go-klubn-320.png'}
               alt={siteSettings.siteName}
-              className="h-12 sm:h-16 md:h-20 w-auto drop-shadow-[0_12px_30px_rgba(0,0,0,0.45)]"
+              className="h-12 sm:h-16 md:h-20 w-auto drop-shadow-[0_0_18px_rgba(255,107,53,0.45)] drop-shadow-[0_12px_30px_rgba(0,0,0,0.5)]"
               loading="lazy"
             />
             <span className="sr-only">{siteSettings.siteName}</span>
