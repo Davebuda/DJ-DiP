@@ -162,7 +162,10 @@ const HeroSection = ({
                 </>
               )}
             </h1>
-            <p className="text-lg text-gray-300 max-w-xl leading-relaxed">
+            <p
+              className="max-w-xl leading-relaxed bg-gradient-to-r from-orange-400 to-[#FF6B35] bg-clip-text text-transparent"
+              style={{ fontFamily: "'Pacifico', cursive", fontSize: '1.3rem', lineHeight: '1.8' }}
+            >
               {siteSettings.heroSubtitle ||
                 'Book tickets to exclusive DJ events, discover new artists, and be part of the Afrobeats music scene.'}
             </p>
