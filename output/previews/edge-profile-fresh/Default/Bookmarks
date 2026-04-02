@@ -1,0 +1,97 @@
+{
+   "checksum": "1dd2c71d10f62725a129ff20b8f43ce3",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "children": [ {
+               "date_added": "13333721298524505",
+               "date_last_used": "0",
+               "guid": "5cbff3d0-ca14-47f0-9e31-3daefcdc2df5",
+               "id": "8",
+               "name": "ASUS Homepage",
+               "show_icon": false,
+               "source": "sync",
+               "type": "url",
+               "url": "http://www.asus.com/",
+               "visit_count": 0
+            }, {
+               "date_added": "13333721298524505",
+               "date_last_used": "0",
+               "guid": "4aae7a01-c1fd-4fdb-81db-5583e83b80b1",
+               "id": "9",
+               "name": "ASUS Member",
+               "show_icon": false,
+               "source": "sync",
+               "type": "url",
+               "url": "https://account.asus.com/",
+               "visit_count": 0
+            }, {
+               "date_added": "13357955669770363",
+               "date_last_used": "0",
+               "guid": "6ff81495-e2a1-44cb-b32f-e9d2a03365bd",
+               "id": "10",
+               "meta_info": {
+                  "power_bookmark_meta": ""
+               },
+               "name": "Spotify",
+               "show_icon": false,
+               "source": "sync",
+               "type": "url",
+               "url": "https://www.spotify.com/us/redirect-in-app/android_premium_promotion/?offerSlug=2024-q2globalcampaign-winback-3m-for-1&utm_source=spotify&utm_medium=in_app&utm_campaign=Desktop-MidYear24-Wave%201-Global-Winback&utm_content=NO_135500&market=us&sp_in_app=1",
+               "visit_count": 0
+            } ],
+            "date_added": "13333732684478525",
+            "date_last_used": "0",
+            "date_modified": "13357955669770363",
+            "guid": "0a5a5449-d0bb-4062-ad25-569f04ec60ef",
+            "id": "7",
+            "name": "ASUS E-Service",
+            "source": "unknown",
+            "type": "folder"
+         } ],
+         "date_added": "13419553045139550",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
+         "id": "1",
+         "name": "Favorites bar",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "other": {
+         "children": [  ],
+         "date_added": "13419553045139550",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "82b081ec-3dd3-529c-8475-ab6c344590dd",
+         "id": "2",
+         "name": "Other favorites",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [  ],
+         "date_added": "13419553045139550",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "4cf2e351-0e85-532b-bb37-df045d8f8d0f",
+         "id": "3",
+         "name": "Mobile favorites",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "workspaces_v2": {
+         "children": [  ],
+         "date_added": "13419553045139550",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "75aa6670-344f-549d-b742-660f029506ab",
+         "id": "5",
+         "name": "Workspaces",
+         "source": "unknown",
+         "type": "folder"
+      }
+   },
+   "sync_metadata": "CjEKDgiIgQISCMj+l3iZAQAAEgAqGER6eTI3MTUweHEvTDBteDlxVUJheFE9PUgDoAYHEo4BCAMSiQEKHG5qZ0R1ODhlQ3J2WHA4NnBEN2ZIR2NxRnA4OD0SJDlhNWRhMWM1LWFhNWMtNWZiNC1hYTQ1LTAzOTk3MmJmNTc2MRgAIAAoADCWvo74lDE4tcKO+JQxQLXCjviUMUoceXpOQjAxY241NEE3Y1JVMHVUKy9QZ21UdFVvPVoAZQAAAADCPgJgABKsAQgKEqcBChx5Nlg4U1oveW82K1ZGNXFDVVRuNWRaOG53eEk9EiQ2ZmY4MTQ5NS1lMmExLTQ0Y2ItYjMyZi1lOWQyYTAzMzY1YmQYACAAKAAwlenYq78yOKjx2Ku/MkCo8dirvzJKHGZoNXZrM1VFRWFwaXVjNTd3VnpqcjY1NGo0ST1aHiIcYkM5RURDUm9BaHBhNnd5dWlFTENxeGIyTGFVPWU3UZ99wj4CYAUSrAEICBKnAQocN1l2VGtlbnBpZUQ4WkplamJpOWVuWWhZY1pFPRIkNWNiZmYzZDAtY2ExNC00N2YwLTllMzEtM2RhZWZjZGMyZGY1GAAgACgAMIWewP2UMTi9o8D9lDFAvaPA/ZQxShxlWnBRZjduN25pL2tTaFJsOWxTeTNzTmdNdWM9Wh4iHDA2em5oNDVNQVBnSUpLaU95bHhXb1VFMFovbz1lAAAAAMI+AmAFEqwBCAkSpwEKHHZETDRYMDBSWTl4QWc1YklZMlgxNG9mZ3laRT0SJDRhYWU3YTAxLWMxZmQtNGZkYi04MWRiLTU1ODNlODNiODBiMRgAIAAoADCGnsD9lDE44KPA/ZQxQOCjwP2UMUocWUpWS2w4aEhFSHFDNWs2Y0R2U2ZrU245R2tvPVoeIhxJTVRQcUhGRXZ6dGtMaHMzTVZDUDRTczNuSU09ZQAAAADCPgJgBRKOAQgCEokBChxZY1NUb252RVNQd3FDczRMMmNyVmh2NjhMOTg9EiRiMTA5YzcyNC00Zjc1LTU1MTgtOTNiNi00N2Q5MmM3NzI2MzkYACAAKAAwkb6O+JQxOOvBjviUMUDrwY74lDFKHG9QVmtod0JSYlY2NUtDV1IyK0lPTkhXb091OD1aAGUAAAAAwj4CYAASrAEIBxKnAQocK05OV2NqSFZhZ29UeHhnMG1wZ09hYTBzSGJrPRIkMGE1YTU0NDktZDBiYi00MDYyLWFkMjUtNTY5ZjA0ZWM2MGVmGAAgACgAMISewP2UMTiao8D9lDFAmqPA/ZQxShxudktrY1UvOVMzQmpIY1FsZnJIZXI3czZpUE09Wh4iHC9vTkptS2RVbk9yYkNFbm9LLy90MzNVY3JYYz1lAAAAAMI+AmAAEo4BCAESiQEKHHl4Si82ZnZrZWNyN2twNUVRekI0dFdMcGRiRT0SJDBiNDgzNDQ1LTJiYzItNTg4My1hZDkwLWFmMWI2ZGU1NDRiOBgAIAAoADCQvo74lDE4xcGO+JQxQMXBjviUMUocYVJDV0xnaEY5YjVJbnFLSUR2dUovanZRa0ZjPVoAZQAAAADCPgJgABKOAQgFEokBChx3UkJyWkwrNlBBOWF2S2dqTlA3SlhETGNmdnM9EiQyMzJmYTAwZC1kODQzLTU0NTAtOGM1Yi00NDQ5NTJiMzUzZmEYACAAKAAwx/3fxJczOKL+38SXM0Ci/t/ElzNKHG5teDY1c1FEdnhJOFRnRWV2K0ErbnR0b1NuND1aAGUAAAAAwj4CYAAwADgA",
+   "version": 1
+}
