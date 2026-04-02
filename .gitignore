@@ -541,3 +541,10 @@ appsettings.Production.json.user
 # Database dumps
 *.dump
 *.sql
+
+# Screenshots and output folders
+*.png
+*.jpg
+*.jpeg
+output/
+.claude/settings.local.json
