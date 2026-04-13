@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from 'react-router-dom';
-import { Home, Edit, Music, Calendar, BarChart3, ListMusic } from 'lucide-react';
+import { Home, Edit, Music, Calendar, BarChart3, ListMusic, Radio } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Header from '../common/Header';
 import ErrorBoundary from '../common/ErrorBoundary';
@@ -12,6 +12,7 @@ const DJLayout = () => {
     { to: '/dj-dashboard/edit-profile', label: 'Edit Profile', icon: <Edit className="w-4 h-4" /> },
     { to: '/dj-dashboard/top10', label: 'Top 10 Tracks', icon: <Music className="w-4 h-4" /> },
     { to: '/dj-dashboard/playlists', label: 'Playlists', icon: <ListMusic className="w-4 h-4" /> },
+    { to: '/dj-dashboard/mixes', label: 'Mixes', icon: <Radio className="w-4 h-4" /> },
     { to: '/dj-dashboard/events', label: 'My Events', icon: <Calendar className="w-4 h-4" /> },
     { to: '/dj-dashboard/stats', label: 'Analytics', icon: <BarChart3 className="w-4 h-4" /> },
   ];

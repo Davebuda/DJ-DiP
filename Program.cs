@@ -867,6 +867,61 @@ public class Mutation
         return userId;
     }
 
+    private static string? GetCurrentRole(IHttpContextAccessor accessor)
+    {
+        return accessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+    }
+
+    private async Task RequireDjProfileOwnerOrManager(
+        Guid djProfileId,
+        IHttpContextAccessor accessor,
+        IUnitOfWork unitOfWork)
+    {
+        var userId = RequireAuthentication(accessor);
+        var role = GetCurrentRole(accessor);
+        if (role == "Admin" || role == "CoAdmin") return;
+
+        var djProfile = await unitOfWork.DJProfiles.GetByIdAsync(djProfileId);
+        if (djProfile == null)
+            throw new GraphQLException("DJ profile not found.");
+
+        if (djProfile.UserId != userId)
+            throw new GraphQLException("Access denied. You can only modify your own DJ profile.");
+    }
+
+    private async Task RequireDjTop10OwnerOrManager(
+        Guid entryId,
+        IHttpContextAccessor accessor,
+        IUnitOfWork unitOfWork)
+    {
+        var role = GetCurrentRole(accessor);
+        if (role == "Admin" || role == "CoAdmin") return;
+
+        var entry = await unitOfWork.DJTop10s.GetByIdAsync(entryId);
+        if (entry == null)
+            throw new GraphQLException("Top 10 entry not found.");
+
+        await RequireDjProfileOwnerOrManager(entry.DJId, accessor, unitOfWork);
+    }
+
+    private async Task RequireDjMixOwnerOrManager(
+        Guid mixId,
+        IHttpContextAccessor accessor,
+        IUnitOfWork unitOfWork)
+    {
+        var role = GetCurrentRole(accessor);
+        if (role == "Admin" || role == "CoAdmin") return;
+
+        var mix = await unitOfWork.DJMixes.GetByIdAsync(mixId);
+        if (mix == null)
+            throw new GraphQLException("Mix not found.");
+
+        if (!mix.DJProfileId.HasValue)
+            throw new GraphQLException("Access denied. Only admins can modify unassigned mixes.");
+
+        await RequireDjProfileOwnerOrManager(mix.DJProfileId.Value, accessor, unitOfWork);
+    }
+
     private static string RequireOrganizer(IHttpContextAccessor accessor)
     {
         var userId = RequireAuthentication(accessor);
@@ -1240,9 +1295,11 @@ public class Mutation
         Guid id,
         UpdateDjInput input,
         [Service] IDJService djs,
-        [Service] IHttpContextAccessor httpContextAccessor)
+        [Service] IHttpContextAccessor httpContextAccessor,
+        [Service] IUnitOfWork unitOfWork)
     {
         RequireRole(httpContextAccessor, "DJ", "Admin", "CoAdmin");
+        await RequireDjProfileOwnerOrManager(id, httpContextAccessor, unitOfWork);
         var dto = new UpdateDJProfileDto
         {
             Id = id,
@@ -1653,8 +1710,12 @@ public class Mutation
     // DJ TOP 10 MUTATIONS
     public async Task<Guid> CreateDjTop10Entry(
         CreateDjTop10Input input,
-        [Service] IDJTop10Service djTop10Service)
+        [Service] IDJTop10Service djTop10Service,
+        [Service] IHttpContextAccessor httpContextAccessor,
+        [Service] IUnitOfWork unitOfWork)
     {
+        RequireRole(httpContextAccessor, "DJ", "Admin", "CoAdmin");
+        await RequireDjProfileOwnerOrManager(input.DjId, httpContextAccessor, unitOfWork);
         var dto = new DJTop10CreateDto
         {
             DJId = input.DjId,
@@ -1666,8 +1727,12 @@ public class Mutation
 
     public async Task<bool> DeleteDjTop10Entry(
         Guid id,
-        [Service] IDJTop10Service djTop10Service)
+        [Service] IDJTop10Service djTop10Service,
+        [Service] IHttpContextAccessor httpContextAccessor,
+        [Service] IUnitOfWork unitOfWork)
     {
+        RequireRole(httpContextAccessor, "DJ", "Admin", "CoAdmin");
+        await RequireDjTop10OwnerOrManager(id, httpContextAccessor, unitOfWork);
         await djTop10Service.DeleteAsync(id);
         return true;
     }
@@ -1675,8 +1740,10 @@ public class Mutation
     // SONG MUTATIONS
     public async Task<Guid> CreateSong(
         CreateSongInput input,
-        [Service] ISongService songService)
+        [Service] ISongService songService,
+        [Service] IHttpContextAccessor httpContextAccessor)
     {
+        RequireRole(httpContextAccessor, "DJ", "Admin", "CoAdmin");
         var hasUrl = !string.IsNullOrWhiteSpace(input.SpotifyUrl) || !string.IsNullOrWhiteSpace(input.SoundCloudUrl);
         if (string.IsNullOrWhiteSpace(input.Title) && !hasUrl)
             throw new GraphQLException("Song title is required (or provide a URL).");
@@ -1840,20 +1907,19 @@ public class Mutation
         [Service] IHttpContextAccessor httpContextAccessor,
         [Service] IUnitOfWork unitOfWork)
     {
-        var userId = RequireAuthentication(httpContextAccessor);
+        RequireRole(httpContextAccessor, "DJ", "Admin", "CoAdmin");
         if (string.IsNullOrWhiteSpace(input.Title))
             throw new GraphQLException("Mix title is required.");
         if (string.IsNullOrWhiteSpace(input.MixUrl))
             throw new GraphQLException("Mix URL is required.");
 
-        // Verify DJ owns the profile (unless admin/coadmin)
-        var role = httpContextAccessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-        if (role != "Admin" && role != "CoAdmin" && input.DjProfileId.HasValue)
+        var role = GetCurrentRole(httpContextAccessor);
+        if (role == "DJ")
         {
-            var djProfiles = await unitOfWork.DJProfiles.GetAllAsync();
-            var djProfile = djProfiles.FirstOrDefault(d => d.Id == input.DjProfileId.Value);
-            if (djProfile == null || djProfile.UserId != userId)
-                throw new GraphQLException("Access denied. You can only create mixes for your own DJ profile.");
+            if (!input.DjProfileId.HasValue)
+                throw new GraphQLException("DJs must associate mixes with their own DJ profile.");
+
+            await RequireDjProfileOwnerOrManager(input.DjProfileId.Value, httpContextAccessor, unitOfWork);
         }
 
         var dto = new CreateDJMixDto
@@ -1877,14 +1943,23 @@ public class Mutation
         [Service] IHttpContextAccessor httpContextAccessor,
         [Service] IUnitOfWork unitOfWork)
     {
-        var userId = RequireAuthentication(httpContextAccessor);
-        var role = httpContextAccessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-        if (role != "Admin" && role != "CoAdmin" && input.DjProfileId.HasValue)
+        RequireRole(httpContextAccessor, "DJ", "Admin", "CoAdmin");
+        var role = GetCurrentRole(httpContextAccessor);
+        Guid? effectiveDjProfileId = input.DjProfileId;
+
+        if (role == "DJ")
         {
-            var djProfiles = await unitOfWork.DJProfiles.GetAllAsync();
-            var djProfile = djProfiles.FirstOrDefault(d => d.Id == input.DjProfileId.Value);
-            if (djProfile == null || djProfile.UserId != userId)
-                throw new GraphQLException("Access denied. You can only modify your own mixes.");
+            await RequireDjMixOwnerOrManager(id, httpContextAccessor, unitOfWork);
+            if (!effectiveDjProfileId.HasValue)
+            {
+                var existingMix = await unitOfWork.DJMixes.GetByIdAsync(id);
+                effectiveDjProfileId = existingMix?.DJProfileId;
+            }
+
+            if (!effectiveDjProfileId.HasValue)
+                throw new GraphQLException("DJs must keep mixes associated with their own DJ profile.");
+
+            await RequireDjProfileOwnerOrManager(effectiveDjProfileId.Value, httpContextAccessor, unitOfWork);
         }
 
         var dto = new CreateDJMixDto
@@ -1895,7 +1970,7 @@ public class Mutation
             ThumbnailUrl = input.ThumbnailUrl,
             Genre = input.Genre,
             MixType = input.MixType,
-            DjProfileId = input.DjProfileId
+            DjProfileId = effectiveDjProfileId
         };
 
         await djMixService.UpdateAsync(id, dto);
@@ -1905,9 +1980,11 @@ public class Mutation
     public async Task<bool> DeleteDjMix(
         Guid id,
         [Service] IDJMixService djMixService,
-        [Service] IHttpContextAccessor httpContextAccessor)
+        [Service] IHttpContextAccessor httpContextAccessor,
+        [Service] IUnitOfWork unitOfWork)
     {
-        RequireAuthentication(httpContextAccessor);
+        RequireRole(httpContextAccessor, "DJ", "Admin", "CoAdmin");
+        await RequireDjMixOwnerOrManager(id, httpContextAccessor, unitOfWork);
         await djMixService.DeleteAsync(id);
         return true;
     }
@@ -2212,7 +2289,11 @@ public class Mutation
         [Service] IUserService userService,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAuthentication(httpContextAccessor);
+        var callerUserId = RequireAuthentication(httpContextAccessor);
+        var role = GetCurrentRole(httpContextAccessor);
+        if (role != "Admin" && role != "CoAdmin" && callerUserId != input.Id)
+            throw new GraphQLException("Access denied. You can only update your own user profile.");
+
         var dto = new UpdateUserDto
         {
             Id = input.Id,

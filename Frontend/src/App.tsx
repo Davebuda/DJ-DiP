@@ -49,6 +49,7 @@ import DJTop10Manager from './pages/dj/DJTop10Manager';
 import DJEventsList from './pages/dj/DJEventsList';
 import DJAnalytics from './pages/dj/DJAnalytics';
 import DJPlaylistsManager from './pages/dj/DJPlaylistsManager';
+import DJMixesManager from './pages/dj/DJMixesManager';
 import MixesPage from './pages/MixesPage';
 import AdminMixesPage from './pages/admin/AdminMixesPage';
 import OrganizerLayout from './components/layouts/OrganizerLayout';
@@ -151,6 +152,7 @@ const App = () => (
       <Route path="edit-profile" element={<DJProfileEditor />} />
       <Route path="top10" element={<DJTop10Manager />} />
       <Route path="playlists" element={<DJPlaylistsManager />} />
+      <Route path="mixes" element={<DJMixesManager />} />
       <Route path="events" element={<DJEventsList />} />
       <Route path="stats" element={<DJAnalytics />} />
     </Route>
