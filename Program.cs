@@ -757,7 +757,7 @@ public class Query
         [Service] IHttpContextAccessor httpContextAccessor)
     {
         var role = httpContextAccessor.HttpContext?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-        if (role != "Admin") throw new GraphQLException("Access denied.");
+        if (role != "Admin" && role != "CoAdmin") throw new GraphQLException("Access denied.");
         return await db.Events
             .Include(e => e.Venue)
             .Include(e => e.Genres)

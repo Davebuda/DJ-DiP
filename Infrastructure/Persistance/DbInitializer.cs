@@ -60,6 +60,7 @@ namespace DJDiP.Infrastructure.Persistance
                         ""CreatedAt"" TIMESTAMP NOT NULL DEFAULT NOW()
                       );
                       ALTER TABLE ""Events"" ADD COLUMN IF NOT EXISTS ""OrganizerId"" TEXT REFERENCES ""ApplicationUsers""(""Id"") ON DELETE SET NULL;
+                      ALTER TABLE ""Events"" ADD COLUMN IF NOT EXISTS ""TicketingUrl"" TEXT;
                       ALTER TABLE ""Events"" ADD COLUMN IF NOT EXISTS ""Status"" TEXT NOT NULL DEFAULT 'Published';
                       ALTER TABLE ""Events"" ADD COLUMN IF NOT EXISTS ""StatusReason"" TEXT;
                       CREATE TABLE IF NOT EXISTS ""EventOrganizerApplications"" (
