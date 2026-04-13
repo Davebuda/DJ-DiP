@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1776032695312,
+  "lastScanned": 1776121156605,
   "projectRoot": "c:\\Users\\daveb\\Documents\\GitHub\\DJ-DiP",
   "techStack": {
     "languages": [],
@@ -39,14 +39,14 @@
       "path": "API",
       "purpose": "API routes",
       "fileCount": 0,
-      "lastAccessed": 1776032695269,
+      "lastAccessed": 1776121156571,
       "keyFiles": []
     },
     "Application": {
       "path": "Application",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1776032695269,
+      "lastAccessed": 1776121156571,
       "keyFiles": [
         "Application.csproj",
         "Class1.cs"
@@ -56,14 +56,14 @@
       "path": "bin",
       "purpose": "Executable scripts",
       "fileCount": 0,
-      "lastAccessed": 1776032695270,
+      "lastAccessed": 1776121156572,
       "keyFiles": []
     },
     "Domain": {
       "path": "Domain",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1776032695271,
+      "lastAccessed": 1776121156572,
       "keyFiles": [
         "Domain.csproj"
       ]
@@ -72,7 +72,7 @@
       "path": "Frontend",
       "purpose": null,
       "fileCount": 19,
-      "lastAccessed": 1776032695272,
+      "lastAccessed": 1776121156573,
       "keyFiles": [
         "Dockerfile",
         "eslint.config.js",
@@ -85,7 +85,7 @@
       "path": "Infrastructure",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1776032695273,
+      "lastAccessed": 1776121156574,
       "keyFiles": [
         "Infrastructure.csproj"
       ]
@@ -94,7 +94,7 @@
       "path": "logs",
       "purpose": null,
       "fileCount": 3,
-      "lastAccessed": 1776032695273,
+      "lastAccessed": 1776121156574,
       "keyFiles": [
         "djdip-20260226.log",
         "djdip-20260227.log",
@@ -105,7 +105,7 @@
       "path": "obj",
       "purpose": null,
       "fileCount": 5,
-      "lastAccessed": 1776032695274,
+      "lastAccessed": 1776121156575,
       "keyFiles": [
         "DJDiP.csproj.nuget.dgspec.json",
         "DJDiP.csproj.nuget.g.props",
@@ -118,14 +118,14 @@
       "path": "output",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776032695274,
+      "lastAccessed": 1776121156575,
       "keyFiles": []
     },
     "Properties": {
       "path": "Properties",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1776032695274,
+      "lastAccessed": 1776121156576,
       "keyFiles": [
         "launchSettings.json"
       ]
@@ -134,7 +134,7 @@
       "path": "scripts",
       "purpose": "Build/utility scripts",
       "fileCount": 3,
-      "lastAccessed": 1776032695275,
+      "lastAccessed": 1776121156576,
       "keyFiles": [
         "backup-docker.sh",
         "backup-postgres.sh",
@@ -145,14 +145,14 @@
       "path": "wwwroot",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776032695275,
+      "lastAccessed": 1776121156577,
       "keyFiles": []
     },
     "API\\Controllers": {
       "path": "API\\Controllers",
       "purpose": "Controllers",
       "fileCount": 1,
-      "lastAccessed": 1776032695277,
+      "lastAccessed": 1776121156578,
       "keyFiles": [
         "FileUploadController.cs"
       ]
@@ -161,14 +161,14 @@
       "path": "Application\\bin",
       "purpose": "Executable scripts",
       "fileCount": 0,
-      "lastAccessed": 1776032695277,
+      "lastAccessed": 1776121156579,
       "keyFiles": []
     },
     "Application\\Services": {
       "path": "Application\\Services",
       "purpose": "Business logic services",
       "fileCount": 19,
-      "lastAccessed": 1776032695278,
+      "lastAccessed": 1776121156579,
       "keyFiles": [
         "AuthService.cs",
         "ContactMessageService.cs",
@@ -179,14 +179,14 @@
       "path": "Domain\\bin",
       "purpose": "Executable scripts",
       "fileCount": 0,
-      "lastAccessed": 1776032695279,
+      "lastAccessed": 1776121156580,
       "keyFiles": []
     },
     "Domain\\Models": {
       "path": "Domain\\Models",
       "purpose": "Data models",
       "fileCount": 41,
-      "lastAccessed": 1776032695279,
+      "lastAccessed": 1776121156581,
       "keyFiles": [
         "Badge.cs",
         "ContactMessage.cs",
@@ -197,7 +197,7 @@
       "path": "Frontend\\dist",
       "purpose": "Distribution/build output",
       "fileCount": 6,
-      "lastAccessed": 1776032695280,
+      "lastAccessed": 1776121156583,
       "keyFiles": [
         "index.html",
         "manifest.json",
@@ -208,21 +208,21 @@
       "path": "Frontend\\node_modules",
       "purpose": "Dependencies",
       "fileCount": 1,
-      "lastAccessed": 1776032695281,
+      "lastAccessed": 1776121156585,
       "keyFiles": []
     },
     "Infrastructure\\bin": {
       "path": "Infrastructure\\bin",
       "purpose": "Executable scripts",
       "fileCount": 0,
-      "lastAccessed": 1776032695282,
+      "lastAccessed": 1776121156586,
       "keyFiles": []
     },
     "Infrastructure\\Migrations": {
       "path": "Infrastructure\\Migrations",
       "purpose": "Database migrations",
       "fileCount": 7,
-      "lastAccessed": 1776032695283,
+      "lastAccessed": 1776121156587,
       "keyFiles": [
         "20251116004813_AddGalleryMedia.cs",
         "20251116004813_AddGalleryMedia.Designer.cs",
@@ -230,19 +230,6 @@
       ]
     }
   },
-  "hotPaths": [
-    {
-      "path": ".env",
-      "accessCount": 1,
-      "lastAccessed": 1776032782516,
-      "type": "file"
-    },
-    {
-      "path": "docker-compose.yml",
-      "accessCount": 1,
-      "lastAccessed": 1776032783028,
-      "type": "file"
-    }
-  ],
+  "hotPaths": [],
   "userDirectives": []
 }
