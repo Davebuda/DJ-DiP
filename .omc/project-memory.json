@@ -1,0 +1,248 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1776032695312,
+  "projectRoot": "c:\\Users\\daveb\\Documents\\GitHub\\DJ-DiP",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "bin",
+      "scripts"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "API": {
+      "path": "API",
+      "purpose": "API routes",
+      "fileCount": 0,
+      "lastAccessed": 1776032695269,
+      "keyFiles": []
+    },
+    "Application": {
+      "path": "Application",
+      "purpose": null,
+      "fileCount": 2,
+      "lastAccessed": 1776032695269,
+      "keyFiles": [
+        "Application.csproj",
+        "Class1.cs"
+      ]
+    },
+    "bin": {
+      "path": "bin",
+      "purpose": "Executable scripts",
+      "fileCount": 0,
+      "lastAccessed": 1776032695270,
+      "keyFiles": []
+    },
+    "Domain": {
+      "path": "Domain",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1776032695271,
+      "keyFiles": [
+        "Domain.csproj"
+      ]
+    },
+    "Frontend": {
+      "path": "Frontend",
+      "purpose": null,
+      "fileCount": 19,
+      "lastAccessed": 1776032695272,
+      "keyFiles": [
+        "Dockerfile",
+        "eslint.config.js",
+        "index.html",
+        "nginx.conf",
+        "package-lock.json"
+      ]
+    },
+    "Infrastructure": {
+      "path": "Infrastructure",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1776032695273,
+      "keyFiles": [
+        "Infrastructure.csproj"
+      ]
+    },
+    "logs": {
+      "path": "logs",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1776032695273,
+      "keyFiles": [
+        "djdip-20260226.log",
+        "djdip-20260227.log",
+        "djdip-20260309.log"
+      ]
+    },
+    "obj": {
+      "path": "obj",
+      "purpose": null,
+      "fileCount": 5,
+      "lastAccessed": 1776032695274,
+      "keyFiles": [
+        "DJDiP.csproj.nuget.dgspec.json",
+        "DJDiP.csproj.nuget.g.props",
+        "DJDiP.csproj.nuget.g.targets",
+        "project.assets.json",
+        "project.nuget.cache"
+      ]
+    },
+    "output": {
+      "path": "output",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1776032695274,
+      "keyFiles": []
+    },
+    "Properties": {
+      "path": "Properties",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1776032695274,
+      "keyFiles": [
+        "launchSettings.json"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 3,
+      "lastAccessed": 1776032695275,
+      "keyFiles": [
+        "backup-docker.sh",
+        "backup-postgres.sh",
+        "restore-postgres.sh"
+      ]
+    },
+    "wwwroot": {
+      "path": "wwwroot",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1776032695275,
+      "keyFiles": []
+    },
+    "API\\Controllers": {
+      "path": "API\\Controllers",
+      "purpose": "Controllers",
+      "fileCount": 1,
+      "lastAccessed": 1776032695277,
+      "keyFiles": [
+        "FileUploadController.cs"
+      ]
+    },
+    "Application\\bin": {
+      "path": "Application\\bin",
+      "purpose": "Executable scripts",
+      "fileCount": 0,
+      "lastAccessed": 1776032695277,
+      "keyFiles": []
+    },
+    "Application\\Services": {
+      "path": "Application\\Services",
+      "purpose": "Business logic services",
+      "fileCount": 19,
+      "lastAccessed": 1776032695278,
+      "keyFiles": [
+        "AuthService.cs",
+        "ContactMessageService.cs",
+        "DJApplicationService.cs"
+      ]
+    },
+    "Domain\\bin": {
+      "path": "Domain\\bin",
+      "purpose": "Executable scripts",
+      "fileCount": 0,
+      "lastAccessed": 1776032695279,
+      "keyFiles": []
+    },
+    "Domain\\Models": {
+      "path": "Domain\\Models",
+      "purpose": "Data models",
+      "fileCount": 41,
+      "lastAccessed": 1776032695279,
+      "keyFiles": [
+        "Badge.cs",
+        "ContactMessage.cs",
+        "DJApplication.cs"
+      ]
+    },
+    "Frontend\\dist": {
+      "path": "Frontend\\dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 6,
+      "lastAccessed": 1776032695280,
+      "keyFiles": [
+        "index.html",
+        "manifest.json",
+        "offline.html"
+      ]
+    },
+    "Frontend\\node_modules": {
+      "path": "Frontend\\node_modules",
+      "purpose": "Dependencies",
+      "fileCount": 1,
+      "lastAccessed": 1776032695281,
+      "keyFiles": []
+    },
+    "Infrastructure\\bin": {
+      "path": "Infrastructure\\bin",
+      "purpose": "Executable scripts",
+      "fileCount": 0,
+      "lastAccessed": 1776032695282,
+      "keyFiles": []
+    },
+    "Infrastructure\\Migrations": {
+      "path": "Infrastructure\\Migrations",
+      "purpose": "Database migrations",
+      "fileCount": 7,
+      "lastAccessed": 1776032695283,
+      "keyFiles": [
+        "20251116004813_AddGalleryMedia.cs",
+        "20251116004813_AddGalleryMedia.Designer.cs",
+        "20251125170950_NorwegianTicketingStandards.cs"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": ".env",
+      "accessCount": 1,
+      "lastAccessed": 1776032782516,
+      "type": "file"
+    },
+    {
+      "path": "docker-compose.yml",
+      "accessCount": 1,
+      "lastAccessed": 1776032783028,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
