@@ -503,7 +503,7 @@ const EventDetailPage = () => {
                         <div className="flex items-center justify-between pt-1">
                           <p className="text-xs text-gray-400 line-clamp-1">{re.venue?.name ?? 'TBA'}</p>
                           <p className="text-sm font-bold bg-gradient-to-br from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">
-                            €{re.price}
+                            kr {re.price}
                           </p>
                         </div>
                       </div>

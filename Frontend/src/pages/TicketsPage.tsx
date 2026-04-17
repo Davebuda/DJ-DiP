@@ -204,7 +204,7 @@ const TicketsPage = () => {
                     <p className="text-gray-500 text-xs">{ev.venue.name}{ev.venue.city ? ` · ${ev.venue.city}` : ''}</p>
                     <div className="flex items-center justify-between pt-1">
                       <span className="text-orange-300 text-sm font-bold">
-                        {ev.price > 0 ? `€${ev.price.toFixed(2)}` : 'Free'}
+                        {ev.price > 0 ? `kr ${ev.price.toFixed(2)}` : 'Free'}
                       </span>
                       {ev.ticketingUrl ? (
                         <span className="text-xs text-green-400 uppercase tracking-wider">Tickets Available</span>

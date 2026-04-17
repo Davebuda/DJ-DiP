@@ -648,7 +648,7 @@ const DJProfilePage = () => {
                     {new Date(event.date).toLocaleDateString()} · {event.venueName}
                     {event.city ? `, ${event.city}` : ''}
                   </p>
-                  {!past && <p className="text-sm text-gray-300">{event.price ? `€${event.price}` : 'Free entry'}</p>}
+                  {!past && <p className="text-sm text-gray-300">{event.price ? `kr ${event.price}` : 'Free entry'}</p>}
                 </div>
               </Link>
             );

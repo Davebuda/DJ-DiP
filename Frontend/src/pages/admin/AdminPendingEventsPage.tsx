@@ -58,7 +58,7 @@ const AdminPendingEventsPage = () => {
                     {new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                   </p>
                   <p className="text-xs text-gray-400">{event.venue?.name}, {event.venue?.city}</p>
-                  <p className="text-xs text-orange-400 font-semibold">€{event.price}</p>
+                  <p className="text-xs text-orange-400 font-semibold">kr {event.price}</p>
                   {event.genres?.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
                       {event.genres.map((g: string) => (

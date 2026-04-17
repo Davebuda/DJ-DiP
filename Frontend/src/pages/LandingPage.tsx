@@ -595,7 +595,7 @@ const LandingPage = () => {
                         </h3>
                         <p className="text-xs text-gray-400 truncate">{event.venue?.name ?? 'TBA'}</p>
                         <p className="text-sm font-black bg-gradient-to-r from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">
-                          €{event.price}
+                          kr {event.price}
                         </p>
                       </div>
                     </Link>

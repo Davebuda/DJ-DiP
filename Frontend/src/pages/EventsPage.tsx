@@ -400,7 +400,7 @@ const EventsPage = () => {
                           </div>
                           <div className="text-right">
                             <p className="text-xs uppercase tracking-[0.3em] text-gray-500">Price</p>
-                            <p className={`text-2xl font-bold ${isPast ? 'text-gray-500' : 'text-orange-400'}`}>€{event.price}</p>
+                            <p className={`text-2xl font-bold ${isPast ? 'text-gray-500' : 'text-orange-400'}`}>kr {event.price}</p>
                           </div>
                         </div>
 

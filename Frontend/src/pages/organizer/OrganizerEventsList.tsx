@@ -103,7 +103,7 @@ const OrganizerEventsList = () => {
                         {new Date(event.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
                         {event.venue?.name && ` · ${event.venue.name}, ${event.venue.city}`}
                       </p>
-                      <p className="text-xs text-orange-400 mt-0.5">€{event.price}</p>
+                      <p className="text-xs text-orange-400 mt-0.5">kr {event.price}</p>
                     </div>
                     <span className={`flex-shrink-0 px-2.5 py-1 rounded-full border text-[0.6rem] uppercase tracking-wider font-semibold ${statusBadge(event.status)}`}>
                       {statusLabel(event.status)}

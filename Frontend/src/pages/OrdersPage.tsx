@@ -322,7 +322,7 @@ const OrdersPage = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm text-gray-400">Total Paid</p>
-                          <p className="text-3xl font-bold text-orange-400">€{order.price.toFixed(2)}</p>
+                          <p className="text-3xl font-bold text-orange-400">kr {order.price.toFixed(2)}</p>
                         </div>
                         <div className="flex gap-3">
                           <Link
