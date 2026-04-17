@@ -1575,7 +1575,7 @@ public class Mutation
         [Service] IVenueService venues,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         if (string.IsNullOrWhiteSpace(input.Name))
             throw new GraphQLException("Venue name is required.");
 
@@ -1611,7 +1611,7 @@ public class Mutation
         [Service] IVenueService venues,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         var dto = new UpdateVenueDto
         {
             Id = id,
@@ -1638,7 +1638,7 @@ public class Mutation
         [Service] IVenueService venues,
         [Service] IHttpContextAccessor httpContextAccessor)
     {
-        RequireAdmin(httpContextAccessor);
+        RequireCoAdmin(httpContextAccessor);
         await venues.DeleteAsync(id);
         return true;
     }

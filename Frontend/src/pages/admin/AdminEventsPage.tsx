@@ -179,15 +179,18 @@ const AdminEventsPage = () => {
             />
           </label>
           <label className="space-y-1 text-sm font-semibold text-gray-300">
-            Price
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              className={inputClass}
-              value={form.price}
-              onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
-            />
+            Price (kr)
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none">kr</span>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                className={`${inputClass} pl-9`}
+                value={form.price}
+                onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
+              />
+            </div>
           </label>
           <label className="space-y-1 text-sm font-semibold text-gray-300">
             Venue
