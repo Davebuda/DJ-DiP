@@ -314,7 +314,7 @@ const EventsPage = () => {
                         </div>
                         <div className="text-right">
                           <p className="text-[10px] uppercase tracking-[0.4em] text-orange-200/40">From</p>
-                          <p className="text-3xl font-black text-orange-400">€{featured.price}</p>
+                          <p className="text-3xl font-black text-orange-400">kr {featured.price}</p>
                         </div>
                       </div>
 

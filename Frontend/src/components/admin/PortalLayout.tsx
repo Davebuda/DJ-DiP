@@ -13,6 +13,7 @@ const portalNav = [
   { label: 'Mixes', path: '/portal/mixes' },
   { label: 'Playlists', path: '/portal/playlists' },
   { label: 'Gallery', path: '/portal/gallery' },
+  { label: 'Venues', path: '/portal/venues' },
 ];
 
 const PortalLayout = () => (

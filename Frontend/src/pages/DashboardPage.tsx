@@ -93,7 +93,7 @@ const DashboardPage = () => {
     },
     {
       label: 'Total Spent',
-      value: `€${tickets.reduce((sum: number, t: any) => sum + (t.totalPrice ?? 0), 0).toFixed(0)}`,
+      value: `kr ${tickets.reduce((sum: number, t: any) => sum + (t.totalPrice ?? 0), 0).toFixed(0)}`,
       icon: TrendingUp,
       color: 'from-yellow-500 to-orange-500',
       link: '/orders',

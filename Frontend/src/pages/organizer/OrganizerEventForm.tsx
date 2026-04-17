@@ -152,7 +152,7 @@ const OrganizerEventForm = () => {
               <input className={inputClass} type="datetime-local" required value={form.date} onChange={(e) => setForm((p) => ({ ...p, date: e.target.value }))} />
             </label>
             <label className="block space-y-1.5 text-sm font-medium text-gray-300">
-              Ticket Price (€)
+              Ticket Price (kr)
               <input className={inputClass} type="number" min="0" step="0.01" value={form.price} onChange={(e) => setForm((p) => ({ ...p, price: e.target.value }))} />
             </label>
             <label className="block space-y-1.5 text-sm font-medium text-gray-300">

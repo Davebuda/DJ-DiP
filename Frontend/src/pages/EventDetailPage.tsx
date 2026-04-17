@@ -230,14 +230,14 @@ const EventDetailPage = () => {
                 className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-white font-bold text-sm tracking-wide hover:shadow-[0_0_30px_rgba(255,107,53,0.5)] hover:scale-[1.02] transition-all"
               >
                 <ExternalLink className="w-4 h-4" />
-                Get Tickets — €{event.price}
+                Get Tickets — kr {event.price}
               </a>
             ) : !isPast ? (
               <Link
                 to={`/checkout?eventId=${event.id}`}
                 className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-white font-bold text-sm tracking-wide hover:shadow-[0_0_30px_rgba(255,107,53,0.5)] hover:scale-[1.02] transition-all"
               >
-                Get Tickets — €{event.price}
+                Get Tickets — kr {event.price}
               </Link>
             ) : (
               <span className="px-8 py-3.5 rounded-full bg-white/10 border border-white/10 text-gray-400 text-sm font-semibold">
@@ -357,7 +357,7 @@ const EventDetailPage = () => {
                 <div className="flex items-end justify-between">
                   <div>
                     <p className="text-[10px] uppercase tracking-[0.4em] text-orange-200/50">From</p>
-                    <p className="text-4xl font-black text-orange-400">€{event.price}</p>
+                    <p className="text-4xl font-black text-orange-400">kr {event.price}</p>
                   </div>
                   {isPast ? (
                     <span className="px-3 py-1.5 rounded-full bg-white/10 text-gray-400 text-[10px] font-bold uppercase tracking-wider">

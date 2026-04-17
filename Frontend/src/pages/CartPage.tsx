@@ -131,9 +131,9 @@ const CartPage = () => {
 
                       <div className="flex items-center gap-4">
                         <div className="text-right">
-                          <p className="text-xs text-gray-500">€{item.price} each</p>
+                          <p className="text-xs text-gray-500">kr {item.price} each</p>
                           <p className="text-2xl font-bold text-orange-400">
-                            €{(item.price * item.quantity).toFixed(2)}
+                            kr {(item.price * item.quantity).toFixed(2)}
                           </p>
                         </div>
                         <button
@@ -159,15 +159,15 @@ const CartPage = () => {
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Subtotal ({totalItems} tickets)</span>
-                  <span className="font-semibold">€{totalPrice.toFixed(2)}</span>
+                  <span className="font-semibold">kr {totalPrice.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Service Fee (5%)</span>
-                  <span className="font-semibold">€{serviceFee.toFixed(2)}</span>
+                  <span className="font-semibold">kr {serviceFee.toFixed(2)}</span>
                 </div>
                 <div className="border-t border-white/10 pt-3 flex justify-between text-lg">
                   <span className="font-bold">Total</span>
-                  <span className="font-bold text-orange-400">€{grandTotal.toFixed(2)}</span>
+                  <span className="font-bold text-orange-400">kr {grandTotal.toFixed(2)}</span>
                 </div>
               </div>
 

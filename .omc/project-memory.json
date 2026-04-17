@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1776121156605,
+  "lastScanned": 1776439791075,
   "projectRoot": "c:\\Users\\daveb\\Documents\\GitHub\\DJ-DiP",
   "techStack": {
     "languages": [],
@@ -39,14 +39,14 @@
       "path": "API",
       "purpose": "API routes",
       "fileCount": 0,
-      "lastAccessed": 1776121156571,
+      "lastAccessed": 1776439790957,
       "keyFiles": []
     },
     "Application": {
       "path": "Application",
       "purpose": null,
       "fileCount": 2,
-      "lastAccessed": 1776121156571,
+      "lastAccessed": 1776439790958,
       "keyFiles": [
         "Application.csproj",
         "Class1.cs"
@@ -56,14 +56,14 @@
       "path": "bin",
       "purpose": "Executable scripts",
       "fileCount": 0,
-      "lastAccessed": 1776121156572,
+      "lastAccessed": 1776439790958,
       "keyFiles": []
     },
     "Domain": {
       "path": "Domain",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1776121156572,
+      "lastAccessed": 1776439790959,
       "keyFiles": [
         "Domain.csproj"
       ]
@@ -72,7 +72,7 @@
       "path": "Frontend",
       "purpose": null,
       "fileCount": 19,
-      "lastAccessed": 1776121156573,
+      "lastAccessed": 1776439790960,
       "keyFiles": [
         "Dockerfile",
         "eslint.config.js",
@@ -85,7 +85,7 @@
       "path": "Infrastructure",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1776121156574,
+      "lastAccessed": 1776439790960,
       "keyFiles": [
         "Infrastructure.csproj"
       ]
@@ -93,19 +93,20 @@
     "logs": {
       "path": "logs",
       "purpose": null,
-      "fileCount": 3,
-      "lastAccessed": 1776121156574,
+      "fileCount": 4,
+      "lastAccessed": 1776439790961,
       "keyFiles": [
         "djdip-20260226.log",
         "djdip-20260227.log",
-        "djdip-20260309.log"
+        "djdip-20260309.log",
+        "djdip-20260414.log"
       ]
     },
     "obj": {
       "path": "obj",
       "purpose": null,
       "fileCount": 5,
-      "lastAccessed": 1776121156575,
+      "lastAccessed": 1776439790961,
       "keyFiles": [
         "DJDiP.csproj.nuget.dgspec.json",
         "DJDiP.csproj.nuget.g.props",
@@ -118,14 +119,14 @@
       "path": "output",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776121156575,
+      "lastAccessed": 1776439790962,
       "keyFiles": []
     },
     "Properties": {
       "path": "Properties",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1776121156576,
+      "lastAccessed": 1776439790962,
       "keyFiles": [
         "launchSettings.json"
       ]
@@ -134,7 +135,7 @@
       "path": "scripts",
       "purpose": "Build/utility scripts",
       "fileCount": 3,
-      "lastAccessed": 1776121156576,
+      "lastAccessed": 1776439790983,
       "keyFiles": [
         "backup-docker.sh",
         "backup-postgres.sh",
@@ -145,14 +146,14 @@
       "path": "wwwroot",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776121156577,
+      "lastAccessed": 1776439791003,
       "keyFiles": []
     },
     "API\\Controllers": {
       "path": "API\\Controllers",
       "purpose": "Controllers",
       "fileCount": 1,
-      "lastAccessed": 1776121156578,
+      "lastAccessed": 1776439791018,
       "keyFiles": [
         "FileUploadController.cs"
       ]
@@ -161,14 +162,14 @@
       "path": "Application\\bin",
       "purpose": "Executable scripts",
       "fileCount": 0,
-      "lastAccessed": 1776121156579,
+      "lastAccessed": 1776439791021,
       "keyFiles": []
     },
     "Application\\Services": {
       "path": "Application\\Services",
       "purpose": "Business logic services",
       "fileCount": 19,
-      "lastAccessed": 1776121156579,
+      "lastAccessed": 1776439791023,
       "keyFiles": [
         "AuthService.cs",
         "ContactMessageService.cs",
@@ -179,14 +180,14 @@
       "path": "Domain\\bin",
       "purpose": "Executable scripts",
       "fileCount": 0,
-      "lastAccessed": 1776121156580,
+      "lastAccessed": 1776439791028,
       "keyFiles": []
     },
     "Domain\\Models": {
       "path": "Domain\\Models",
       "purpose": "Data models",
       "fileCount": 41,
-      "lastAccessed": 1776121156581,
+      "lastAccessed": 1776439791034,
       "keyFiles": [
         "Badge.cs",
         "ContactMessage.cs",
@@ -196,33 +197,33 @@
     "Frontend\\dist": {
       "path": "Frontend\\dist",
       "purpose": "Distribution/build output",
-      "fileCount": 6,
-      "lastAccessed": 1776121156583,
+      "fileCount": 8,
+      "lastAccessed": 1776439791044,
       "keyFiles": [
+        "favicon.ico",
         "index.html",
-        "manifest.json",
-        "offline.html"
+        "manifest.json"
       ]
     },
     "Frontend\\node_modules": {
       "path": "Frontend\\node_modules",
       "purpose": "Dependencies",
       "fileCount": 1,
-      "lastAccessed": 1776121156585,
+      "lastAccessed": 1776439791046,
       "keyFiles": []
     },
     "Infrastructure\\bin": {
       "path": "Infrastructure\\bin",
       "purpose": "Executable scripts",
       "fileCount": 0,
-      "lastAccessed": 1776121156586,
+      "lastAccessed": 1776439791047,
       "keyFiles": []
     },
     "Infrastructure\\Migrations": {
       "path": "Infrastructure\\Migrations",
       "purpose": "Database migrations",
       "fileCount": 7,
-      "lastAccessed": 1776121156587,
+      "lastAccessed": 1776439791048,
       "keyFiles": [
         "20251116004813_AddGalleryMedia.cs",
         "20251116004813_AddGalleryMedia.Designer.cs",
@@ -230,6 +231,97 @@
       ]
     }
   },
-  "hotPaths": [],
+  "hotPaths": [
+    {
+      "path": "Frontend\\src\\pages\\CartPage.tsx",
+      "accessCount": 7,
+      "lastAccessed": 1776440016893,
+      "type": "directory"
+    },
+    {
+      "path": "Frontend\\src\\pages\\EventDetailPage.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1776439992269,
+      "type": "directory"
+    },
+    {
+      "path": "Frontend\\src\\pages\\LandingPage.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1776439993836,
+      "type": "directory"
+    },
+    {
+      "path": "Frontend\\src\\pages\\admin\\AdminEventsPage.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1776439994563,
+      "type": "directory"
+    },
+    {
+      "path": "Frontend\\src\\pages\\organizer\\OrganizerEventForm.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1776439995185,
+      "type": "directory"
+    },
+    {
+      "path": "Frontend\\src\\pages\\CheckoutPage.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1776440005790,
+      "type": "directory"
+    },
+    {
+      "path": "Frontend\\src\\pages\\TicketsPage.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1776440006986,
+      "type": "directory"
+    },
+    {
+      "path": "Frontend\\src\\pages\\OrdersPage.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1776440007616,
+      "type": "directory"
+    },
+    {
+      "path": "Frontend\\src\\pages\\DashboardPage.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1776440008972,
+      "type": "directory"
+    },
+    {
+      "path": "Frontend\\src",
+      "accessCount": 2,
+      "lastAccessed": 1776439932601,
+      "type": "directory"
+    },
+    {
+      "path": "Frontend\\src\\components\\admin\\PortalLayout.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776439976321,
+      "type": "file"
+    },
+    {
+      "path": "Frontend\\src\\App.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776439976651,
+      "type": "file"
+    },
+    {
+      "path": "Frontend\\src\\pages\\EventsPage.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1776439993200,
+      "type": "file"
+    },
+    {
+      "path": "Frontend\\src\\pages\\admin\\AdminVenuesPage.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776439926711,
+      "type": "file"
+    },
+    {
+      "path": "Frontend\\src\\pages",
+      "accessCount": 1,
+      "lastAccessed": 1776439944095,
+      "type": "directory"
+    }
+  ],
   "userDirectives": []
 }

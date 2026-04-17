@@ -152,7 +152,7 @@ const TicketsPage = () => {
                 </div>
                 <div className="text-right space-y-2">
                   <p className="text-xs uppercase tracking-[0.4em] text-gray-500">Price</p>
-                  <p className="text-2xl font-bold text-orange-300">€{(ticket.totalPrice ?? 0).toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-orange-300">kr {(ticket.totalPrice ?? 0).toFixed(2)}</p>
                   <Link
                     to={`/events/${ticket.event.id}`}
                     className="text-sm uppercase tracking-[0.3em] text-orange-200 underline"

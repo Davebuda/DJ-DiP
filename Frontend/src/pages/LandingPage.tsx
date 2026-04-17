@@ -534,7 +534,7 @@ const LandingPage = () => {
                       </h3>
                       <div className="flex items-center justify-between pt-1">
                         <p className="text-xl font-black bg-gradient-to-r from-orange-400 to-[#FF6B35] bg-clip-text text-transparent">
-                          €{highlightEvent.price}
+                          kr {highlightEvent.price}
                         </p>
                         <span className="px-5 py-2.5 rounded-full bg-gradient-to-r from-orange-500 to-[#FF6B35] text-white text-xs font-bold uppercase tracking-wider shadow-lg shadow-orange-600/40 group-hover:scale-105 transition-transform">
                           Get Tickets →

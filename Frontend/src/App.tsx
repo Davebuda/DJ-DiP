@@ -200,6 +200,7 @@ const App = () => (
       <Route path="mixes" element={<AdminMixesPage />} />
       <Route path="playlists" element={<AdminPlaylistsPage />} />
       <Route path="gallery" element={<AdminGalleryPage />} />
+      <Route path="venues" element={<AdminVenuesPage />} />
     </Route>
   </Routes>
 );
